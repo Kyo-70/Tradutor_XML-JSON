@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 
 :: ============================================================================
 :: GAME TRANSLATOR - EXECUCAO RAPIDA
-:: Versao: 1.0.2 - Compativel com Windows 11
+:: Versao: 1.0.3 - Compativel com Windows 11 e Python Launcher (py)
 :: ============================================================================
 
 chcp 65001 >nul 2>&1
@@ -26,36 +26,52 @@ echo.
 echo [AVISO] Executavel nao encontrado. Tentando modo desenvolvimento...
 echo.
 
-:: Verifica Python
-python --version >nul 2>&1
-if errorlevel 1 (
-    echo [ERRO] Python nao encontrado!
-    echo.
-    echo Execute o arquivo INSTALAR.bat para configurar o programa.
-    echo.
-    pause
-    exit /b 1
+:: Detecta comando Python (py ou python)
+set "PY_CMD="
+
+py --version >nul 2>&1
+if not errorlevel 1 (
+    set "PY_CMD=py"
+    echo [OK] Usando Python Launcher (py)
+    goto :RUN
 )
 
+python --version >nul 2>&1
+if not errorlevel 1 (
+    set "PY_CMD=python"
+    echo [OK] Usando Python (python)
+    goto :RUN
+)
+
+:: Nenhum Python encontrado
+echo [ERRO] Python nao encontrado!
+echo.
+echo Instale Python de: https://www.python.org/downloads/
+echo Ou execute INSTALAR.bat para mais opcoes.
+echo.
+pause
+exit /b 1
+
+:RUN
 :: Verifica e instala dependencias
 echo [INFO] Verificando dependencias...
 
-python -c "import PySide6" >nul 2>&1
+%PY_CMD% -c "import PySide6" >nul 2>&1
 if errorlevel 1 (
     echo [INFO] Instalando PySide6...
-    pip install PySide6 >nul 2>&1
+    %PY_CMD% -m pip install PySide6 >nul 2>&1
 )
 
-python -c "import requests" >nul 2>&1
+%PY_CMD% -c "import requests" >nul 2>&1
 if errorlevel 1 (
     echo [INFO] Instalando requests...
-    pip install requests >nul 2>&1
+    %PY_CMD% -m pip install requests >nul 2>&1
 )
 
-python -c "import psutil" >nul 2>&1
+%PY_CMD% -c "import psutil" >nul 2>&1
 if errorlevel 1 (
     echo [INFO] Instalando psutil...
-    pip install psutil >nul 2>&1
+    %PY_CMD% -m pip install psutil >nul 2>&1
 )
 
 echo [OK] Dependencias verificadas!
@@ -64,6 +80,6 @@ echo [INFO] Iniciando Game Translator...
 echo.
 
 cd /d "%SCRIPT_DIR%src"
-python main.py
+%PY_CMD% main.py
 
 pause

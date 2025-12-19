@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 
 :: ============================================================================
 :: GAME TRANSLATOR - INSTALADOR E CONSTRUTOR DE EXECUTAVEL
-:: Versao: 1.0.2 - Compativel com Windows 11
+:: Versao: 1.0.3 - Compativel com Windows 11 e Python Launcher (py)
 :: ============================================================================
 
 :: Configura codepage para UTF-8
@@ -15,8 +15,19 @@ set "VENV_DIR=%SCRIPT_DIR%venv"
 set "DIST_DIR=%SCRIPT_DIR%dist"
 set "BUILD_DIR=%SCRIPT_DIR%build"
 
+:: Detecta comando Python (py ou python)
+set "PY_CMD=py"
+py --version >nul 2>&1
+if errorlevel 1 (
+    set "PY_CMD=python"
+    python --version >nul 2>&1
+    if errorlevel 1 (
+        set "PY_CMD="
+    )
+)
+
 :: Titulo da janela
-title Game Translator - Instalador v1.0.2
+title Game Translator - Instalador v1.0.3
 
 :MENU_PRINCIPAL
 cls
@@ -30,7 +41,7 @@ echo    G   G A   A M   M E           T   R  R  A   A N  NN     S L     A   A   
 echo     GGG  A   A M   M EEEEE       T   R   R A   A N   N SSSS  LLLLL A   A   T    OOO  R   R
 echo.
 echo              Sistema Profissional de Traducao para Jogos e Mods
-echo                              Versao 1.0.2
+echo                              Versao 1.0.3
 echo.
 echo ========================================================================
 echo.
@@ -151,36 +162,44 @@ set "AVISOS=0"
 
 :: Verifica Sistema Operacional
 echo [INFO] Sistema Operacional:
-for /f "tokens=2 delims==" %%a in ('systeminfo ^| findstr /B /C:"OS Name"') do echo    %%a
-for /f "tokens=2 delims==" %%a in ('systeminfo ^| findstr /B /C:"Nome do sistema"') do echo    %%a
+for /f "tokens=*" %%a in ('systeminfo ^| findstr /B /C:"OS Name" /C:"Nome do sistema"') do echo    %%a
 echo.
 
-:: Verifica Python
+:: Verifica Python (tenta py primeiro, depois python)
 echo [INFO] Verificando Python...
-python --version >nul 2>&1
+
+py --version >nul 2>&1
 if errorlevel 1 (
-    echo    [ERRO] Python NAO encontrado
-    set /a ERROS+=1
+    python --version >nul 2>&1
+    if errorlevel 1 (
+        echo    [ERRO] Python NAO encontrado
+        echo    [INFO] Instale Python de: https://www.python.org/downloads/
+        set /a ERROS+=1
+    ) else (
+        for /f "tokens=2" %%v in ('python --version 2^>nul') do echo    [OK] Python encontrado: %%v (comando: python)
+        set "PY_CMD=python"
+    )
 ) else (
-    for /f "tokens=2" %%v in ('python --version 2^>nul') do echo    [OK] Python encontrado: %%v
+    for /f "tokens=2" %%v in ('py --version 2^>nul') do echo    [OK] Python encontrado: %%v (comando: py)
+    set "PY_CMD=py"
 )
 
 :: Verifica pip
 echo.
 echo [INFO] Verificando pip...
-pip --version >nul 2>&1
+%PY_CMD% -m pip --version >nul 2>&1
 if errorlevel 1 (
     echo    [ERRO] pip NAO encontrado
     set /a ERROS+=1
 ) else (
-    for /f "tokens=2" %%v in ('pip --version 2^>nul') do echo    [OK] pip encontrado: %%v
+    for /f "tokens=2" %%v in ('%PY_CMD% -m pip --version 2^>nul') do echo    [OK] pip encontrado: %%v
 )
 
 :: Verifica bibliotecas
 echo.
 echo [INFO] Verificando bibliotecas Python...
 
-python -c "import PySide6" >nul 2>&1
+%PY_CMD% -c "import PySide6" >nul 2>&1
 if errorlevel 1 (
     echo    [AVISO] PySide6: Nao instalado
     set /a AVISOS+=1
@@ -188,7 +207,7 @@ if errorlevel 1 (
     echo    [OK] PySide6: Instalado
 )
 
-python -c "import requests" >nul 2>&1
+%PY_CMD% -c "import requests" >nul 2>&1
 if errorlevel 1 (
     echo    [AVISO] requests: Nao instalado
     set /a AVISOS+=1
@@ -196,7 +215,7 @@ if errorlevel 1 (
     echo    [OK] requests: Instalado
 )
 
-python -c "import psutil" >nul 2>&1
+%PY_CMD% -c "import psutil" >nul 2>&1
 if errorlevel 1 (
     echo    [AVISO] psutil: Nao instalado
     set /a AVISOS+=1
@@ -204,7 +223,7 @@ if errorlevel 1 (
     echo    [OK] psutil: Instalado
 )
 
-pyinstaller --version >nul 2>&1
+%PY_CMD% -m PyInstaller --version >nul 2>&1
 if errorlevel 1 (
     echo    [AVISO] PyInstaller: Nao instalado (necessario para criar .exe)
     set /a AVISOS+=1
@@ -294,14 +313,14 @@ if errorlevel 1 goto MENU_PRINCIPAL
 
 echo.
 echo [INFO] Atualizando pip...
-python -m pip install --upgrade pip
+%PY_CMD% -m pip install --upgrade pip
 
 echo.
 echo [INFO] Instalando dependencias do requirements.txt...
 echo.
 
 if exist "%SCRIPT_DIR%requirements.txt" (
-    pip install -r "%SCRIPT_DIR%requirements.txt"
+    %PY_CMD% -m pip install -r "%SCRIPT_DIR%requirements.txt"
     if errorlevel 1 (
         echo.
         echo [ERRO] Erro ao instalar dependencias!
@@ -310,14 +329,14 @@ if exist "%SCRIPT_DIR%requirements.txt" (
     )
 ) else (
     echo [AVISO] Arquivo requirements.txt nao encontrado. Instalando manualmente...
-    pip install PySide6>=6.6.0
-    pip install requests>=2.31.0
-    pip install psutil>=5.9.0
+    %PY_CMD% -m pip install PySide6>=6.6.0
+    %PY_CMD% -m pip install requests>=2.31.0
+    %PY_CMD% -m pip install psutil>=5.9.0
 )
 
 echo.
 echo [INFO] Instalando PyInstaller para criar executavel...
-pip install pyinstaller
+%PY_CMD% -m pip install pyinstaller
 
 echo.
 echo [OK] Todas as dependencias foram instaladas com sucesso!
@@ -327,15 +346,15 @@ goto MENU_PRINCIPAL
 
 :INSTALAR_DEPS
 echo [INFO] Instalando dependencias...
-python -m pip install --upgrade pip >nul 2>&1
+%PY_CMD% -m pip install --upgrade pip >nul 2>&1
 echo    [+] Instalando PySide6...
-pip install PySide6>=6.6.0 >nul 2>&1
+%PY_CMD% -m pip install PySide6>=6.6.0 >nul 2>&1
 echo    [+] Instalando requests...
-pip install requests>=2.31.0 >nul 2>&1
+%PY_CMD% -m pip install requests>=2.31.0 >nul 2>&1
 echo    [+] Instalando psutil...
-pip install psutil>=5.9.0 >nul 2>&1
+%PY_CMD% -m pip install psutil>=5.9.0 >nul 2>&1
 echo    [+] Instalando PyInstaller...
-pip install pyinstaller >nul 2>&1
+%PY_CMD% -m pip install pyinstaller >nul 2>&1
 echo    [OK] Dependencias instaladas!
 exit /b 0
 
@@ -355,10 +374,10 @@ if errorlevel 1 goto MENU_PRINCIPAL
 
 :: Verifica PyInstaller
 echo [INFO] Verificando PyInstaller...
-pyinstaller --version >nul 2>&1
+%PY_CMD% -m PyInstaller --version >nul 2>&1
 if errorlevel 1 (
     echo [AVISO] PyInstaller nao encontrado. Instalando...
-    pip install pyinstaller
+    %PY_CMD% -m pip install pyinstaller
 )
 
 echo.
@@ -397,8 +416,8 @@ if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%" >nul 2>&1
 :: Cria diretorio de profiles se nao existir
 if not exist "%SCRIPT_DIR%profiles" mkdir "%SCRIPT_DIR%profiles"
 
-:: Cria o executavel
-pyinstaller --name="GameTranslator" ^
+:: Cria o executavel usando py -m PyInstaller
+%PY_CMD% -m PyInstaller --name="GameTranslator" ^
     --onefile ^
     --windowed ^
     --noconfirm ^
@@ -440,7 +459,7 @@ echo [INFO] Iniciando Game Translator em modo desenvolvimento...
 echo.
 
 cd /d "%SCRIPT_DIR%src"
-python main.py
+%PY_CMD% main.py
 
 echo.
 echo [INFO] Programa encerrado.
@@ -523,35 +542,47 @@ exit /b 0
 :: ============================================================================
 
 :VERIFICAR_PYTHON
-python --version >nul 2>&1
-if errorlevel 1 (
-    echo.
-    echo ========================================================================
-    echo  [ERRO] PYTHON NAO ENCONTRADO!
-    echo ========================================================================
-    echo.
-    echo  O Python e necessario para executar este programa.
-    echo.
-    echo  Para instalar o Python:
-    echo  1. Acesse: https://www.python.org/downloads/
-    echo  2. Baixe a versao mais recente (3.8 ou superior)
-    echo  3. Durante a instalacao, marque "Add Python to PATH"
-    echo  4. Reinicie este instalador
-    echo.
-    echo ========================================================================
-    echo.
-    set /p "ABRIR_SITE=Deseja abrir o site de download do Python? (S/N): "
-    if /i "!ABRIR_SITE!"=="S" (
-        start https://www.python.org/downloads/
-    )
-    echo.
-    pause
-    exit /b 1
+:: Tenta py primeiro (Python Launcher do Windows)
+py --version >nul 2>&1
+if not errorlevel 1 (
+    for /f "tokens=2" %%v in ('py --version 2^>nul') do set "PYTHON_VERSION=%%v"
+    set "PY_CMD=py"
+    echo [OK] Python encontrado: !PYTHON_VERSION! (comando: py)
+    exit /b 0
 )
 
-for /f "tokens=2" %%v in ('python --version 2^>nul') do set "PYTHON_VERSION=%%v"
-echo [OK] Python encontrado: %PYTHON_VERSION%
-exit /b 0
+:: Tenta python
+python --version >nul 2>&1
+if not errorlevel 1 (
+    for /f "tokens=2" %%v in ('python --version 2^>nul') do set "PYTHON_VERSION=%%v"
+    set "PY_CMD=python"
+    echo [OK] Python encontrado: !PYTHON_VERSION! (comando: python)
+    exit /b 0
+)
+
+:: Nenhum encontrado
+echo.
+echo ========================================================================
+echo  [ERRO] PYTHON NAO ENCONTRADO!
+echo ========================================================================
+echo.
+echo  O Python e necessario para executar este programa.
+echo.
+echo  Para instalar o Python:
+echo  1. Acesse: https://www.python.org/downloads/
+echo  2. Baixe a versao mais recente (3.8 ou superior)
+echo  3. Durante a instalacao, marque "Add Python to PATH"
+echo  4. Reinicie este instalador
+echo.
+echo ========================================================================
+echo.
+set /p "ABRIR_SITE=Deseja abrir o site de download do Python? (S/N): "
+if /i "!ABRIR_SITE!"=="S" (
+    start https://www.python.org/downloads/
+)
+echo.
+pause
+exit /b 1
 
 :SAIR
 cls
