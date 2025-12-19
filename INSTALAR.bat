@@ -132,6 +132,7 @@ if exist "%~dp0dist\GameTranslator.exe" (
     echo.
     set /p ABRIR="%COLOR_INFO%Deseja abrir o programa agora? (S/N):%COLOR_RESET% "
     if /i "%ABRIR%"=="S" start "" "%~dp0dist\GameTranslator.exe"
+    if /i "%ABRIR%"=="Y" start "" "%~dp0dist\GameTranslator.exe"
 ) else (
     echo %COLOR_ERRO%[ERRO] Falha ao criar executavel!%COLOR_RESET%
     echo %COLOR_AVISO%Verifique os erros acima.%COLOR_RESET%
@@ -256,6 +257,7 @@ if exist "%~dp0dist\GameTranslator.exe" (
     echo.
     set /p ABRIR="%COLOR_INFO%Abrir pasta? (S/N):%COLOR_RESET% "
     if /i "%ABRIR%"=="S" explorer "%~dp0dist"
+    if /i "%ABRIR%"=="Y" explorer "%~dp0dist"
 ) else (
     echo %COLOR_ERRO%[ERRO] Falha ao criar executavel!%COLOR_RESET%
 )

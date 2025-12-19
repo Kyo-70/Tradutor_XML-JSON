@@ -370,30 +370,32 @@ echo.
 
 :: Pergunta se deseja recriar o executavel
 set /p RECRIAR="%COLOR_INFO%Deseja recriar o executavel agora? (S/N):%COLOR_RESET% "
-if /i "%RECRIAR%"=="S" (
+if /i "%RECRIAR%"=="S" goto DO_REBUILD
+if /i "%RECRIAR%"=="Y" goto DO_REBUILD
+echo %COLOR_INFO%Execute EXECUTAR.bat para iniciar o programa em modo desenvolvedor.%COLOR_RESET%
+echo %COLOR_INFO%Ou use a opcao [4] do menu para criar o executavel.%COLOR_RESET%
+echo.
+goto END_UPDATE
+
+:DO_REBUILD
+echo.
+echo %COLOR_INFO%Recriando executavel...%COLOR_RESET%
+echo.
+
+call :BUILD_EXECUTAVEL
+
+if exist "%~dp0dist\GameTranslator.exe" (
     echo.
-    echo %COLOR_INFO%Recriando executavel...%COLOR_RESET%
-    echo.
-    
-    if exist "build" rmdir /s /q "build" >nul 2>&1
-    if exist "dist" rmdir /s /q "dist" >nul 2>&1
-    
-    py -m PyInstaller --name="GameTranslator" --onefile --windowed --noconfirm --clean --paths="%~dp0src" --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets --hidden-import=sqlite3 --hidden-import=psutil --add-data "src;src" "%~dp0src\main.py"
-    
-    if exist "%~dp0dist\GameTranslator.exe" (
-        echo.
-        echo %COLOR_SUCESSO%[OK] Executavel recriado com sucesso!%COLOR_RESET%
-        echo %COLOR_INFO%Local:%COLOR_RESET% %~dp0dist\GameTranslator.exe
-    ) else (
-        echo.
-        echo %COLOR_ERRO%[ERRO] Falha ao recriar executavel!%COLOR_RESET%
-        echo %COLOR_AVISO%Use a opcao [4] do menu para tentar novamente.%COLOR_RESET%
-    )
+    echo %COLOR_SUCESSO%[OK] Executavel recriado com sucesso!%COLOR_RESET%
+    echo %COLOR_INFO%Local:%COLOR_RESET% %~dp0dist\GameTranslator.exe
 ) else (
-    echo %COLOR_INFO%Execute EXECUTAR.bat para iniciar o programa em modo desenvolvedor.%COLOR_RESET%
-    echo %COLOR_INFO%Ou use a opcao [4] do menu para criar o executavel.%COLOR_RESET%
+    echo.
+    echo %COLOR_ERRO%[ERRO] Falha ao recriar executavel!%COLOR_RESET%
+    echo %COLOR_AVISO%Use a opcao [4] do menu para tentar novamente.%COLOR_RESET%
 )
 echo.
+
+:END_UPDATE
 
 pause
 cls
@@ -519,18 +521,7 @@ if errorlevel 1 (
 echo %COLOR_SUCESSO%[OK]%COLOR_RESET% PyInstaller disponivel
 echo.
 
-echo %COLOR_INFO%Criando executavel (isso pode levar alguns minutos)...%COLOR_RESET%
-echo %COLOR_AVISO%Aguarde, nao feche esta janela...%COLOR_RESET%
-echo.
-
-cd /d "%~dp0"
-
-if exist "build" rmdir /s /q "build" >nul 2>&1
-if exist "dist" rmdir /s /q "dist" >nul 2>&1
-
-py -m PyInstaller --name="GameTranslator" --onefile --windowed --noconfirm --clean --paths="%~dp0src" --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets --hidden-import=sqlite3 --hidden-import=psutil --add-data "src;src" "%~dp0src\main.py"
-
-echo.
+call :BUILD_EXECUTAVEL
 
 if exist "%~dp0dist\GameTranslator.exe" (
     echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
@@ -541,6 +532,7 @@ if exist "%~dp0dist\GameTranslator.exe" (
     echo.
     set /p ABRIR="%COLOR_INFO%Abrir pasta? (S/N):%COLOR_RESET% "
     if /i "%ABRIR%"=="S" explorer "%~dp0dist"
+    if /i "%ABRIR%"=="Y" explorer "%~dp0dist"
 ) else (
     echo %COLOR_ERRO%========================================================================%COLOR_RESET%
     echo %COLOR_ERRO%  [ERRO] FALHA AO CRIAR EXECUTAVEL!%COLOR_RESET%
@@ -553,6 +545,22 @@ echo.
 pause
 cls
 goto MENU
+
+:BUILD_EXECUTAVEL
+:: Funcao compartilhada para criar o executavel
+echo %COLOR_INFO%Criando executavel (isso pode levar alguns minutos)...%COLOR_RESET%
+echo %COLOR_AVISO%Aguarde, nao feche esta janela...%COLOR_RESET%
+echo.
+
+cd /d "%~dp0"
+
+if exist "build" rmdir /s /q "build" >nul 2>&1
+if exist "dist" rmdir /s /q "dist" >nul 2>&1
+
+py -m PyInstaller --name="GameTranslator" --onefile --windowed --noconfirm --clean --paths="%~dp0src" --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets --hidden-import=sqlite3 --hidden-import=psutil --add-data "src;src" "%~dp0src\main.py"
+
+echo.
+exit /b %ERRORLEVEL%
 
 :SAIR
 echo.
