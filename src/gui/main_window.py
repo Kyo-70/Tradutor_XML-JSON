@@ -61,6 +61,17 @@ except ImportError:
         from src.gui.regex_editor import RegexProfileManagerDialog, ImportTranslationDialog
 
 # ============================================================================
+# UI CONSTANTS
+# ============================================================================
+
+# Cores para linhas da tabela (tema escuro)
+class TableColors:
+    """Cores usadas nas tabelas para manter consistência visual"""
+    BASE_ROW = QColor(40, 40, 40)           # Cor de fundo para linhas pares
+    ALTERNATE_ROW = QColor(50, 50, 50)      # Cor de fundo para linhas ímpares
+    TRANSLATED_ROW = QColor(40, 60, 40)     # Cor de fundo para linhas traduzidas
+
+# ============================================================================
 # WORKER THREADS
 # ============================================================================
 
@@ -432,7 +443,10 @@ class DatabaseViewerDialog(QDialog):
                        category=category if category != "Todas" else None)
     
     def _on_item_double_clicked(self, item):
-        """Callback de duplo clique"""
+        """Callback de duplo clique - auto-ajusta altura e inicia edição"""
+        # Auto-ajusta altura das linhas quando começar a editar
+        self._auto_adjust_row_heights()
+        # Nota: A edição será iniciada pelo método _edit_selected se necessário
         self._edit_selected()
     
     def _auto_adjust_row_heights(self):
@@ -682,6 +696,37 @@ class SettingsDialog(QDialog):
         info_label.setStyleSheet("background-color: #2d5a27; padding: 10px; border-radius: 5px;")
         api_layout.addWidget(info_label)
         
+        # Status das APIs configuradas
+        status_group = QGroupBox("📋 Status das APIs Configuradas")
+        status_layout = QVBoxLayout()
+        self.api_status_labels = {}
+        
+        # Obtém informações das APIs
+        available_apis = self.api_manager.get_available_apis()
+        
+        # DeepL
+        deepl_status = "✅ Configurada" if 'deepl' in available_apis else "⏳ Não configurada"
+        self.api_status_labels['deepl'] = QLabel(f"<b>DeepL:</b> {deepl_status}")
+        status_layout.addWidget(self.api_status_labels['deepl'])
+        
+        # Google
+        google_status = "✅ Configurada" if 'google' in available_apis else "⏳ Não configurada"
+        self.api_status_labels['google'] = QLabel(f"<b>Google:</b> {google_status}")
+        status_layout.addWidget(self.api_status_labels['google'])
+        
+        # MyMemory
+        mymemory_status = "✅ Configurada" if 'mymemory' in available_apis else "⏳ Não configurada"
+        self.api_status_labels['mymemory'] = QLabel(f"<b>MyMemory:</b> {mymemory_status}")
+        status_layout.addWidget(self.api_status_labels['mymemory'])
+        
+        # LibreTranslate
+        libre_status = "✅ Configurada" if 'libre' in available_apis else "⏳ Não configurada"
+        self.api_status_labels['libre'] = QLabel(f"<b>LibreTranslate:</b> {libre_status}")
+        status_layout.addWidget(self.api_status_labels['libre'])
+        
+        status_group.setLayout(status_layout)
+        api_layout.addWidget(status_group)
+        
         # APIs Gratuitas (sem chave)
         free_group = QGroupBox("🆓 APIs Gratuitas (Sem Chave)")
         free_layout = QVBoxLayout()
@@ -831,6 +876,7 @@ class SettingsDialog(QDialog):
         server = self.libre_server_input.text().strip() or None
         self.api_manager.add_libre(server)
         self._refresh_api_combo()
+        self._update_api_status()
         QMessageBox.information(
             self, 
             "Sucesso", 
@@ -844,6 +890,7 @@ class SettingsDialog(QDialog):
         email = self.mymemory_email_input.text().strip() or None
         self.api_manager.add_mymemory(email)
         self._refresh_api_combo()
+        self._update_api_status()
         limit = "10.000 chars/dia" if email else "5.000 chars/dia"
         QMessageBox.information(
             self, 
@@ -859,6 +906,7 @@ class SettingsDialog(QDialog):
         if key:
             self.api_manager.add_deepl(key)
             self._refresh_api_combo()
+            self._update_api_status()
             QMessageBox.information(
                 self, 
                 "Sucesso", 
@@ -875,6 +923,7 @@ class SettingsDialog(QDialog):
         if key:
             self.api_manager.add_google(key)
             self._refresh_api_combo()
+            self._update_api_status()
             QMessageBox.information(
                 self, 
                 "Sucesso", 
@@ -889,6 +938,30 @@ class SettingsDialog(QDialog):
         """Atualiza combo de APIs disponíveis"""
         self.combo_active_api.clear()
         self.combo_active_api.addItems(["Nenhuma"] + self.api_manager.get_available_apis())
+    
+    def _update_api_status(self):
+        """Atualiza os indicadores de status das APIs configuradas"""
+        available_apis = self.api_manager.get_available_apis()
+        
+        # Atualiza DeepL
+        if 'deepl' in self.api_status_labels:
+            deepl_status = "✅ Configurada" if 'deepl' in available_apis else "⏳ Não configurada"
+            self.api_status_labels['deepl'].setText(f"<b>DeepL:</b> {deepl_status}")
+        
+        # Atualiza Google
+        if 'google' in self.api_status_labels:
+            google_status = "✅ Configurada" if 'google' in available_apis else "⏳ Não configurada"
+            self.api_status_labels['google'].setText(f"<b>Google:</b> {google_status}")
+        
+        # Atualiza MyMemory
+        if 'mymemory' in self.api_status_labels:
+            mymemory_status = "✅ Configurada" if 'mymemory' in available_apis else "⏳ Não configurada"
+            self.api_status_labels['mymemory'].setText(f"<b>MyMemory:</b> {mymemory_status}")
+        
+        # Atualiza LibreTranslate
+        if 'libre' in self.api_status_labels:
+            libre_status = "✅ Configurada" if 'libre' in available_apis else "⏳ Não configurada"
+            self.api_status_labels['libre'].setText(f"<b>LibreTranslate:</b> {libre_status}")
     
     def _on_api_changed(self, api_name):
         """Callback quando API é alterada"""
@@ -1375,12 +1448,20 @@ class MainWindow(QMainWindow):
         # Conecta evento de edição
         table.itemChanged.connect(self.on_translation_edited)
         
+        # Auto-ajusta altura quando clicar para editar (duplo-clique ou tecla Edit)
+        # Conecta ao signal de duplo-clique para ajustar antes de editar
+        table.itemDoubleClicked.connect(lambda item: self._auto_adjust_row_heights())
+        
         # Adiciona atalhos de copiar e colar
         copy_shortcut = QShortcut(QKeySequence.Copy, table)
         copy_shortcut.activated.connect(self.copy_selected_rows)
         
         paste_shortcut = QShortcut(QKeySequence.Paste, table)
         paste_shortcut.activated.connect(self.paste_rows)
+        
+        # Adiciona atalho de Delete para limpar traduções
+        delete_shortcut = QShortcut(QKeySequence.Delete, table)
+        delete_shortcut.activated.connect(self._clear_selected_translations)
         
         return table
     
@@ -1666,7 +1747,7 @@ class MainWindow(QMainWindow):
                 status_item = QTableWidgetItem("✅")
                 for col in range(4):
                     if self.table.item(i, col):
-                        self.table.item(i, col).setBackground(QColor(40, 60, 40))
+                        self.table.item(i, col).setBackground(TableColors.TRANSLATED_ROW)
             else:
                 status_item = QTableWidgetItem("⏳")
             
@@ -1761,12 +1842,83 @@ class MainWindow(QMainWindow):
                 self.table.item(row, 3).setText("✅")
                 for col in range(4):
                     if self.table.item(row, col):
-                        self.table.item(row, col).setBackground(QColor(40, 60, 40))
+                        self.table.item(row, col).setBackground(TableColors.TRANSLATED_ROW)
             
             # Auto-ajusta altura da linha editada
             self._auto_adjust_row_heights()
             
             self._update_statistics()
+    
+    def _clear_selected_translations(self):
+        """
+        Limpa as traduções das linhas selecionadas.
+        
+        Funcionalidade:
+        - Remove o texto de tradução das células selecionadas
+        - Atualiza o status visual para "pendente" (⏳)
+        - Atualiza as entradas de tradução
+        - Atualiza estatísticas
+        
+        Operações:
+        - Bloqueia sinais durante a limpeza para evitar triggers múltiplos
+        - Remove cor de fundo das linhas limpas
+        - Registra operação no log
+        """
+        selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        
+        if not selected_rows:
+            self.status_label.setText("Nenhuma linha selecionada")
+            return
+        
+        # Confirma ação
+        reply = QMessageBox.question(
+            self,
+            "Confirmar Limpeza",
+            f"Limpar tradução de {len(selected_rows)} linha(s) selecionada(s)?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        
+        if reply != QMessageBox.Yes:
+            return
+        
+        # Bloqueia sinais durante atualização
+        self.table.blockSignals(True)
+        
+        cleared_count = 0
+        for row in selected_rows:
+            if row < len(self.entries):
+                # Limpa a tradução
+                self.entries[row].translated_text = ""
+                
+                # Atualiza item da tabela
+                translation_item = self.table.item(row, 2)
+                if translation_item:
+                    translation_item.setText("")
+                
+                # Atualiza status visual
+                status_item = self.table.item(row, 3)
+                if status_item:
+                    status_item.setText("⏳")
+                
+                # Remove cor de fundo (volta ao padrão)
+                for col in range(4):
+                    item = self.table.item(row, col)
+                    if item:
+                        # Reseta cor de fundo baseado em alternating rows
+                        if row % 2 == 0:
+                            item.setBackground(TableColors.BASE_ROW)
+                        else:
+                            item.setBackground(TableColors.ALTERNATE_ROW)
+                
+                cleared_count += 1
+        
+        self.table.blockSignals(False)
+        
+        # Atualiza estatísticas
+        self._update_statistics()
+        
+        self.status_label.setText(f"{cleared_count} tradução(ões) limpa(s)")
+        app_logger.info(f"Limpas {cleared_count} traduções via tecla Delete")
     
     def copy_selected_rows(self):
         """
@@ -1906,7 +2058,7 @@ class MainWindow(QMainWindow):
             for col in range(4):
                 item = self.table.item(row, col)
                 if item:
-                    item.setBackground(QColor(40, 60, 40))
+                    item.setBackground(TableColors.TRANSLATED_ROW)
             
             pasted_count += 1
         
