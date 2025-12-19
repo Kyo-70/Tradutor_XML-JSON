@@ -100,7 +100,7 @@ class VerificadorSistema:
         try:
             versao = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
             return True, versao
-        except:
+        except Exception:
             return False, ""
     
     def verificar_pip(self) -> bool:
@@ -118,7 +118,7 @@ class VerificadorSistema:
                 text=True
             )
             return True
-        except:
+        except Exception:
             return False
     
     def verificar_biblioteca(self, nome: str) -> bool:
@@ -155,7 +155,7 @@ class VerificadorSistema:
                 [sys.executable, "-m", "pip", "install", pacote, "--quiet"],
                 capture_output=True,
                 text=True,
-                timeout=300  # 5 minutos de timeout
+                timeout=180  # 3 minutos de timeout
             )
             
             if resultado.returncode == 0:
@@ -341,6 +341,10 @@ class VerificadorSistema:
         
         # Resumo final
         self.print_titulo("RESUMO DA VERIFICAÇÃO")
+        
+        # Informa se colorama está ativo
+        if not HAS_COLORAMA:
+            print("Nota: Execute o script novamente após instalação para ver as cores.\n")
         
         if self.erros == 0 and self.avisos == 0:
             self.print_sucesso("✓ SISTEMA PRONTO!")
