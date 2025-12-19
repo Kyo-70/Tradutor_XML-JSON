@@ -231,14 +231,7 @@ class VerificadorSistema:
             for nome, pacote in faltantes:
                 self.instalar_biblioteca(nome, pacote)
             
-            # Re-importa colorama se foi instalado agora
-            if not HAS_COLORAMA and 'colorama' in [n for n, _ in faltantes]:
-                try:
-                    global Fore, Back, Style
-                    from colorama import init, Fore, Back, Style
-                    init(autoreset=True)
-                except:
-                    pass
+            # Nota: colorama será recarregado na próxima execução do script
         
         return todas_ok or (auto_instalar and len(faltantes) > 0)
     
