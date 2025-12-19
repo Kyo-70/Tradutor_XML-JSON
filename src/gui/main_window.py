@@ -64,6 +64,12 @@ except ImportError:
 # UI CONSTANTS
 # ============================================================================
 
+# Geometria padrão da janela
+DEFAULT_WINDOW_X = 100
+DEFAULT_WINDOW_Y = 100
+DEFAULT_WINDOW_WIDTH = 1300
+DEFAULT_WINDOW_HEIGHT = 800
+
 # Settings para persistência
 # Constantes usadas pelo QSettings para identificação da aplicação no sistema de armazenamento persistente
 # No Windows: armazenado no registro ou em arquivos .ini em AppData
@@ -1049,7 +1055,7 @@ class MainWindow(QMainWindow):
         
         # Configura interface
         self.setWindowTitle("Game Translator - Sistema de Tradução para Jogos e Mods")
-        self.setGeometry(100, 100, 1300, 800)
+        self.setGeometry(DEFAULT_WINDOW_X, DEFAULT_WINDOW_Y, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
         
         # Aplica tema escuro
         self._apply_dark_theme()
