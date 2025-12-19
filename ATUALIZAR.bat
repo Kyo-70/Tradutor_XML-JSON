@@ -557,7 +557,20 @@ cd /d "%~dp0"
 if exist "build" rmdir /s /q "build" >nul 2>&1
 if exist "dist" rmdir /s /q "dist" >nul 2>&1
 
-py -m PyInstaller --name="GameTranslator" --onefile --windowed --noconfirm --clean --paths="%~dp0src" --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets --hidden-import=sqlite3 --hidden-import=psutil --add-data "src;src" "%~dp0src\main.py"
+py -m PyInstaller ^
+    --name="GameTranslator" ^
+    --onefile ^
+    --windowed ^
+    --noconfirm ^
+    --clean ^
+    --paths="%~dp0src" ^
+    --hidden-import=PySide6.QtCore ^
+    --hidden-import=PySide6.QtGui ^
+    --hidden-import=PySide6.QtWidgets ^
+    --hidden-import=sqlite3 ^
+    --hidden-import=psutil ^
+    --add-data "src;src" ^
+    "%~dp0src\main.py"
 
 echo.
 exit /b %ERRORLEVEL%
