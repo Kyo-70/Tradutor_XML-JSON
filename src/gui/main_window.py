@@ -1618,7 +1618,15 @@ class MainWindow(QMainWindow):
             self._update_statistics()
     
     def copy_selected_rows(self):
-        """Copia linhas selecionadas para a área de transferência"""
+        """
+        Copia linhas selecionadas para a área de transferência.
+        
+        Formato de saída: TSV (tab-separated values)
+        Cada linha: "Original\\tTradução"
+        
+        Atualiza o status da interface e registra a operação no log.
+        Não requer parâmetros - opera nas linhas selecionadas na tabela.
+        """
         selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
         
         if not selected_rows:
@@ -1641,7 +1649,22 @@ class MainWindow(QMainWindow):
         app_logger.info(f"Copiadas {len(selected_rows)} linhas para área de transferência")
     
     def paste_rows(self):
-        """Cola dados da área de transferência nas linhas selecionadas"""
+        """
+        Cola dados da área de transferência nas linhas selecionadas.
+        
+        Formatos aceitos:
+        - TSV completo: "Original\\tTradução" (uma linha por entrada)
+        - Apenas traduções: "Tradução" (uma linha por entrada)
+        
+        Funcionalidades:
+        - Suporta diferentes quebras de linha (Windows, Unix, Mac)
+        - Preserva tabs dentro do texto de tradução
+        - Ignora traduções vazias após strip()
+        - Atualiza automaticamente a memória de tradução
+        - Valida null para todos os items da tabela
+        
+        Não requer parâmetros - opera nas linhas selecionadas e na área de transferência.
+        """
         clipboard_text = QApplication.clipboard().text()
         
         if not clipboard_text:
@@ -1701,7 +1724,8 @@ class MainWindow(QMainWindow):
                 # Se tem apenas um campo, usa como tradução
                 translation = parts[0].strip()
             
-            # Atualiza apenas se há tradução não vazia (ignora apenas espaços)
+            # Atualiza apenas se há tradução não vazia
+            # strip() já remove espaços, então a verificação 'not translation' é suficiente
             if not translation:
                 continue
             
