@@ -74,6 +74,7 @@ O arquivo `ATUALIZAR.bat` oferece:
 - **Tema Escuro**: Design profissional e confortável
 - **Copiar/Colar**: Ctrl+C e Ctrl+V para editar traduções em massa no Notepad
 - **Seleção Múltipla**: Selecione e edite várias linhas simultaneamente
+- **Auto-ajuste de Altura**: Linhas da tabela se ajustam automaticamente ao tamanho do conteúdo
 - **Visualizador de Banco**: Veja e edite todas as traduções salvas
 - **Progresso em Tempo Real**: Acompanhe o status das operações
 - **Monitor de Recursos**: Visualize uso de RAM e CPU
@@ -82,7 +83,8 @@ O arquivo `ATUALIZAR.bat` oferece:
 - **Limite de Memória**: Máximo 500MB de RAM
 - **Limite de CPU**: Máximo 80% de uso
 - **Validação de Arquivos**: Verifica tamanho e integridade
-- **Backup Automático**: Cria backup antes de salvar
+- **Backup Automático**: Cria backup antes de salvar na pasta `backups/`
+- **Organização de Backups**: Todos os backups ficam organizados em uma pasta dedicada
 - **Timeout de Operações**: Evita travamentos
 
 ### APIs de Tradução
@@ -129,7 +131,11 @@ Ao iniciar, o programa solicita um banco de dados:
 ### 4. Salvar
 
 - Clique em **"💾 Salvar"**
-- Um backup automático será criado
+- Um backup automático será criado na pasta **`backups/`**
+- Os backups ficam organizados no mesmo diretório do arquivo original
+- Nome do backup: `[arquivo].backup_[data]_[hora]`
+
+> 💡 **Dica**: Os backups são salvos em uma pasta dedicada para facilitar a organização e recuperação de versões anteriores!
 
 ## 🗄️ Visualizador de Banco de Dados
 

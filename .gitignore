@@ -43,6 +43,10 @@ api_config.json
 *.sqlite
 *.sqlite3
 
+# Backup files
+backups/
+*.backup*
+
 # Temporary files
 /tmp/
 *.tmp
