@@ -4,7 +4,7 @@ title Game Translator - Instalador v1.0.6
 
 :: Define cores customizadas usando ANSI escape codes
 :: Habilita suporte a cores ANSI no Windows 10+
-for /F %%A in ('echo prompt $E ^| cmd') do set "ESC=%%A"
+for /F %%A in ('prompt $E ^| cmd') do set "ESC=%%A"
 
 :: Cores personalizadas
 set "COLOR_RESET=%ESC%[0m"
