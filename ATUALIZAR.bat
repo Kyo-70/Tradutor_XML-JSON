@@ -154,20 +154,31 @@ echo %COLOR_SUCESSO%[OK]%COLOR_RESET% Informacoes atualizadas do servidor remoto
 echo.
 
 :: Verifica se ha commits novos - obtém a branch atual primeiro
-for /f "tokens=*" %%i in ('git branch --show-current 2^>nul') do set BRANCH_ATUAL=%%i
+:: Usa symbolic-ref para compatibilidade com Git mais antigo
+for /f "tokens=*" %%i in ('git symbolic-ref --short HEAD 2^>nul') do set BRANCH_ATUAL=%%i
 
 :: Se não conseguiu obter a branch atual, tenta main/master
 if "%BRANCH_ATUAL%"=="" (
     set "BRANCH_ATUAL=main"
 )
 
+:: Verifica se o remote branch existe antes de comparar
+git rev-parse --verify origin/%BRANCH_ATUAL% >nul 2>&1
+if errorlevel 1 (
+    :: Branch remota não existe, tenta master
+    set "BRANCH_ATUAL=master"
+    git rev-parse --verify origin/%BRANCH_ATUAL% >nul 2>&1
+    if errorlevel 1 (
+        echo %COLOR_AVISO%[AVISO]%COLOR_RESET% Nao foi possivel determinar a branch remota
+        echo.
+        pause
+        cls
+        goto MENU
+    )
+)
+
 :: Verifica se ha commits pendentes na branch atual
 for /f %%i in ('git rev-list HEAD...origin/%BRANCH_ATUAL% --count 2^>nul') do set COMMITS_PENDENTES=%%i
-
-:: Se não encontrou, tenta com master como fallback
-if "%COMMITS_PENDENTES%"=="" (
-    for /f %%i in ('git rev-list HEAD...origin/master --count 2^>nul') do set COMMITS_PENDENTES=%%i
-)
 
 if "%COMMITS_PENDENTES%"=="0" (
     echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
@@ -270,7 +281,8 @@ echo %COLOR_SUCESSO%[OK]%COLOR_RESET% Atualizacoes obtidas do servidor
 echo.
 
 :: Passo 3: Faz o pull - obtém a branch atual primeiro
-for /f "tokens=*" %%i in ('git branch --show-current 2^>nul') do set BRANCH_PULL=%%i
+:: Usa symbolic-ref para compatibilidade com Git mais antigo
+for /f "tokens=*" %%i in ('git symbolic-ref --short HEAD 2^>nul') do set BRANCH_PULL=%%i
 
 :: Se não conseguiu obter a branch, usa HEAD
 if "%BRANCH_PULL%"=="" (
@@ -280,7 +292,7 @@ if "%BRANCH_PULL%"=="" (
 echo %COLOR_INFO%[3/5]%COLOR_RESET% Aplicando atualizacoes...
 echo.
 
-git pull origin %BRANCH_PULL%
+git pull origin "%BRANCH_PULL%"
 if errorlevel 1 (
     echo.
     echo %COLOR_ERRO%[ERRO]%COLOR_RESET% Falha ao aplicar atualizacoes
