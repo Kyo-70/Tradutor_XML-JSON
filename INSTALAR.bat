@@ -2,26 +2,41 @@
 chcp 65001 >nul 2>&1
 title Game Translator - Instalador v1.0.6
 
+:: Define cores customizadas usando ANSI escape codes
+:: Habilita suporte a cores ANSI no Windows 10+
+for /F %%A in ('echo prompt $E ^| cmd') do set "ESC=%%A"
+
+:: Cores personalizadas
+set "COLOR_RESET=%ESC%[0m"
+set "COLOR_TITULO=%ESC%[95m%ESC%[1m"
+set "COLOR_SUCESSO=%ESC%[92m%ESC%[1m"
+set "COLOR_ERRO=%ESC%[91m%ESC%[1m"
+set "COLOR_AVISO=%ESC%[93m%ESC%[1m"
+set "COLOR_INFO=%ESC%[96m%ESC%[1m"
+set "COLOR_DESTAQUE=%ESC%[97m%ESC%[1m"
+set "COLOR_SECAO=%ESC%[94m%ESC%[1m"
+
+cls
 echo.
-echo ========================================================================
-echo.
-echo     GAME TRANSLATOR - INSTALADOR v1.0.6
-echo.
-echo     Sistema Profissional de Traducao para Jogos e Mods
-echo.
-echo ========================================================================
+echo %COLOR_TITULO%========================================================================%COLOR_RESET%
+echo %COLOR_TITULO%                                                                        %COLOR_RESET%
+echo %COLOR_TITULO%     GAME TRANSLATOR - INSTALADOR v1.0.6                               %COLOR_RESET%
+echo %COLOR_TITULO%                                                                        %COLOR_RESET%
+echo %COLOR_TITULO%     Sistema Profissional de Traducao para Jogos e Mods                %COLOR_RESET%
+echo %COLOR_TITULO%                                                                        %COLOR_RESET%
+echo %COLOR_TITULO%========================================================================%COLOR_RESET%
 echo.
 
 :MENU
 echo.
-echo   [1] Instalacao Completa (Recomendado)
-echo   [2] Verificar Requisitos
-echo   [3] Instalar Dependencias
-echo   [4] Criar Executavel (.exe)
-echo   [5] Executar Programa (modo desenvolvedor)
-echo   [0] Sair
+echo %COLOR_INFO%  [1]%COLOR_RESET% %COLOR_DESTAQUE%Instalacao Completa%COLOR_RESET% (Recomendado)
+echo %COLOR_INFO%  [2]%COLOR_RESET% Verificar Requisitos
+echo %COLOR_INFO%  [3]%COLOR_RESET% Instalar Dependencias
+echo %COLOR_INFO%  [4]%COLOR_RESET% Criar Executavel (.exe)
+echo %COLOR_INFO%  [5]%COLOR_RESET% Executar Programa (modo desenvolvedor)
+echo %COLOR_INFO%  [0]%COLOR_RESET% Sair
 echo.
-set /p OPCAO="Digite sua opcao: "
+set /p OPCAO="%COLOR_INFO%Digite sua opcao:%COLOR_RESET% "
 
 if "%OPCAO%"=="1" goto INSTALACAO_COMPLETA
 if "%OPCAO%"=="2" goto VERIFICAR
@@ -31,7 +46,7 @@ if "%OPCAO%"=="5" goto EXECUTAR
 if "%OPCAO%"=="0" goto SAIR
 
 echo.
-echo [ERRO] Opcao invalida! Tente novamente.
+echo %COLOR_ERRO%[ERRO]%COLOR_RESET% Opcao invalida! Tente novamente.
 echo.
 pause
 cls
@@ -40,56 +55,56 @@ goto MENU
 :INSTALACAO_COMPLETA
 cls
 echo.
-echo ========================================================================
-echo   INSTALACAO COMPLETA
-echo ========================================================================
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
+echo %COLOR_SECAO%  INSTALACAO COMPLETA%COLOR_RESET%
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
 echo.
 
-echo [1/4] Verificando Python...
+echo %COLOR_INFO%[1/4] Verificando Python...%COLOR_RESET%
 echo.
 
 py --version >nul 2>&1
 if errorlevel 1 (
-    echo [ERRO] Python nao encontrado!
+    echo %COLOR_ERRO%[ERRO] Python nao encontrado!%COLOR_RESET%
     echo.
-    echo Instale Python de: https://www.python.org/downloads/
-    echo Durante a instalacao, marque "Add Python to PATH"
+    echo %COLOR_INFO%Instale Python de: https://www.python.org/downloads/%COLOR_RESET%
+    echo %COLOR_INFO%Durante a instalacao, marque "Add Python to PATH"%COLOR_RESET%
     echo.
     pause
     goto MENU
 )
 
-for /f "tokens=*" %%i in ('py --version') do echo [OK] %%i encontrado
+for /f "tokens=*" %%i in ('py --version') do echo %COLOR_SUCESSO%[OK] %%i encontrado%COLOR_RESET%
 
 echo.
-echo [2/4] Instalando dependencias...
+echo %COLOR_INFO%[2/4] Instalando dependencias...%COLOR_RESET%
 echo.
 
-echo    Atualizando pip...
+echo %COLOR_INFO%   Atualizando pip...%COLOR_RESET%
 py -m pip install --upgrade pip --quiet
 
-echo    Instalando PySide6...
+echo %COLOR_INFO%   Instalando PySide6...%COLOR_RESET%
 py -m pip install PySide6 --quiet
 
-echo    Instalando requests...
+echo %COLOR_INFO%   Instalando requests...%COLOR_RESET%
 py -m pip install requests --quiet
 
-echo    Instalando psutil...
+echo %COLOR_INFO%   Instalando psutil...%COLOR_RESET%
 py -m pip install psutil --quiet
 
-echo    Instalando colorama...
+echo %COLOR_INFO%   Instalando colorama...%COLOR_RESET%
 py -m pip install colorama --quiet
 
-echo    Instalando PyInstaller...
+echo %COLOR_INFO%   Instalando PyInstaller...%COLOR_RESET%
 py -m pip install pyinstaller --quiet
 
 echo.
-echo [OK] Dependencias instaladas!
+echo %COLOR_SUCESSO%[OK] Dependencias instaladas!%COLOR_RESET%
 echo.
 
-echo [3/4] Criando executavel...
+echo %COLOR_INFO%[3/4] Criando executavel...%COLOR_RESET%
 echo.
-echo    Isso pode levar alguns minutos, aguarde...
+echo %COLOR_AVISO%   Isso pode levar alguns minutos, aguarde...%COLOR_RESET%
 echo.
 
 cd /d "%~dp0"
@@ -100,24 +115,24 @@ if exist "dist" rmdir /s /q "dist" >nul 2>&1
 py -m PyInstaller --name="GameTranslator" --onefile --windowed --noconfirm --clean --paths="%~dp0src" --hidden-import=PySide6.QtCore --hidden-import=PySide6.QtGui --hidden-import=PySide6.QtWidgets --hidden-import=sqlite3 --hidden-import=psutil --add-data "src;src" "%~dp0src\main.py"
 
 echo.
-echo [4/4] Verificando resultado...
+echo %COLOR_INFO%[4/4] Verificando resultado...%COLOR_RESET%
 echo.
 
 if exist "%~dp0dist\GameTranslator.exe" (
-    echo ========================================================================
+    echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
+    echo %COLOR_SUCESSO%                                                                        %COLOR_RESET%
+    echo %COLOR_SUCESSO%  [OK] INSTALACAO CONCLUIDA COM SUCESSO!                              %COLOR_RESET%
+    echo %COLOR_SUCESSO%                                                                        %COLOR_RESET%
+    echo %COLOR_SUCESSO%  Executavel criado em:                                               %COLOR_RESET%
+    echo %COLOR_SUCESSO%  %~dp0dist\GameTranslator.exe                                        %COLOR_RESET%
+    echo %COLOR_SUCESSO%                                                                        %COLOR_RESET%
+    echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
     echo.
-    echo   [OK] INSTALACAO CONCLUIDA COM SUCESSO!
-    echo.
-    echo   Executavel criado em:
-    echo   %~dp0dist\GameTranslator.exe
-    echo.
-    echo ========================================================================
-    echo.
-    set /p ABRIR="Deseja abrir o programa agora? (S/N): "
+    set /p ABRIR="%COLOR_INFO%Deseja abrir o programa agora? (S/N):%COLOR_RESET% "
     if /i "%ABRIR%"=="S" start "" "%~dp0dist\GameTranslator.exe"
 ) else (
-    echo [ERRO] Falha ao criar executavel!
-    echo Verifique os erros acima.
+    echo %COLOR_ERRO%[ERRO] Falha ao criar executavel!%COLOR_RESET%
+    echo %COLOR_AVISO%Verifique os erros acima.%COLOR_RESET%
 )
 
 echo.
@@ -128,18 +143,18 @@ goto MENU
 :VERIFICAR
 cls
 echo.
-echo ========================================================================
-echo   VERIFICACAO DE REQUISITOS
-echo ========================================================================
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
+echo %COLOR_SECAO%  VERIFICACAO DE REQUISITOS%COLOR_RESET%
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
 echo.
 
 :: Verifica se Python esta disponivel primeiro
 py --version >nul 2>&1
 if errorlevel 1 (
-    echo [ERRO] Python nao encontrado!
+    echo %COLOR_ERRO%[ERRO] Python nao encontrado!%COLOR_RESET%
     echo.
-    echo Instale Python de: https://www.python.org/downloads/
-    echo Durante a instalacao, marque "Add Python to PATH"
+    echo %COLOR_INFO%Instale Python de: https://www.python.org/downloads/%COLOR_RESET%
+    echo %COLOR_INFO%Durante a instalacao, marque "Add Python to PATH"%COLOR_RESET%
     echo.
     pause
     goto MENU
@@ -158,47 +173,47 @@ goto MENU
 :INSTALAR_DEPS
 cls
 echo.
-echo ========================================================================
-echo   INSTALACAO DE DEPENDENCIAS
-echo ========================================================================
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
+echo %COLOR_SECAO%  INSTALACAO DE DEPENDENCIAS%COLOR_RESET%
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
 echo.
 
-echo Verificando Python...
+echo %COLOR_INFO%Verificando Python...%COLOR_RESET%
 py --version >nul 2>&1
 if errorlevel 1 (
-    echo [ERRO] Python nao encontrado!
-    echo Instale Python de: https://www.python.org/downloads/
+    echo %COLOR_ERRO%[ERRO] Python nao encontrado!%COLOR_RESET%
+    echo %COLOR_INFO%Instale Python de: https://www.python.org/downloads/%COLOR_RESET%
     pause
     goto MENU
 )
 
 echo.
-echo Instalando dependencias...
+echo %COLOR_INFO%Instalando dependencias...%COLOR_RESET%
 echo.
 
-echo [1/5] Atualizando pip...
+echo %COLOR_INFO%[1/5] Atualizando pip...%COLOR_RESET%
 py -m pip install --upgrade pip
 
 echo.
-echo [2/5] Instalando PySide6...
+echo %COLOR_INFO%[2/5] Instalando PySide6...%COLOR_RESET%
 py -m pip install PySide6
 
 echo.
-echo [3/5] Instalando requests...
+echo %COLOR_INFO%[3/5] Instalando requests...%COLOR_RESET%
 py -m pip install requests
 
 echo.
-echo [4/5] Instalando psutil e colorama...
+echo %COLOR_INFO%[4/5] Instalando psutil e colorama...%COLOR_RESET%
 py -m pip install psutil colorama
 
 echo.
-echo [5/5] Instalando PyInstaller...
+echo %COLOR_INFO%[5/5] Instalando PyInstaller...%COLOR_RESET%
 py -m pip install pyinstaller
 
 echo.
-echo ========================================================================
-echo   [OK] Todas as dependencias foram instaladas!
-echo ========================================================================
+echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
+echo %COLOR_SUCESSO%  [OK] Todas as dependencias foram instaladas!%COLOR_RESET%
+echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
 echo.
 pause
 cls
@@ -207,21 +222,21 @@ goto MENU
 :CRIAR_EXE
 cls
 echo.
-echo ========================================================================
-echo   CRIACAO DO EXECUTAVEL
-echo ========================================================================
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
+echo %COLOR_SECAO%  CRIACAO DO EXECUTAVEL%COLOR_RESET%
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
 echo.
 
-echo Verificando Python...
+echo %COLOR_INFO%Verificando Python...%COLOR_RESET%
 py --version >nul 2>&1
 if errorlevel 1 (
-    echo [ERRO] Python nao encontrado!
+    echo %COLOR_ERRO%[ERRO] Python nao encontrado!%COLOR_RESET%
     pause
     goto MENU
 )
 
 echo.
-echo Criando executavel (isso pode levar alguns minutos)...
+echo %COLOR_INFO%Criando executavel (isso pode levar alguns minutos)...%COLOR_RESET%
 echo.
 
 cd /d "%~dp0"
@@ -234,13 +249,13 @@ py -m PyInstaller --name="GameTranslator" --onefile --windowed --noconfirm --cle
 echo.
 
 if exist "%~dp0dist\GameTranslator.exe" (
-    echo [OK] Executavel criado com sucesso!
-    echo Local: %~dp0dist\GameTranslator.exe
+    echo %COLOR_SUCESSO%[OK] Executavel criado com sucesso!%COLOR_RESET%
+    echo %COLOR_INFO%Local: %~dp0dist\GameTranslator.exe%COLOR_RESET%
     echo.
-    set /p ABRIR="Abrir pasta? (S/N): "
+    set /p ABRIR="%COLOR_INFO%Abrir pasta? (S/N):%COLOR_RESET% "
     if /i "%ABRIR%"=="S" explorer "%~dp0dist"
 ) else (
-    echo [ERRO] Falha ao criar executavel!
+    echo %COLOR_ERRO%[ERRO] Falha ao criar executavel!%COLOR_RESET%
 )
 
 echo.
@@ -251,21 +266,21 @@ goto MENU
 :EXECUTAR
 cls
 echo.
-echo ========================================================================
-echo   EXECUTAR PROGRAMA
-echo ========================================================================
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
+echo %COLOR_SECAO%  EXECUTAR PROGRAMA%COLOR_RESET%
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
 echo.
 
-echo Verificando Python...
+echo %COLOR_INFO%Verificando Python...%COLOR_RESET%
 py --version >nul 2>&1
 if errorlevel 1 (
-    echo [ERRO] Python nao encontrado!
+    echo %COLOR_ERRO%[ERRO] Python nao encontrado!%COLOR_RESET%
     pause
     goto MENU
 )
 
 echo.
-echo Iniciando Game Translator...
+echo %COLOR_INFO%Iniciando Game Translator...%COLOR_RESET%
 echo.
 
 cd /d "%~dp0src"
@@ -278,6 +293,7 @@ goto MENU
 
 :SAIR
 echo.
-echo Obrigado por usar o Game Translator!
+echo %COLOR_DESTAQUE%Obrigado por usar o Game Translator!%COLOR_RESET%
 echo.
+timeout /t 2 >nul
 exit /b 0

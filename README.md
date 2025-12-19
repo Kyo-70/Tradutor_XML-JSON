@@ -23,6 +23,17 @@ Sistema profissional de tradução para arquivos JSON e XML de jogos e mods, com
 2. Execute `EXECUTAR.bat`
 3. As dependências serão instaladas automaticamente
 
+### 🔄 Manter Atualizado
+
+Para manter o Game Translator sempre atualizado:
+
+1. **Execute** `ATUALIZAR.bat`
+2. **Selecione** a opção `[1] Atualizar Repositório Completo`
+3. **Aguarde** a sincronização com a versão mais recente
+4. **Pronto!** Todas as melhorias e correções serão aplicadas automaticamente
+
+> 💡 **Dica**: Execute `ATUALIZAR.bat` regularmente para obter novos recursos e correções de bugs!
+
 ## 📋 Arquivos do Instalador
 
 | Arquivo | Descrição |
@@ -30,12 +41,25 @@ Sistema profissional de tradução para arquivos JSON e XML de jogos e mods, com
 | `INSTALAR.bat` | 🚀 Instalador completo com menu interativo |
 | `EXECUTAR.bat` | ▶️ Executa o programa rapidamente |
 | `VERIFICAR_SISTEMA.bat` | 🔍 Verifica compatibilidade do sistema com **cores no terminal** |
+| `ATUALIZAR.bat` | 🔄 Atualiza o repositório e dependências automaticamente |
 
-> **Novo! 🎨** Os scripts agora utilizam a biblioteca `colorama` para exibir mensagens coloridas no terminal:
-> - ✅ **Verde** para operações bem-sucedidas
-> - ❌ **Vermelho** para erros
-> - ⚠️ **Amarelo** para avisos
-> - ℹ️ **Ciano** para informações
+> **Novo! 🎨** Os scripts agora utilizam **cores personalizadas no terminal**:
+> - ✅ **Verde brilhante** para operações bem-sucedidas
+> - ❌ **Vermelho brilhante** para erros
+> - ⚠️ **Amarelo brilhante** para avisos
+> - ℹ️ **Ciano brilhante** para informações
+> - 🔷 **Azul brilhante** para seções
+> - 🌟 **Branco brilhante** para destaques
+> - 💜 **Magenta brilhante** para títulos
+
+### 🔄 Novo: Sistema de Atualização Automática
+
+O arquivo `ATUALIZAR.bat` oferece:
+- **Atualização Completa**: Sincroniza o repositório Git e atualiza todas as dependências
+- **Verificação de Atualizações**: Verifica se há novas versões disponíveis
+- **Atualização de Dependências**: Atualiza apenas os pacotes Python
+- **Verificação de Estado**: Mostra o estado atual do repositório Git
+- **Interface Colorida**: Menu interativo com cores personalizadas para melhor visualização
 
 ## 🎯 Características Principais
 
@@ -149,6 +173,7 @@ game-translator/
 ├── 📄 INSTALAR.bat          # Instalador principal
 ├── 📄 EXECUTAR.bat          # Execução rápida
 ├── 📄 VERIFICAR_SISTEMA.bat # Verificação de compatibilidade (com cores!)
+├── 📄 ATUALIZAR.bat         # Atualizador do repositório (NOVO!)
 ├── 📄 requirements.txt      # Dependências Python
 ├── 📄 README.md             # Este arquivo
 ├── 📁 src/                  # Código-fonte
