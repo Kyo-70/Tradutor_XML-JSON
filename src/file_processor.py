@@ -9,7 +9,9 @@ import xml.etree.ElementTree as ET
 from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
 import shutil
+import os
 from datetime import datetime
+from pathlib import Path
 
 @dataclass
 class TranslationEntry:
@@ -234,7 +236,20 @@ class FileProcessor:
         try:
             # Cria backup se solicitado
             if create_backup and self.original_content:
-                backup_path = f"{filepath}.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                # Cria pasta de backups no mesmo diretório do arquivo
+                file_dir = os.path.dirname(os.path.abspath(filepath))
+                backup_dir = os.path.join(file_dir, "backups")
+                
+                # Cria o diretório se não existir
+                if not os.path.exists(backup_dir):
+                    os.makedirs(backup_dir)
+                
+                # Cria o nome do backup com timestamp
+                filename = os.path.basename(filepath)
+                backup_filename = f"{filename}.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                backup_path = os.path.join(backup_dir, backup_filename)
+                
+                # Salva o backup
                 with open(backup_path, 'w', encoding='utf-8') as f:
                     f.write(self.original_content)
             

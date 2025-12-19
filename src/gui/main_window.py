@@ -1585,7 +1585,67 @@ class MainWindow(QMainWindow):
             status_item.setFlags(status_item.flags() & ~Qt.ItemIsEditable)
             self.table.setItem(i, 3, status_item)
         
+        # Auto-ajusta altura das linhas baseado no conteúdo
+        self._auto_adjust_row_heights()
+        
         self.table.blockSignals(False)  # Reativa sinais
+    
+    def _auto_adjust_row_heights(self):
+        """
+        Auto-ajusta a altura das linhas baseado no conteúdo.
+        
+        Calcula a altura necessária para cada linha considerando:
+        - Comprimento do texto nas colunas Original e Tradução
+        - Largura disponível na coluna
+        - Padding adicional para textos longos
+        
+        Aplica altura mínima padrão e aumenta conforme necessário.
+        """
+        # Altura mínima padrão
+        min_height = 30
+        
+        # Calcula a altura de cada linha baseado no conteúdo
+        for row in range(self.table.rowCount()):
+            max_height = min_height
+            
+            # Verifica colunas de texto (Original e Tradução)
+            for col in [1, 2]:  # Apenas colunas de texto original e tradução
+                item = self.table.item(row, col)
+                if item:
+                    text = item.text()
+                    
+                    # Calcula altura baseado no comprimento do texto
+                    # Usa a largura da coluna para estimar quebras de linha
+                    col_width = self.table.columnWidth(col)
+                    
+                    if col_width > 0 and text:
+                        # Estima quantos caracteres cabem por linha
+                        # Usa aproximação de 8 pixels por caractere
+                        chars_per_line = max(1, col_width // 8)
+                        
+                        # Calcula número de linhas necessárias
+                        num_lines = max(1, len(text) // chars_per_line + 1)
+                        
+                        # Altura base por linha de texto (considera fonte e padding)
+                        height_per_line = 20
+                        
+                        # Calcula altura necessária
+                        required_height = num_lines * height_per_line + 10  # +10 para padding
+                        
+                        # Adiciona padding extra para textos muito longos
+                        if len(text) > 200:
+                            required_height += 10
+                        elif len(text) > 100:
+                            required_height += 5
+                        
+                        max_height = max(max_height, required_height)
+            
+            # Define altura máxima razoável para evitar linhas gigantes
+            max_allowed_height = 200
+            final_height = min(max_height, max_allowed_height)
+            
+            # Aplica a altura calculada
+            self.table.setRowHeight(row, final_height)
     
     def on_translation_edited(self, item):
         """Callback quando uma tradução é editada"""
@@ -1614,6 +1674,9 @@ class MainWindow(QMainWindow):
                 for col in range(4):
                     if self.table.item(row, col):
                         self.table.item(row, col).setBackground(QColor(40, 60, 40))
+            
+            # Auto-ajusta altura da linha editada
+            self._auto_adjust_row_heights()
             
             self._update_statistics()
     
@@ -1761,6 +1824,9 @@ class MainWindow(QMainWindow):
         
         self.table.blockSignals(False)  # Reativa sinais
         
+        # Auto-ajusta altura das linhas após colar
+        self._auto_adjust_row_heights()
+        
         # Atualiza estatísticas
         self._update_statistics()
         
@@ -1904,10 +1970,16 @@ class MainWindow(QMainWindow):
             # Salva arquivo (com backup automático)
             if self.file_processor.save_file(self.current_file, translated_content, create_backup=True):
                 self.status_label.setText("Arquivo salvo com sucesso!")
+                
+                # Obtém o caminho da pasta de backups
+                file_dir = os.path.dirname(os.path.abspath(self.current_file))
+                backup_dir = os.path.join(file_dir, "backups")
+                
                 QMessageBox.information(
                     self, 
                     "Sucesso", 
-                    "Arquivo traduzido salvo com sucesso!\n\nUm backup do original foi criado."
+                    f"Arquivo traduzido salvo com sucesso!\n\n"
+                    f"Um backup do original foi criado em:\n{backup_dir}"
                 )
                 app_logger.log_file_operation("save", self.current_file, True)
             else:
