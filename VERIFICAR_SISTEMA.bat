@@ -2,8 +2,8 @@
 setlocal EnableDelayedExpansion
 
 :: ============================================================================
-:: GAME TRANSLATOR - VERIFICACAO COMPLETA DO SISTEMA
-:: Versao: 1.0.3 - Compativel com Windows 11 e Python Launcher (py)
+:: GAME TRANSLATOR - VERIFICACAO DO SISTEMA
+:: Versao: 1.0.4
 :: ============================================================================
 
 chcp 65001 >nul 2>&1
@@ -12,7 +12,7 @@ title Game Translator - Verificacao do Sistema
 cls
 echo.
 echo ========================================================================
-echo  GAME TRANSLATOR - VERIFICACAO COMPLETA DO SISTEMA
+echo  GAME TRANSLATOR - VERIFICACAO DO SISTEMA
 echo ========================================================================
 echo.
 
@@ -22,272 +22,180 @@ set "SCRIPT_DIR=%~dp0"
 set "PY_CMD="
 
 :: ============================================================================
-:: DETECTAR COMANDO PYTHON
+:: DETECTAR PYTHON
 :: ============================================================================
-echo ------------------------------------------------------------------------
-echo  DETECTANDO PYTHON
-echo ------------------------------------------------------------------------
+echo [1/4] Verificando Python...
 echo.
 
-:: Tenta py primeiro (Python Launcher do Windows - mais recente)
 py --version >nul 2>&1
 if not errorlevel 1 (
-    for /f "tokens=2" %%v in ('py --version 2^>nul') do (
-        echo    [OK] Python Launcher encontrado: %%v
-        echo    [INFO] Usando comando: py
-    )
     set "PY_CMD=py"
-    goto :PYTHON_FOUND
+    for /f "tokens=2" %%v in ('py --version 2^>nul') do (
+        echo   OK: Python %%v encontrado [comando: py]
+    )
+    goto :CHECK_PIP
 )
 
-:: Tenta python
 python --version >nul 2>&1
 if not errorlevel 1 (
-    for /f "tokens=2" %%v in ('python --version 2^>nul') do (
-        echo    [OK] Python encontrado: %%v
-        echo    [INFO] Usando comando: python
-    )
     set "PY_CMD=python"
-    goto :PYTHON_FOUND
+    for /f "tokens=2" %%v in ('python --version 2^>nul') do (
+        echo   OK: Python %%v encontrado [comando: python]
+    )
+    goto :CHECK_PIP
 )
 
-:: Nenhum encontrado
-echo    [ERRO] Python NAO INSTALADO
-echo.
-echo    Para instalar:
-echo    1. Acesse: https://www.python.org/downloads/
-echo    2. Baixe a versao mais recente
-echo    3. Durante instalacao, marque "Add Python to PATH"
-echo.
+echo   ERRO: Python NAO encontrado!
+echo   Baixe em: https://www.python.org/downloads/
 set /a ERROS+=1
-set /p "ABRIR=Deseja abrir o site de download? (S/N): "
-if /i "!ABRIR!"=="S" start https://www.python.org/downloads/
-goto :RESUMO
-
-:PYTHON_FOUND
-echo.
+goto :CHECK_FILES
 
 :: ============================================================================
-:: VERIFICACAO DO SISTEMA OPERACIONAL
+:: VERIFICAR PIP
 :: ============================================================================
-echo ------------------------------------------------------------------------
-echo  SISTEMA OPERACIONAL
-echo ------------------------------------------------------------------------
+:CHECK_PIP
+echo.
+echo [2/4] Verificando pip...
 echo.
 
-for /f "tokens=*" %%a in ('systeminfo ^| findstr /B /C:"OS Name" /C:"Nome do sistema"') do (
-    echo    %%a
-)
-for /f "tokens=*" %%a in ('systeminfo ^| findstr /B /C:"OS Version" /C:"Versao do sistema"') do (
-    echo    %%a
-)
-echo.
-
-:: ============================================================================
-:: VERIFICACAO DO PIP
-:: ============================================================================
-echo ------------------------------------------------------------------------
-echo  PIP (Gerenciador de Pacotes)
-echo ------------------------------------------------------------------------
-echo.
-
-%PY_CMD% -m pip --version >nul 2>&1
+!PY_CMD! -m pip --version >nul 2>&1
 if errorlevel 1 (
-    echo    [ERRO] pip NAO INSTALADO
-    echo    [INFO] Tentando instalar pip...
-    %PY_CMD% -m ensurepip --upgrade >nul 2>&1
-    %PY_CMD% -m pip --version >nul 2>&1
-    if errorlevel 1 (
-        set /a ERROS+=1
-    ) else (
-        echo    [OK] pip instalado com sucesso!
-    )
+    echo   ERRO: pip nao encontrado
+    set /a ERROS+=1
 ) else (
-    for /f "tokens=2" %%v in ('%PY_CMD% -m pip --version 2^>nul') do (
-        echo    [OK] pip encontrado: %%v
-    )
+    echo   OK: pip instalado
 )
-echo.
 
 :: ============================================================================
-:: VERIFICACAO DAS BIBLIOTECAS
+:: VERIFICAR BIBLIOTECAS
 :: ============================================================================
-echo ------------------------------------------------------------------------
-echo  BIBLIOTECAS PYTHON
-echo ------------------------------------------------------------------------
+echo.
+echo [3/4] Verificando bibliotecas...
 echo.
 
-:: PySide6
-%PY_CMD% -c "import PySide6; print(PySide6.__version__)" >nul 2>&1
+!PY_CMD! -c "import PySide6" >nul 2>&1
 if errorlevel 1 (
-    echo    [AVISO] PySide6: Nao instalado
+    echo   FALTA: PySide6
     set /a AVISOS+=1
     set "NEED_PYSIDE=1"
 ) else (
-    for /f %%v in ('%PY_CMD% -c "import PySide6; print(PySide6.__version__)" 2^>nul') do (
-        echo    [OK] PySide6: %%v
-    )
+    echo   OK: PySide6
 )
 
-:: requests
-%PY_CMD% -c "import requests; print(requests.__version__)" >nul 2>&1
+!PY_CMD! -c "import requests" >nul 2>&1
 if errorlevel 1 (
-    echo    [AVISO] requests: Nao instalado
+    echo   FALTA: requests
     set /a AVISOS+=1
     set "NEED_REQUESTS=1"
 ) else (
-    for /f %%v in ('%PY_CMD% -c "import requests; print(requests.__version__)" 2^>nul') do (
-        echo    [OK] requests: %%v
-    )
+    echo   OK: requests
 )
 
-:: psutil
-%PY_CMD% -c "import psutil; print(psutil.__version__)" >nul 2>&1
+!PY_CMD! -c "import psutil" >nul 2>&1
 if errorlevel 1 (
-    echo    [AVISO] psutil: Nao instalado
+    echo   FALTA: psutil
     set /a AVISOS+=1
     set "NEED_PSUTIL=1"
 ) else (
-    for /f %%v in ('%PY_CMD% -c "import psutil; print(psutil.__version__)" 2^>nul') do (
-        echo    [OK] psutil: %%v
-    )
+    echo   OK: psutil
 )
 
-:: PyInstaller
-%PY_CMD% -m PyInstaller --version >nul 2>&1
+!PY_CMD! -m PyInstaller --version >nul 2>&1
 if errorlevel 1 (
-    echo    [AVISO] PyInstaller: Nao instalado (necessario para criar .exe)
+    echo   FALTA: PyInstaller
     set /a AVISOS+=1
     set "NEED_PYINSTALLER=1"
 ) else (
-    for /f %%v in ('%PY_CMD% -m PyInstaller --version 2^>nul') do (
-        echo    [OK] PyInstaller: %%v
-    )
+    echo   OK: PyInstaller
 )
-echo.
 
 :: ============================================================================
-:: VERIFICACAO DOS ARQUIVOS DO PROJETO
+:: VERIFICAR ARQUIVOS
 :: ============================================================================
-echo ------------------------------------------------------------------------
-echo  ARQUIVOS DO PROJETO
-echo ------------------------------------------------------------------------
+:CHECK_FILES
+echo.
+echo [4/4] Verificando arquivos do projeto...
 echo.
 
 if exist "%SCRIPT_DIR%src\main.py" (
-    echo    [OK] src\main.py: Encontrado
+    echo   OK: src\main.py
 ) else (
-    echo    [ERRO] src\main.py: NAO ENCONTRADO
-    set /a ERROS+=1
-)
-
-if exist "%SCRIPT_DIR%src\database.py" (
-    echo    [OK] src\database.py: Encontrado
-) else (
-    echo    [ERRO] src\database.py: NAO ENCONTRADO
+    echo   ERRO: src\main.py NAO encontrado
     set /a ERROS+=1
 )
 
 if exist "%SCRIPT_DIR%src\gui\main_window.py" (
-    echo    [OK] src\gui\main_window.py: Encontrado
+    echo   OK: src\gui\main_window.py
 ) else (
-    echo    [ERRO] src\gui\main_window.py: NAO ENCONTRADO
+    echo   ERRO: src\gui\main_window.py NAO encontrado
     set /a ERROS+=1
 )
 
-if exist "%SCRIPT_DIR%requirements.txt" (
-    echo    [OK] requirements.txt: Encontrado
+if exist "%SCRIPT_DIR%src\database.py" (
+    echo   OK: src\database.py
 ) else (
-    echo    [AVISO] requirements.txt: Nao encontrado
-    set /a AVISOS+=1
+    echo   ERRO: src\database.py NAO encontrado
+    set /a ERROS+=1
 )
 
 if exist "%SCRIPT_DIR%dist\GameTranslator.exe" (
-    echo    [OK] dist\GameTranslator.exe: Executavel criado
+    echo   OK: Executavel ja criado
 ) else (
-    echo    [INFO] dist\GameTranslator.exe: Executavel nao criado ainda
-)
-echo.
-
-:: ============================================================================
-:: INSTALAR DEPENDENCIAS FALTANTES
-:: ============================================================================
-if !AVISOS! GTR 0 (
-    if defined PY_CMD (
-        echo ------------------------------------------------------------------------
-        echo  INSTALAR DEPENDENCIAS FALTANTES
-        echo ------------------------------------------------------------------------
-        echo.
-        set /p "INSTALAR=Deseja instalar as dependencias faltantes agora? (S/N): "
-        if /i "!INSTALAR!"=="S" (
-            echo.
-            echo [INFO] Instalando dependencias...
-            echo.
-            
-            if defined NEED_PYSIDE (
-                echo    [+] Instalando PySide6...
-                %PY_CMD% -m pip install PySide6>=6.6.0
-            )
-            
-            if defined NEED_REQUESTS (
-                echo    [+] Instalando requests...
-                %PY_CMD% -m pip install requests>=2.31.0
-            )
-            
-            if defined NEED_PSUTIL (
-                echo    [+] Instalando psutil...
-                %PY_CMD% -m pip install psutil>=5.9.0
-            )
-            
-            if defined NEED_PYINSTALLER (
-                echo    [+] Instalando PyInstaller...
-                %PY_CMD% -m pip install pyinstaller
-            )
-            
-            echo.
-            echo [OK] Dependencias instaladas!
-            echo.
-            echo Pressione qualquer tecla para verificar novamente...
-            pause >nul
-            call "%~f0"
-            exit /b
-        )
-    )
+    echo   INFO: Executavel ainda nao criado
 )
 
 :: ============================================================================
-:: RESUMO FINAL
+:: RESUMO
 :: ============================================================================
-:RESUMO
 echo.
 echo ========================================================================
-echo  RESUMO DA VERIFICACAO
+echo  RESUMO
 echo ========================================================================
 echo.
 
 if !ERROS! EQU 0 (
     if !AVISOS! EQU 0 (
-        echo   [OK] SISTEMA TOTALMENTE COMPATIVEL!
-        echo.
-        echo   Seu sistema esta pronto para executar o Game Translator.
+        echo   Sistema PRONTO!
         echo   Execute INSTALAR.bat para criar o executavel.
     ) else (
-        echo   [AVISO] SISTEMA COMPATIVEL COM AVISOS
+        echo   Sistema OK, mas faltam !AVISOS! dependencia(s).
         echo.
-        echo   Avisos encontrados: !AVISOS!
-        echo   Execute novamente e escolha S para instalar dependencias.
+        set /p "INSTALAR=Instalar dependencias agora? (S/N): "
+        if /i "!INSTALAR!"=="S" (
+            echo.
+            echo Instalando...
+            echo.
+            
+            if defined NEED_PYSIDE (
+                echo   Instalando PySide6...
+                !PY_CMD! -m pip install PySide6>=6.6.0
+            )
+            
+            if defined NEED_REQUESTS (
+                echo   Instalando requests...
+                !PY_CMD! -m pip install requests>=2.31.0
+            )
+            
+            if defined NEED_PSUTIL (
+                echo   Instalando psutil...
+                !PY_CMD! -m pip install psutil>=5.9.0
+            )
+            
+            if defined NEED_PYINSTALLER (
+                echo   Instalando PyInstaller...
+                !PY_CMD! -m pip install pyinstaller
+            )
+            
+            echo.
+            echo Pronto! Execute INSTALAR.bat para criar o executavel.
+        )
     )
 ) else (
-    echo   [ERRO] PROBLEMAS ENCONTRADOS
-    echo.
-    echo   Erros criticos: !ERROS!
-    echo   Avisos: !AVISOS!
-    echo.
+    echo   PROBLEMAS encontrados: !ERROS! erro(s), !AVISOS! aviso(s)
     echo   Corrija os erros antes de continuar.
 )
 
 echo.
 echo ========================================================================
 echo.
-
 pause

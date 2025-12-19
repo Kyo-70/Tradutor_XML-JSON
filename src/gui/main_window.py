@@ -7,8 +7,17 @@ import sys
 import os
 from pathlib import Path
 
-# Adiciona o diretório src ao path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Adiciona o diretório src ao path para funcionar com PyInstaller
+if getattr(sys, 'frozen', False):
+    # Executando como executável
+    BASE_DIR = os.path.dirname(sys.executable)
+    INTERNAL_DIR = os.path.join(BASE_DIR, '_internal')
+    if os.path.exists(INTERNAL_DIR):
+        sys.path.insert(0, INTERNAL_DIR)
+    sys.path.insert(0, BASE_DIR)
+else:
+    # Executando como script
+    sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                               QPushButton, QTableWidget, QTableWidgetItem, QLabel,
@@ -19,15 +28,28 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
 from PySide6.QtCore import Qt, QThread, Signal, QTimer
 from PySide6.QtGui import QPalette, QColor, QFont, QAction, QIcon
 
-from database import TranslationMemory, create_new_database
-from regex_profiles import RegexProfileManager
-from file_processor import FileProcessor, TranslationEntry
-from smart_translator import SmartTranslator
-from translation_api import TranslationAPIManager
-from logger import app_logger
-from security import (SecurityValidator, ResourceMonitor, ChunkProcessor,
-                     AutoSaveManager, LIMITS, is_safe_to_proceed, 
-                     safe_operation, memory_safe)
+# Imports com tratamento de erro para funcionar tanto como script quanto executável
+try:
+    from database import TranslationMemory, create_new_database
+    from regex_profiles import RegexProfileManager
+    from file_processor import FileProcessor, TranslationEntry
+    from smart_translator import SmartTranslator
+    from translation_api import TranslationAPIManager
+    from logger import app_logger
+    from security import (SecurityValidator, ResourceMonitor, ChunkProcessor,
+                         AutoSaveManager, LIMITS, is_safe_to_proceed, 
+                         safe_operation, memory_safe)
+except ImportError:
+    # Tenta import relativo
+    from src.database import TranslationMemory, create_new_database
+    from src.regex_profiles import RegexProfileManager
+    from src.file_processor import FileProcessor, TranslationEntry
+    from src.smart_translator import SmartTranslator
+    from src.translation_api import TranslationAPIManager
+    from src.logger import app_logger
+    from src.security import (SecurityValidator, ResourceMonitor, ChunkProcessor,
+                             AutoSaveManager, LIMITS, is_safe_to_proceed, 
+                             safe_operation, memory_safe)
 
 # ============================================================================
 # WORKER THREADS
