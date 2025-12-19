@@ -65,7 +65,7 @@ except ImportError:
 # ============================================================================
 
 # Settings para persistência
-SETTINGS_ORG_NAME = "GameTranslator"
+SETTINGS_ORG_NAME = "ManusAI"
 SETTINGS_APP_NAME = "GameTranslator"
 
 # Cores para linhas da tabela (tema escuro)
@@ -2425,19 +2425,29 @@ class MainWindow(QMainWindow):
     
     def _save_window_settings(self):
         """Salva a geometria da janela"""
-        settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
-        settings.setValue("geometry", self.saveGeometry())
-        app_logger.info("Geometria da janela salva")
+        try:
+            settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
+            settings.setValue("geometry", self.saveGeometry())
+            app_logger.info("Geometria da janela salva")
+        except Exception as e:
+            app_logger.error(f"Erro ao salvar configurações da janela: {e}")
     
     def _restore_window_settings(self):
         """Restaura a geometria da janela"""
-        settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
-        
-        # Restaura geometria se existir
-        geometry = settings.value("geometry")
-        if geometry:
-            self.restoreGeometry(geometry)
-            app_logger.info("Geometria da janela restaurada")
+        try:
+            settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
+            
+            # Restaura geometria se existir
+            geometry = settings.value("geometry")
+            if geometry:
+                success = self.restoreGeometry(geometry)
+                if success:
+                    app_logger.info("Geometria da janela restaurada")
+                else:
+                    app_logger.warning("Falha ao restaurar geometria da janela - usando geometria padrão")
+        except Exception as e:
+            app_logger.error(f"Erro ao restaurar configurações da janela: {e}")
+            # Continua com geometria padrão em caso de erro
     
     def closeEvent(self, event):
         """Evento de fechamento da janela"""
