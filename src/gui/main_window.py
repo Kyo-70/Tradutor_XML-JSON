@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                               QTabWidget, QSpinBox, QCheckBox, QSplitter, QFrame,
                               QStatusBar, QToolBar, QMenu, QMenuBar, QApplication)
 from PySide6.QtCore import Qt, QThread, Signal, QTimer
-from PySide6.QtGui import QPalette, QColor, QFont, QAction, QIcon
+from PySide6.QtGui import QPalette, QColor, QFont, QAction, QIcon, QKeySequence, QShortcut
 
 # Imports com tratamento de erro para funcionar tanto como script quanto executável
 try:
@@ -50,6 +50,15 @@ except ImportError:
     from src.security import (SecurityValidator, ResourceMonitor, ChunkProcessor,
                              AutoSaveManager, LIMITS, is_safe_to_proceed, 
                              safe_operation, memory_safe)
+
+# Import do editor de regex
+try:
+    from gui.regex_editor import RegexProfileManagerDialog, ImportTranslationDialog
+except ImportError:
+    try:
+        from regex_editor import RegexProfileManagerDialog, ImportTranslationDialog
+    except ImportError:
+        from src.gui.regex_editor import RegexProfileManagerDialog, ImportTranslationDialog
 
 # ============================================================================
 # WORKER THREADS
@@ -1065,10 +1074,12 @@ class MainWindow(QMainWindow):
         file_menu = menubar.addMenu("Arquivo")
         
         action_new_db = QAction("Novo Banco de Dados...", self)
+        action_new_db.setShortcut("Ctrl+Shift+N")
         action_new_db.triggered.connect(self._create_new_database)
         file_menu.addAction(action_new_db)
         
         action_open_db = QAction("Abrir Banco de Dados...", self)
+        action_open_db.setShortcut("Ctrl+D")
         action_open_db.triggered.connect(self._open_database)
         file_menu.addAction(action_open_db)
         
@@ -1095,10 +1106,12 @@ class MainWindow(QMainWindow):
         db_menu = menubar.addMenu("Banco de Dados")
         
         action_view_db = QAction("Visualizar Banco de Dados...", self)
+        action_view_db.setShortcut("Ctrl+B")
         action_view_db.triggered.connect(self._view_database)
         db_menu.addAction(action_view_db)
         
         action_export_db = QAction("Exportar para CSV...", self)
+        action_export_db.setShortcut("Ctrl+E")
         action_export_db.triggered.connect(self._export_database)
         db_menu.addAction(action_export_db)
         
@@ -1109,12 +1122,32 @@ class MainWindow(QMainWindow):
         # Menu Ferramentas
         tools_menu = menubar.addMenu("Ferramentas")
         
+        action_profiles = QAction("Gerenciar Perfis Regex...", self)
+        action_profiles.setShortcut("Ctrl+P")
+        action_profiles.triggered.connect(self._open_profile_manager)
+        tools_menu.addAction(action_profiles)
+        
+        action_import_trans = QAction("Importar Traduções...", self)
+        action_import_trans.setShortcut("Ctrl+I")
+        action_import_trans.triggered.connect(self._import_translations)
+        tools_menu.addAction(action_import_trans)
+        
+        tools_menu.addSeparator()
+        
         action_settings = QAction("Configurações...", self)
+        action_settings.setShortcut("Ctrl+,")
         action_settings.triggered.connect(self.open_settings)
         tools_menu.addAction(action_settings)
         
         # Menu Ajuda
         help_menu = menubar.addMenu("Ajuda")
+        
+        action_shortcuts = QAction("Atalhos de Teclado", self)
+        action_shortcuts.setShortcut("F1")
+        action_shortcuts.triggered.connect(self._show_shortcuts)
+        help_menu.addAction(action_shortcuts)
+        
+        help_menu.addSeparator()
         
         action_about = QAction("Sobre", self)
         action_about.triggered.connect(self._show_about)
@@ -1192,10 +1225,18 @@ class MainWindow(QMainWindow):
         self.combo_profile.addItems(self.profile_manager.get_all_profile_names())
         layout.addWidget(self.combo_profile)
         
+        # Botão editar perfis
+        self.btn_edit_profiles = QPushButton("✏️")
+        self.btn_edit_profiles.setToolTip("Gerenciar Perfis Regex (Ctrl+P)")
+        self.btn_edit_profiles.setMaximumWidth(40)
+        self.btn_edit_profiles.clicked.connect(self._open_profile_manager)
+        layout.addWidget(self.btn_edit_profiles)
+        
         # Botão traduzir automaticamente
-        self.btn_auto_translate = QPushButton("🤖 Traduzir Auto")
+        self.btn_auto_translate = QPushButton("🤖 Traduzir Auto (F5)")
         self.btn_auto_translate.clicked.connect(self.auto_translate)
         self.btn_auto_translate.setEnabled(False)
+        self.btn_auto_translate.setShortcut("F5")
         layout.addWidget(self.btn_auto_translate)
         
         # Botão aplicar traduções inteligentes
@@ -1735,6 +1776,100 @@ class MainWindow(QMainWindow):
         if total > 0:
             progress = int(translated / total * 100)
             self.progress_bar.setValue(progress)
+    
+    def _open_profile_manager(self):
+        """Abre gerenciador de perfis regex"""
+        dialog = RegexProfileManagerDialog(self, self.profile_manager)
+        dialog.profile_changed.connect(self._refresh_profiles)
+        dialog.exec()
+    
+    def _refresh_profiles(self):
+        """Atualiza lista de perfis no combo"""
+        current = self.combo_profile.currentText()
+        self.combo_profile.clear()
+        self.combo_profile.addItems(self.profile_manager.get_all_profile_names())
+        
+        # Tenta manter o perfil selecionado
+        idx = self.combo_profile.findText(current)
+        if idx >= 0:
+            self.combo_profile.setCurrentIndex(idx)
+    
+    def _import_translations(self):
+        """Importa traduções de arquivo existente"""
+        if not self.entries:
+            QMessageBox.warning(self, "Aviso", "Carregue um arquivo primeiro")
+            return
+        
+        dialog = ImportTranslationDialog(self, self.entries, self.translation_memory)
+        
+        if dialog.exec() == QDialog.Accepted and dialog.imported_translations:
+            # Aplica traduções importadas
+            count = 0
+            for entry in self.entries:
+                if not entry.translated_text:
+                    # Busca correspondência
+                    for original, translation in dialog.imported_translations.items():
+                        if entry.original_text == original or entry.original_text in original:
+                            entry.translated_text = translation
+                            count += 1
+                            
+                            # Adiciona à memória
+                            if self.translation_memory.is_connected():
+                                self.translation_memory.add_translation(
+                                    entry.original_text,
+                                    translation
+                                )
+                            break
+            
+            # Atualiza interface
+            self._populate_table()
+            self._update_statistics()
+            
+            QMessageBox.information(
+                self,
+                "Importação Concluída",
+                f"{count} traduções importadas com sucesso!"
+            )
+    
+    def _show_shortcuts(self):
+        """Mostra diálogo de atalhos de teclado"""
+        shortcuts = """
+        <h2>⌨️ Atalhos de Teclado</h2>
+        
+        <h3>Arquivo</h3>
+        <table>
+        <tr><td><b>Ctrl+O</b></td><td>Importar arquivo</td></tr>
+        <tr><td><b>Ctrl+S</b></td><td>Salvar arquivo</td></tr>
+        <tr><td><b>Ctrl+D</b></td><td>Abrir banco de dados</td></tr>
+        <tr><td><b>Ctrl+Shift+N</b></td><td>Novo banco de dados</td></tr>
+        <tr><td><b>Ctrl+Q</b></td><td>Sair</td></tr>
+        </table>
+        
+        <h3>Banco de Dados</h3>
+        <table>
+        <tr><td><b>Ctrl+B</b></td><td>Visualizar banco de dados</td></tr>
+        <tr><td><b>Ctrl+E</b></td><td>Exportar para CSV</td></tr>
+        </table>
+        
+        <h3>Ferramentas</h3>
+        <table>
+        <tr><td><b>Ctrl+P</b></td><td>Gerenciar perfis regex</td></tr>
+        <tr><td><b>Ctrl+I</b></td><td>Importar traduções</td></tr>
+        <tr><td><b>Ctrl+,</b></td><td>Configurações</td></tr>
+        </table>
+        
+        <h3>Tradução</h3>
+        <table>
+        <tr><td><b>F5</b></td><td>Traduzir automaticamente</td></tr>
+        </table>
+        
+        <h3>Ajuda</h3>
+        <table>
+        <tr><td><b>F1</b></td><td>Mostrar atalhos</td></tr>
+        </table>
+        """
+        
+        QMessageBox.information(self, "Atalhos de Teclado", shortcuts)
     
     def _show_about(self):
         """Mostra diálogo Sobre"""
