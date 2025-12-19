@@ -61,6 +61,17 @@ except ImportError:
         from src.gui.regex_editor import RegexProfileManagerDialog, ImportTranslationDialog
 
 # ============================================================================
+# UI CONSTANTS
+# ============================================================================
+
+# Cores para linhas da tabela (tema escuro)
+class TableColors:
+    """Cores usadas nas tabelas para manter consistência visual"""
+    BASE_ROW = QColor(40, 40, 40)           # Cor de fundo para linhas pares
+    ALTERNATE_ROW = QColor(50, 50, 50)      # Cor de fundo para linhas ímpares
+    TRANSLATED_ROW = QColor(40, 60, 40)     # Cor de fundo para linhas traduzidas
+
+# ============================================================================
 # WORKER THREADS
 # ============================================================================
 
@@ -360,9 +371,6 @@ class DatabaseViewerDialog(QDialog):
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
         self.table.itemDoubleClicked.connect(self._on_item_double_clicked)
         
-        # Conecta evento quando a edição começa (para auto-ajustar altura)
-        self.table.itemDoubleClicked.connect(self._on_edit_started_db)
-        
         # Adiciona atalho da tecla Delete para excluir
         delete_shortcut = QShortcut(QKeySequence.Delete, self.table)
         delete_shortcut.activated.connect(self._delete_selected)
@@ -435,7 +443,10 @@ class DatabaseViewerDialog(QDialog):
                        category=category if category != "Todas" else None)
     
     def _on_item_double_clicked(self, item):
-        """Callback de duplo clique"""
+        """Callback de duplo clique - auto-ajusta altura e inicia edição"""
+        # Auto-ajusta altura das linhas quando começar a editar
+        self._auto_adjust_row_heights()
+        # Nota: A edição será iniciada pelo método _edit_selected se necessário
         self._edit_selected()
     
     def _auto_adjust_row_heights(self):
@@ -494,17 +505,6 @@ class DatabaseViewerDialog(QDialog):
             
             # Aplica a altura calculada
             self.table.setRowHeight(row, final_height)
-    
-    def _on_edit_started_db(self, item):
-        """
-        Callback quando a edição de um item começa (duplo clique) no visualizador do banco.
-        Auto-ajusta a altura da linha para facilitar visualização durante edição.
-        
-        Args:
-            item: Item da tabela que foi clicado para edição
-        """
-        # Auto-ajusta altura das linhas quando começar a editar
-        self._auto_adjust_row_heights()
     
     def _edit_selected(self):
         """Edita tradução selecionada"""
@@ -1448,8 +1448,9 @@ class MainWindow(QMainWindow):
         # Conecta evento de edição
         table.itemChanged.connect(self.on_translation_edited)
         
-        # Conecta evento quando a edição começa (para auto-ajustar altura)
-        table.itemDoubleClicked.connect(self._on_edit_started)
+        # Auto-ajusta altura quando clicar para editar (duplo-clique ou tecla Edit)
+        # Conecta ao signal de duplo-clique para ajustar antes de editar
+        table.itemDoubleClicked.connect(lambda item: self._auto_adjust_row_heights())
         
         # Adiciona atalhos de copiar e colar
         copy_shortcut = QShortcut(QKeySequence.Copy, table)
@@ -1746,7 +1747,7 @@ class MainWindow(QMainWindow):
                 status_item = QTableWidgetItem("✅")
                 for col in range(4):
                     if self.table.item(i, col):
-                        self.table.item(i, col).setBackground(QColor(40, 60, 40))
+                        self.table.item(i, col).setBackground(TableColors.TRANSLATED_ROW)
             else:
                 status_item = QTableWidgetItem("⏳")
             
@@ -1841,24 +1842,12 @@ class MainWindow(QMainWindow):
                 self.table.item(row, 3).setText("✅")
                 for col in range(4):
                     if self.table.item(row, col):
-                        self.table.item(row, col).setBackground(QColor(40, 60, 40))
+                        self.table.item(row, col).setBackground(TableColors.TRANSLATED_ROW)
             
             # Auto-ajusta altura da linha editada
             self._auto_adjust_row_heights()
             
             self._update_statistics()
-    
-    def _on_edit_started(self, item):
-        """
-        Callback quando a edição de um item começa (duplo clique).
-        Auto-ajusta a altura da linha para facilitar visualização durante edição.
-        
-        Args:
-            item: Item da tabela que foi clicado para edição
-        """
-        # Auto-ajusta altura das linhas quando começar a editar
-        # Isso garante que o texto longo seja visível durante a edição
-        self._auto_adjust_row_heights()
     
     def _clear_selected_translations(self):
         """
@@ -1917,9 +1906,9 @@ class MainWindow(QMainWindow):
                     if item:
                         # Reseta cor de fundo baseado em alternating rows
                         if row % 2 == 0:
-                            item.setBackground(QColor(40, 40, 40))  # Base
+                            item.setBackground(TableColors.BASE_ROW)
                         else:
-                            item.setBackground(QColor(50, 50, 50))  # Alternate
+                            item.setBackground(TableColors.ALTERNATE_ROW)
                 
                 cleared_count += 1
         
@@ -2069,7 +2058,7 @@ class MainWindow(QMainWindow):
             for col in range(4):
                 item = self.table.item(row, col)
                 if item:
-                    item.setBackground(QColor(40, 60, 40))
+                    item.setBackground(TableColors.TRANSLATED_ROW)
             
             pasted_count += 1
         
