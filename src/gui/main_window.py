@@ -1653,7 +1653,8 @@ class MainWindow(QMainWindow):
         
         # Parse do conteúdo da área de transferência
         # Formato esperado: Original\tTradução (uma linha por entrada)
-        clipboard_lines = clipboard_text.strip().split('\n')
+        # Usa splitlines() para compatibilidade com diferentes formatos de quebra de linha
+        clipboard_lines = clipboard_text.strip().splitlines()
         
         if not selected_rows:
             # Se nenhuma linha selecionada, não faz nada
@@ -1694,12 +1695,13 @@ class MainWindow(QMainWindow):
             # Extrai a tradução baseado no número de campos
             if len(parts) >= 2:
                 # Se tem original e tradução (formato TSV completo)
-                translation = parts[1].strip()
+                # Une todos os campos após o primeiro para preservar tabs na tradução
+                translation = '\t'.join(parts[1:]).strip()
             else:
                 # Se tem apenas um campo, usa como tradução
                 translation = parts[0].strip()
             
-            # Atualiza apenas se há tradução não vazia
+            # Atualiza apenas se há tradução não vazia (ignora apenas espaços)
             if not translation:
                 continue
             
