@@ -1048,9 +1048,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Game Translator - Sistema de Tradução para Jogos e Mods")
         self.setGeometry(100, 100, 1300, 800)
         
-        # Restaura configurações da janela se existirem
-        self._restore_window_settings()
-        
         # Aplica tema escuro
         self._apply_dark_theme()
         
@@ -1058,6 +1055,9 @@ class MainWindow(QMainWindow):
         self._create_menu_bar()
         self._create_ui()
         self._create_status_bar()
+        
+        # Restaura configurações da janela após UI estar criada
+        self._restore_window_settings()
         
         # Timer para atualizar status de recursos
         self.resource_timer = QTimer()
@@ -2424,14 +2424,13 @@ class MainWindow(QMainWindow):
         )
     
     def _save_window_settings(self):
-        """Salva a geometria e estado da janela"""
+        """Salva a geometria da janela"""
         settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
         settings.setValue("geometry", self.saveGeometry())
-        settings.setValue("windowState", self.saveState())
-        app_logger.info("Configurações da janela salvas")
+        app_logger.info("Geometria da janela salva")
     
     def _restore_window_settings(self):
-        """Restaura a geometria e estado da janela"""
+        """Restaura a geometria da janela"""
         settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
         
         # Restaura geometria se existir
@@ -2439,12 +2438,6 @@ class MainWindow(QMainWindow):
         if geometry:
             self.restoreGeometry(geometry)
             app_logger.info("Geometria da janela restaurada")
-        
-        # Restaura estado da janela se existir
-        window_state = settings.value("windowState")
-        if window_state:
-            self.restoreState(window_state)
-            app_logger.info("Estado da janela restaurado")
     
     def closeEvent(self, event):
         """Evento de fechamento da janela"""
