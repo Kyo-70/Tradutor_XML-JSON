@@ -65,8 +65,11 @@ except ImportError:
 # ============================================================================
 
 # Settings para persistência
-SETTINGS_ORG_NAME = "ManusAI"
-SETTINGS_APP_NAME = "GameTranslator"
+# Constantes usadas pelo QSettings para identificação da aplicação no sistema de armazenamento persistente
+# No Windows: armazenado no registro ou em arquivos .ini em AppData
+# No Linux/Mac: armazenado em arquivos de configuração específicos do sistema
+SETTINGS_ORG_NAME = "ManusAI"  # Nome da organização/desenvolvedor
+SETTINGS_APP_NAME = "GameTranslator"  # Nome da aplicação
 
 # Cores para linhas da tabela (tema escuro)
 class TableColors:
@@ -2437,8 +2440,8 @@ class MainWindow(QMainWindow):
         try:
             settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
             
-            # Restaura geometria se existir
-            geometry = settings.value("geometry")
+            # Restaura geometria se existir (explicit default None)
+            geometry = settings.value("geometry", None)
             if geometry:
                 success = self.restoreGeometry(geometry)
                 if success:
