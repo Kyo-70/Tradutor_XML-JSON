@@ -1274,6 +1274,7 @@ class MainWindow(QMainWindow):
         # Configurações da tabela
         table.setAlternatingRowColors(True)
         table.setSelectionBehavior(QTableWidget.SelectRows)
+        table.setSelectionMode(QTableWidget.ExtendedSelection)  # Permite seleção múltipla
         table.setEditTriggers(QTableWidget.DoubleClicked | QTableWidget.EditKeyPressed)
         
         # Ajusta largura das colunas
@@ -1285,6 +1286,13 @@ class MainWindow(QMainWindow):
         
         # Conecta evento de edição
         table.itemChanged.connect(self.on_translation_edited)
+        
+        # Adiciona atalhos de copiar e colar
+        copy_shortcut = QShortcut(QKeySequence.Copy, table)
+        copy_shortcut.activated.connect(self.copy_selected_rows)
+        
+        paste_shortcut = QShortcut(QKeySequence.Paste, table)
+        paste_shortcut.activated.connect(self.paste_rows)
         
         return table
     
@@ -1609,6 +1617,125 @@ class MainWindow(QMainWindow):
             
             self._update_statistics()
     
+    def copy_selected_rows(self):
+        """Copia linhas selecionadas para a área de transferência"""
+        selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        
+        if not selected_rows:
+            self.status_label.setText("Nenhuma linha selecionada para copiar")
+            return
+        
+        # Formato: Original\tTradução (tab-separated para fácil edição em notepad)
+        clipboard_data = []
+        for row in selected_rows:
+            if row < len(self.entries):
+                original = self.entries[row].original_text
+                translation = self.entries[row].translated_text or ""
+                clipboard_data.append(f"{original}\t{translation}")
+        
+        # Copia para área de transferência
+        clipboard_text = "\n".join(clipboard_data)
+        QApplication.clipboard().setText(clipboard_text)
+        
+        self.status_label.setText(f"{len(selected_rows)} linha(s) copiada(s)")
+        app_logger.info(f"Copiadas {len(selected_rows)} linhas para área de transferência")
+    
+    def paste_rows(self):
+        """Cola dados da área de transferência nas linhas selecionadas"""
+        clipboard_text = QApplication.clipboard().text()
+        
+        if not clipboard_text:
+            self.status_label.setText("Área de transferência vazia")
+            return
+        
+        # Pega linhas selecionadas
+        selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        
+        # Parse do conteúdo da área de transferência
+        # Formato esperado: Original\tTradução (uma linha por entrada)
+        clipboard_lines = clipboard_text.strip().split('\n')
+        
+        if not selected_rows:
+            # Se nenhuma linha selecionada, não faz nada
+            QMessageBox.warning(
+                self,
+                "Aviso",
+                "Selecione as linhas onde deseja colar as traduções."
+            )
+            return
+        
+        # Se há mais dados para colar do que linhas selecionadas
+        if len(clipboard_lines) > len(selected_rows):
+            reply = QMessageBox.question(
+                self,
+                "Confirmar Colagem",
+                f"Há {len(clipboard_lines)} linha(s) na área de transferência, "
+                f"mas apenas {len(selected_rows)} linha(s) selecionada(s).\n\n"
+                "As primeiras linhas serão coladas nas selecionadas. Continuar?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply != QMessageBox.Yes:
+                return
+        
+        # Cola os dados
+        self.table.blockSignals(True)  # Bloqueia sinais durante atualização
+        
+        pasted_count = 0
+        for i, row in enumerate(selected_rows):
+            if i >= len(clipboard_lines):
+                break
+            
+            if row >= len(self.entries):
+                continue
+            
+            # Parse da linha (formato: Original\tTradução)
+            parts = clipboard_lines[i].split('\t')
+            
+            if len(parts) >= 2:
+                # Se tem original e tradução
+                translation = parts[1].strip()
+            elif len(parts) == 1:
+                # Se tem apenas um campo, usa como tradução
+                translation = parts[0].strip()
+            else:
+                continue
+            
+            # Atualiza apenas se há tradução
+            if translation:
+                # Atualiza entrada
+                original = self.entries[row].original_text
+                self.entries[row].translated_text = translation
+                
+                # Atualiza item da tabela
+                if self.table.item(row, 2):
+                    self.table.item(row, 2).setText(translation)
+                
+                # Adiciona à memória
+                if self.translation_memory.is_connected():
+                    self.translation_memory.add_translation(original, translation)
+                    
+                    if self.smart_translator:
+                        self.smart_translator.learn_pattern(original, translation)
+                    
+                    app_logger.log_translation(original, translation, "paste")
+                
+                # Atualiza status visual
+                if self.table.item(row, 3):
+                    self.table.item(row, 3).setText("✅")
+                    for col in range(4):
+                        if self.table.item(row, col):
+                            self.table.item(row, col).setBackground(QColor(40, 60, 40))
+                
+                pasted_count += 1
+        
+        self.table.blockSignals(False)  # Reativa sinais
+        
+        # Atualiza estatísticas
+        self._update_statistics()
+        
+        self.status_label.setText(f"{pasted_count} tradução(ões) colada(s)")
+        app_logger.info(f"Coladas {pasted_count} traduções da área de transferência")
+    
     def apply_smart_translations(self):
         """Aplica traduções inteligentes usando padrões"""
         if not self.smart_translator:
@@ -1861,6 +1988,8 @@ class MainWindow(QMainWindow):
         <h3>Tradução</h3>
         <table>
         <tr><td><b>F5</b></td><td>Traduzir automaticamente</td></tr>
+        <tr><td><b>Ctrl+C</b></td><td>Copiar linhas selecionadas</td></tr>
+        <tr><td><b>Ctrl+V</b></td><td>Colar traduções</td></tr>
         </table>
         
         <h3>Ajuda</h3>
