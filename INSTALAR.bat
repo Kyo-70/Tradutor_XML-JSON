@@ -1,10 +1,12 @@
 @echo off
 chcp 65001 >nul 2>&1
-title Game Translator - Instalador v1.0.6
+title Game Translator - Instalador v1.0.7
+
+:: Habilita suporte a cores ANSI no Windows 10+ via registro
+reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 
 :: Define cores customizadas usando ANSI escape codes
-:: Habilita suporte a cores ANSI no Windows 10+
-for /F %%A in ('prompt $E ^| cmd') do set "ESC=%%A"
+for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set "ESC=%%b"
 
 :: Cores personalizadas
 set "COLOR_RESET=%ESC%[0m"
@@ -20,7 +22,7 @@ cls
 echo.
 echo %COLOR_TITULO%========================================================================%COLOR_RESET%
 echo %COLOR_TITULO%                                                                        %COLOR_RESET%
-echo %COLOR_TITULO%     GAME TRANSLATOR - INSTALADOR v1.0.6                               %COLOR_RESET%
+echo %COLOR_TITULO%     GAME TRANSLATOR - INSTALADOR v1.0.7                               %COLOR_RESET%
 echo %COLOR_TITULO%                                                                        %COLOR_RESET%
 echo %COLOR_TITULO%     Sistema Profissional de Traducao para Jogos e Mods                %COLOR_RESET%
 echo %COLOR_TITULO%                                                                        %COLOR_RESET%
@@ -130,6 +132,7 @@ if exist "%~dp0dist\GameTranslator.exe" (
     echo.
     set /p ABRIR="%COLOR_INFO%Deseja abrir o programa agora? (S/N):%COLOR_RESET% "
     if /i "%ABRIR%"=="S" start "" "%~dp0dist\GameTranslator.exe"
+    if /i "%ABRIR%"=="Y" start "" "%~dp0dist\GameTranslator.exe"
 ) else (
     echo %COLOR_ERRO%[ERRO] Falha ao criar executavel!%COLOR_RESET%
     echo %COLOR_AVISO%Verifique os erros acima.%COLOR_RESET%
@@ -254,6 +257,7 @@ if exist "%~dp0dist\GameTranslator.exe" (
     echo.
     set /p ABRIR="%COLOR_INFO%Abrir pasta? (S/N):%COLOR_RESET% "
     if /i "%ABRIR%"=="S" explorer "%~dp0dist"
+    if /i "%ABRIR%"=="Y" explorer "%~dp0dist"
 ) else (
     echo %COLOR_ERRO%[ERRO] Falha ao criar executavel!%COLOR_RESET%
 )

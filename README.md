@@ -58,6 +58,7 @@ O arquivo `ATUALIZAR.bat` oferece:
 - **Atualização Completa**: Sincroniza o repositório Git e atualiza todas as dependências
 - **Verificação de Atualizações**: Verifica se há novas versões disponíveis
 - **Atualização de Dependências**: Atualiza apenas os pacotes Python
+- **Recriar Executável**: Reconstrói o arquivo .exe após atualizações
 - **Verificação de Estado**: Mostra o estado atual do repositório Git
 - **Interface Colorida**: Menu interativo com cores personalizadas para melhor visualização
 

@@ -2,9 +2,11 @@
 chcp 65001 >nul 2>&1
 title Game Translator - Verificacao do Sistema
 
+:: Habilita suporte a cores ANSI no Windows 10+ via registro
+reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
+
 :: Define cores customizadas usando ANSI escape codes
-:: Habilita suporte a cores ANSI no Windows 10+
-for /F %%A in ('prompt $E ^| cmd') do set "ESC=%%A"
+for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set "ESC=%%b"
 
 :: Cores personalizadas
 set "COLOR_RESET=%ESC%[0m"

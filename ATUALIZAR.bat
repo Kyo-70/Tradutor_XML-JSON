@@ -1,10 +1,12 @@
 @echo off
 chcp 65001 >nul 2>&1
-title Game Translator - Atualizador v1.0.0
+title Game Translator - Atualizador v1.0.1
+
+:: Habilita suporte a cores ANSI no Windows 10+ via registro
+reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 
 :: Define cores customizadas usando ANSI escape codes
-:: Habilita suporte a cores ANSI no Windows 10+
-for /F %%A in ('prompt $E ^| cmd') do set "ESC=%%A"
+for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set "ESC=%%b"
 
 :: Cores personalizadas
 set "COLOR_RESET=%ESC%[0m"
@@ -20,7 +22,7 @@ cls
 echo.
 echo %COLOR_TITULO%========================================================================%COLOR_RESET%
 echo %COLOR_TITULO%                                                                        %COLOR_RESET%
-echo %COLOR_TITULO%     GAME TRANSLATOR - ATUALIZADOR v1.0.0                              %COLOR_RESET%
+echo %COLOR_TITULO%     GAME TRANSLATOR - ATUALIZADOR v1.0.1                              %COLOR_RESET%
 echo %COLOR_TITULO%                                                                        %COLOR_RESET%
 echo %COLOR_TITULO%     Sistema de Atualizacao Automatica do Repositorio                  %COLOR_RESET%
 echo %COLOR_TITULO%                                                                        %COLOR_RESET%
@@ -32,8 +34,9 @@ echo.
 echo %COLOR_INFO%  [1]%COLOR_RESET% %COLOR_DESTAQUE%Atualizar Repositorio Completo%COLOR_RESET% (Recomendado)
 echo %COLOR_INFO%  [2]%COLOR_RESET% Verificar Atualizacoes Disponiveis
 echo %COLOR_INFO%  [3]%COLOR_RESET% Atualizar Apenas Dependencias Python
-echo %COLOR_INFO%  [4]%COLOR_RESET% Verificar Estado do Repositorio
-echo %COLOR_INFO%  [5]%COLOR_RESET% Verificar Sistema e Dependencias
+echo %COLOR_INFO%  [4]%COLOR_RESET% Recriar Executavel (.exe)
+echo %COLOR_INFO%  [5]%COLOR_RESET% Verificar Estado do Repositorio
+echo %COLOR_INFO%  [6]%COLOR_RESET% Verificar Sistema e Dependencias
 echo %COLOR_INFO%  [0]%COLOR_RESET% Sair
 echo.
 set /p OPCAO="%COLOR_INFO%Digite sua opcao:%COLOR_RESET% "
@@ -41,8 +44,9 @@ set /p OPCAO="%COLOR_INFO%Digite sua opcao:%COLOR_RESET% "
 if "%OPCAO%"=="1" goto ATUALIZAR_COMPLETO
 if "%OPCAO%"=="2" goto VERIFICAR_UPDATES
 if "%OPCAO%"=="3" goto ATUALIZAR_DEPS
-if "%OPCAO%"=="4" goto VERIFICAR_REPO
-if "%OPCAO%"=="5" goto VERIFICAR_SISTEMA
+if "%OPCAO%"=="4" goto CRIAR_EXE
+if "%OPCAO%"=="5" goto VERIFICAR_REPO
+if "%OPCAO%"=="6" goto VERIFICAR_SISTEMA
 if "%OPCAO%"=="0" goto SAIR
 
 echo.
@@ -362,8 +366,36 @@ echo %COLOR_SUCESSO%                                                            
 echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
 echo.
 echo %COLOR_INFO%O Game Translator foi atualizado para a versao mais recente.%COLOR_RESET%
-echo %COLOR_INFO%Execute EXECUTAR.bat para iniciar o programa.%COLOR_RESET%
 echo.
+
+:: Pergunta se deseja recriar o executavel
+set /p RECRIAR="%COLOR_INFO%Deseja recriar o executavel agora? (S/N):%COLOR_RESET% "
+if /i "%RECRIAR%"=="S" goto DO_REBUILD
+if /i "%RECRIAR%"=="Y" goto DO_REBUILD
+echo %COLOR_INFO%Execute EXECUTAR.bat para iniciar o programa em modo desenvolvedor.%COLOR_RESET%
+echo %COLOR_INFO%Ou use a opcao [4] do menu para criar o executavel.%COLOR_RESET%
+echo.
+goto END_UPDATE
+
+:DO_REBUILD
+echo.
+echo %COLOR_INFO%Recriando executavel...%COLOR_RESET%
+echo.
+
+call :BUILD_EXECUTAVEL
+
+if exist "%~dp0dist\GameTranslator.exe" (
+    echo.
+    echo %COLOR_SUCESSO%[OK] Executavel recriado com sucesso!%COLOR_RESET%
+    echo %COLOR_INFO%Local:%COLOR_RESET% %~dp0dist\GameTranslator.exe
+) else (
+    echo.
+    echo %COLOR_ERRO%[ERRO] Falha ao recriar executavel!%COLOR_RESET%
+    echo %COLOR_AVISO%Use a opcao [4] do menu para tentar novamente.%COLOR_RESET%
+)
+echo.
+
+:END_UPDATE
 
 pause
 cls
@@ -447,6 +479,101 @@ echo.
 pause
 cls
 goto MENU
+
+:CRIAR_EXE
+cls
+echo.
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
+echo %COLOR_SECAO%  CRIACAO DO EXECUTAVEL%COLOR_RESET%
+echo %COLOR_SECAO%========================================================================%COLOR_RESET%
+echo.
+
+echo %COLOR_INFO%Verificando Python...%COLOR_RESET%
+py --version >nul 2>&1
+if errorlevel 1 (
+    echo %COLOR_ERRO%[ERRO]%COLOR_RESET% Python nao encontrado!
+    echo.
+    echo %COLOR_INFO%Instale Python em:%COLOR_RESET% https://www.python.org/downloads/
+    echo.
+    pause
+    cls
+    goto MENU
+)
+
+echo %COLOR_SUCESSO%[OK]%COLOR_RESET% Python encontrado
+echo.
+
+echo %COLOR_INFO%Verificando PyInstaller...%COLOR_RESET%
+py -m pip show pyinstaller >nul 2>&1
+if errorlevel 1 (
+    echo %COLOR_AVISO%[AVISO]%COLOR_RESET% PyInstaller nao encontrado, instalando...
+    echo.
+    py -m pip install pyinstaller --quiet
+    if errorlevel 1 (
+        echo %COLOR_ERRO%[ERRO]%COLOR_RESET% Falha ao instalar PyInstaller!
+        echo.
+        pause
+        cls
+        goto MENU
+    )
+)
+
+echo %COLOR_SUCESSO%[OK]%COLOR_RESET% PyInstaller disponivel
+echo.
+
+call :BUILD_EXECUTAVEL
+
+if exist "%~dp0dist\GameTranslator.exe" (
+    echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
+    echo %COLOR_SUCESSO%  [OK] EXECUTAVEL CRIADO COM SUCESSO!%COLOR_RESET%
+    echo %COLOR_SUCESSO%========================================================================%COLOR_RESET%
+    echo.
+    echo %COLOR_INFO%Local:%COLOR_RESET% %~dp0dist\GameTranslator.exe
+    echo.
+    set /p ABRIR="%COLOR_INFO%Abrir pasta? (S/N):%COLOR_RESET% "
+    if /i "%ABRIR%"=="S" explorer "%~dp0dist"
+    if /i "%ABRIR%"=="Y" explorer "%~dp0dist"
+) else (
+    echo %COLOR_ERRO%========================================================================%COLOR_RESET%
+    echo %COLOR_ERRO%  [ERRO] FALHA AO CRIAR EXECUTAVEL!%COLOR_RESET%
+    echo %COLOR_ERRO%========================================================================%COLOR_RESET%
+    echo.
+    echo %COLOR_AVISO%Verifique os erros acima.%COLOR_RESET%
+)
+
+echo.
+pause
+cls
+goto MENU
+
+:BUILD_EXECUTAVEL
+:: Funcao compartilhada para criar o executavel
+echo %COLOR_INFO%Criando executavel (isso pode levar alguns minutos)...%COLOR_RESET%
+echo %COLOR_AVISO%Aguarde, nao feche esta janela...%COLOR_RESET%
+echo.
+
+cd /d "%~dp0"
+
+if exist "build" rmdir /s /q "build" >nul 2>&1
+if exist "dist" rmdir /s /q "dist" >nul 2>&1
+
+py -m PyInstaller ^
+    --name="GameTranslator" ^
+    --onefile ^
+    --windowed ^
+    --noconfirm ^
+    --clean ^
+    --paths="%~dp0src" ^
+    --hidden-import=PySide6.QtCore ^
+    --hidden-import=PySide6.QtGui ^
+    --hidden-import=PySide6.QtWidgets ^
+    --hidden-import=sqlite3 ^
+    --hidden-import=psutil ^
+    --add-data "src;src" ^
+    "%~dp0src\main.py"
+
+echo.
+exit /b %ERRORLEVEL%
 
 :SAIR
 echo.
