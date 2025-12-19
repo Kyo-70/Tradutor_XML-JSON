@@ -153,9 +153,18 @@ if errorlevel 1 (
 echo %COLOR_SUCESSO%[OK]%COLOR_RESET% Informacoes atualizadas do servidor remoto
 echo.
 
-:: Verifica se ha commits novos
-for /f %%i in ('git rev-list HEAD...origin/main --count 2^>nul') do set COMMITS_PENDENTES=%%i
+:: Verifica se ha commits novos - obtém a branch atual primeiro
+for /f "tokens=*" %%i in ('git branch --show-current 2^>nul') do set BRANCH_ATUAL=%%i
 
+:: Se não conseguiu obter a branch atual, tenta main/master
+if "%BRANCH_ATUAL%"=="" (
+    set "BRANCH_ATUAL=main"
+)
+
+:: Verifica se ha commits pendentes na branch atual
+for /f %%i in ('git rev-list HEAD...origin/%BRANCH_ATUAL% --count 2^>nul') do set COMMITS_PENDENTES=%%i
+
+:: Se não encontrou, tenta com master como fallback
 if "%COMMITS_PENDENTES%"=="" (
     for /f %%i in ('git rev-list HEAD...origin/master --count 2^>nul') do set COMMITS_PENDENTES=%%i
 )
@@ -260,11 +269,18 @@ if errorlevel 1 (
 echo %COLOR_SUCESSO%[OK]%COLOR_RESET% Atualizacoes obtidas do servidor
 echo.
 
-:: Passo 3: Faz o pull
+:: Passo 3: Faz o pull - obtém a branch atual primeiro
+for /f "tokens=*" %%i in ('git branch --show-current 2^>nul') do set BRANCH_PULL=%%i
+
+:: Se não conseguiu obter a branch, usa HEAD
+if "%BRANCH_PULL%"=="" (
+    set "BRANCH_PULL=HEAD"
+)
+
 echo %COLOR_INFO%[3/5]%COLOR_RESET% Aplicando atualizacoes...
 echo.
 
-git pull origin
+git pull origin %BRANCH_PULL%
 if errorlevel 1 (
     echo.
     echo %COLOR_ERRO%[ERRO]%COLOR_RESET% Falha ao aplicar atualizacoes
@@ -315,9 +331,9 @@ if errorlevel 1 (
     echo.
 ) else (
     cd /d "%~dp0src"
-    py verificar_sistema.py --quiet
+    :: Verifica sistema apos atualizacao
+    py verificar_sistema.py
     cd /d "%~dp0"
-    echo.
 )
 
 :: Resumo final
