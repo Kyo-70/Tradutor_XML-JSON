@@ -51,6 +51,12 @@ if errorlevel 1 (
     py -m pip install psutil --quiet
 )
 
+py -c "import colorama" >nul 2>&1
+if errorlevel 1 (
+    echo    Instalando colorama...
+    py -m pip install colorama --quiet
+)
+
 echo [OK] Dependencias verificadas!
 echo.
 echo Iniciando Game Translator...
