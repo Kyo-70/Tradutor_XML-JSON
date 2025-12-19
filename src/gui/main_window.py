@@ -568,40 +568,99 @@ class SettingsDialog(QDialog):
         api_tab = QWidget()
         api_layout = QVBoxLayout(api_tab)
         
+        # Informação sobre APIs gratuitas
+        info_label = QLabel(
+            "💡 <b>APIs Gratuitas Disponíveis:</b><br>"
+            "• <b>LibreTranslate</b> - 100% gratuito, sem limites<br>"
+            "• <b>MyMemory</b> - Gratuito, 5000 chars/dia<br>"
+            "• <b>DeepL Free</b> - 500.000 chars/mês<br>"
+            "• <b>Google Free</b> - 500.000 chars/mês"
+        )
+        info_label.setWordWrap(True)
+        info_label.setStyleSheet("background-color: #2d5a27; padding: 10px; border-radius: 5px;")
+        api_layout.addWidget(info_label)
+        
+        # APIs Gratuitas (sem chave)
+        free_group = QGroupBox("🆓 APIs Gratuitas (Sem Chave)")
+        free_layout = QVBoxLayout()
+        
+        # LibreTranslate
+        libre_layout = QHBoxLayout()
+        libre_layout.addWidget(QLabel("LibreTranslate:"))
+        self.libre_server_input = QLineEdit()
+        self.libre_server_input.setPlaceholderText("URL do servidor (deixe vazio para servidor público)")
+        libre_layout.addWidget(self.libre_server_input)
+        btn_save_libre = QPushButton("Ativar")
+        btn_save_libre.clicked.connect(self.save_libre)
+        libre_layout.addWidget(btn_save_libre)
+        free_layout.addLayout(libre_layout)
+        
+        # MyMemory
+        mymemory_layout = QHBoxLayout()
+        mymemory_layout.addWidget(QLabel("MyMemory:"))
+        self.mymemory_email_input = QLineEdit()
+        self.mymemory_email_input.setPlaceholderText("Email (opcional, aumenta limite diário)")
+        mymemory_layout.addWidget(self.mymemory_email_input)
+        btn_save_mymemory = QPushButton("Ativar")
+        btn_save_mymemory.clicked.connect(self.save_mymemory)
+        mymemory_layout.addWidget(btn_save_mymemory)
+        free_layout.addLayout(mymemory_layout)
+        
+        free_group.setLayout(free_layout)
+        api_layout.addWidget(free_group)
+        
+        # APIs com Chave (Planos Gratuitos)
+        paid_group = QGroupBox("🔑 APIs com Chave (Planos Gratuitos Disponíveis)")
+        paid_layout = QVBoxLayout()
+        
         # DeepL
-        deepl_group = QGroupBox("DeepL API")
         deepl_layout = QHBoxLayout()
+        deepl_layout.addWidget(QLabel("DeepL:"))
         self.deepl_key_input = QLineEdit()
-        self.deepl_key_input.setPlaceholderText("Cole sua chave da API DeepL")
+        self.deepl_key_input.setPlaceholderText("Chave API (gratuita em deepl.com/pro-api)")
         self.deepl_key_input.setEchoMode(QLineEdit.Password)
         deepl_layout.addWidget(self.deepl_key_input)
         btn_save_deepl = QPushButton("Salvar")
         btn_save_deepl.clicked.connect(self.save_deepl_key)
         deepl_layout.addWidget(btn_save_deepl)
-        deepl_group.setLayout(deepl_layout)
-        api_layout.addWidget(deepl_group)
+        paid_layout.addLayout(deepl_layout)
         
         # Google
-        google_group = QGroupBox("Google Translate API")
         google_layout = QHBoxLayout()
+        google_layout.addWidget(QLabel("Google:"))
         self.google_key_input = QLineEdit()
-        self.google_key_input.setPlaceholderText("Cole sua chave da API Google")
+        self.google_key_input.setPlaceholderText("Chave API (gratuita em cloud.google.com)")
         self.google_key_input.setEchoMode(QLineEdit.Password)
         google_layout.addWidget(self.google_key_input)
         btn_save_google = QPushButton("Salvar")
         btn_save_google.clicked.connect(self.save_google_key)
         google_layout.addWidget(btn_save_google)
-        google_group.setLayout(google_layout)
-        api_layout.addWidget(google_group)
+        paid_layout.addLayout(google_layout)
+        
+        paid_group.setLayout(paid_layout)
+        api_layout.addWidget(paid_group)
         
         # Seletor de API ativa
+        active_group = QGroupBox("⚡ API Ativa")
         active_layout = QHBoxLayout()
-        active_layout.addWidget(QLabel("API Ativa:"))
+        active_layout.addWidget(QLabel("Usar:"))
         self.combo_active_api = QComboBox()
         self.combo_active_api.addItems(["Nenhuma"] + self.api_manager.get_available_apis())
         self.combo_active_api.currentTextChanged.connect(self._on_api_changed)
         active_layout.addWidget(self.combo_active_api)
-        api_layout.addLayout(active_layout)
+        active_group.setLayout(active_layout)
+        api_layout.addWidget(active_group)
+        
+        # Estatísticas de uso
+        self.usage_group = QGroupBox("📊 Uso das APIs (Este Mês)")
+        self.usage_layout = QVBoxLayout()
+        self._update_usage_display()
+        self.usage_group.setLayout(self.usage_layout)
+        api_layout.addWidget(self.usage_group)
+        
+        btn_refresh_usage = QPushButton("Atualizar Estatísticas")
+        btn_refresh_usage.clicked.connect(self._update_usage_display)
+        api_layout.addWidget(btn_refresh_usage)
         
         api_layout.addStretch()
         tabs.addTab(api_tab, "APIs de Tradução")
@@ -665,30 +724,118 @@ class SettingsDialog(QDialog):
         btn_close.clicked.connect(self.accept)
         layout.addWidget(btn_close)
     
+    def save_libre(self):
+        """Ativa LibreTranslate (gratuito)"""
+        server = self.libre_server_input.text().strip() or None
+        self.api_manager.add_libre(server)
+        self._refresh_api_combo()
+        QMessageBox.information(
+            self, 
+            "Sucesso", 
+            "LibreTranslate ativado!\n\n"
+            "🎉 Esta API é 100% gratuita e sem limites de uso!"
+        )
+        app_logger.info("LibreTranslate configurado")
+    
+    def save_mymemory(self):
+        """Ativa MyMemory (gratuito)"""
+        email = self.mymemory_email_input.text().strip() or None
+        self.api_manager.add_mymemory(email)
+        self._refresh_api_combo()
+        limit = "10.000 chars/dia" if email else "5.000 chars/dia"
+        QMessageBox.information(
+            self, 
+            "Sucesso", 
+            f"MyMemory ativado!\n\n"
+            f"🎉 Limite gratuito: {limit}"
+        )
+        app_logger.info("MyMemory configurado")
+    
     def save_deepl_key(self):
         """Salva chave DeepL"""
         key = self.deepl_key_input.text().strip()
         if key:
             self.api_manager.add_deepl(key)
-            self.combo_active_api.clear()
-            self.combo_active_api.addItems(["Nenhuma"] + self.api_manager.get_available_apis())
-            QMessageBox.information(self, "Sucesso", "Chave DeepL salva!")
+            self._refresh_api_combo()
+            QMessageBox.information(
+                self, 
+                "Sucesso", 
+                "Chave DeepL salva!\n\n"
+                "📊 Limite gratuito: 500.000 chars/mês"
+            )
             app_logger.info("Chave DeepL configurada")
+        else:
+            QMessageBox.warning(self, "Erro", "Digite uma chave válida!")
     
     def save_google_key(self):
         """Salva chave Google"""
         key = self.google_key_input.text().strip()
         if key:
             self.api_manager.add_google(key)
-            self.combo_active_api.clear()
-            self.combo_active_api.addItems(["Nenhuma"] + self.api_manager.get_available_apis())
-            QMessageBox.information(self, "Sucesso", "Chave Google salva!")
+            self._refresh_api_combo()
+            QMessageBox.information(
+                self, 
+                "Sucesso", 
+                "Chave Google salva!\n\n"
+                "📊 Limite gratuito: 500.000 chars/mês"
+            )
             app_logger.info("Chave Google configurada")
+        else:
+            QMessageBox.warning(self, "Erro", "Digite uma chave válida!")
+    
+    def _refresh_api_combo(self):
+        """Atualiza combo de APIs disponíveis"""
+        self.combo_active_api.clear()
+        self.combo_active_api.addItems(["Nenhuma"] + self.api_manager.get_available_apis())
     
     def _on_api_changed(self, api_name):
         """Callback quando API é alterada"""
         if api_name != "Nenhuma":
             self.api_manager.set_active_api(api_name)
+            app_logger.info(f"API ativa alterada para: {api_name}")
+    
+    def _update_usage_display(self):
+        """Atualiza exibição de uso das APIs"""
+        # Limpa layout anterior
+        while self.usage_layout.count():
+            item = self.usage_layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+        
+        # Obtém estatísticas
+        stats = self.api_manager.get_usage_stats()
+        
+        # DeepL
+        deepl = stats.get('deepl', {})
+        deepl_used = deepl.get('used', 0)
+        deepl_limit = deepl.get('limit', 500000)
+        deepl_pct = (deepl_used / deepl_limit * 100) if deepl_limit > 0 else 0
+        self.usage_layout.addWidget(QLabel(
+            f"DeepL: {deepl_used:,} / {deepl_limit:,} chars ({deepl_pct:.1f}%)"
+        ))
+        
+        # Google
+        google = stats.get('google', {})
+        google_used = google.get('used', 0)
+        google_limit = google.get('limit', 500000)
+        google_pct = (google_used / google_limit * 100) if google_limit > 0 else 0
+        self.usage_layout.addWidget(QLabel(
+            f"Google: {google_used:,} / {google_limit:,} chars ({google_pct:.1f}%)"
+        ))
+        
+        # MyMemory
+        mymemory = stats.get('mymemory', {})
+        mm_used = mymemory.get('used_today', 0)
+        mm_limit = mymemory.get('daily_limit', 5000)
+        mm_pct = (mm_used / mm_limit * 100) if mm_limit > 0 else 0
+        self.usage_layout.addWidget(QLabel(
+            f"MyMemory (hoje): {mm_used:,} / {mm_limit:,} chars ({mm_pct:.1f}%)"
+        ))
+        
+        # LibreTranslate
+        self.usage_layout.addWidget(QLabel(
+            "LibreTranslate: ∞ (sem limites)"
+        ))
     
     def _refresh_monitor(self):
         """Atualiza monitor de recursos"""
