@@ -29,7 +29,13 @@ Sistema profissional de tradução para arquivos JSON e XML de jogos e mods, com
 |---------|-----------|
 | `INSTALAR.bat` | 🚀 Instalador completo com menu interativo |
 | `EXECUTAR.bat` | ▶️ Executa o programa rapidamente |
-| `VERIFICAR_SISTEMA.bat` | 🔍 Verifica compatibilidade do sistema |
+| `VERIFICAR_SISTEMA.bat` | 🔍 Verifica compatibilidade do sistema com **cores no terminal** |
+
+> **Novo! 🎨** Os scripts agora utilizam a biblioteca `colorama` para exibir mensagens coloridas no terminal:
+> - ✅ **Verde** para operações bem-sucedidas
+> - ❌ **Vermelho** para erros
+> - ⚠️ **Amarelo** para avisos
+> - ℹ️ **Ciano** para informações
 
 ## 🎯 Características Principais
 
@@ -142,7 +148,7 @@ Acesse via **Menu > Banco de Dados > Visualizar** ou botão **"🗄️ Ver Banco
 game-translator/
 ├── 📄 INSTALAR.bat          # Instalador principal
 ├── 📄 EXECUTAR.bat          # Execução rápida
-├── 📄 VERIFICAR_SISTEMA.bat # Verificação de compatibilidade
+├── 📄 VERIFICAR_SISTEMA.bat # Verificação de compatibilidade (com cores!)
 ├── 📄 requirements.txt      # Dependências Python
 ├── 📄 README.md             # Este arquivo
 ├── 📁 src/                  # Código-fonte
@@ -154,6 +160,7 @@ game-translator/
 │   ├── regex_profiles.py    # Perfis de regex
 │   ├── security.py          # Segurança e otimização
 │   ├── logger.py            # Sistema de logs
+│   ├── verificar_sistema.py # Verificação do sistema com cores
 │   └── gui/
 │       └── main_window.py   # Interface gráfica
 ├── 📁 profiles/             # Perfis de regex salvos
