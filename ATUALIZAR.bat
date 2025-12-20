@@ -46,6 +46,19 @@ if not exist ".git" (
 )
 exit /b 0
 
+:VERIFICAR_PYTHON_SIMPLES
+:: Verifica se o Python está no PATH. Se não estiver, exibe mensagem e retorna erro.
+where py >nul 2>&1
+if errorlevel 1 (
+    echo ERRO: Python nao encontrado!
+    echo Instale Python de: https://www.python.org/downloads/
+    echo Durante a instalacao, marque "Add Python to PATH"
+    pause
+    exit /b 1
+)
+echo OK: Python encontrado.
+exit /b 0
+
 :VERIFICAR_UPDATES
 cls
 echo ========================================================================
@@ -152,15 +165,9 @@ echo ========================================================================
 echo.
 
 echo Verificando Python...
-where py >nul 2>&1
-if errorlevel 1 (
-    echo ERRO: Python nao encontrado!
-    echo Instale Python de: https://www.python.org/downloads/
-    pause
-    goto MENU
-)
+call :VERIFICAR_PYTHON_SIMPLES
+if errorlevel 1 goto MENU
 
-echo OK: Python encontrado.
 echo.
 
 echo Atualizando dependencias...
@@ -189,14 +196,23 @@ echo ========================================================================
 echo.
 
 echo Verificando Python...
-where py >nul 2>&1
-if errorlevel 1 (
-    echo ERRO: Python nao encontrado!
-    pause
-    goto MENU
-)
+call :VERIFICAR_PYTHON_SIMPLES
+if errorlevel 1 goto MENU
 
-echo OK: Python encontrado.
+echo.
+
+echo Verificando PyInstaller...
+where pyinstaller >nul 2>&1
+if errorlevel 1 (
+    echo AVISO: PyInstaller nao encontrado. Instalando...
+    py -m pip install pyinstaller
+    if errorlevel 1 (
+        echo ERRO: Falha ao instalar PyInstaller.
+        pause
+        goto MENU
+    )
+)
+echo OK: PyInstaller encontrado.
 echo.
 
 echo Criando executavel (isso pode levar alguns minutos)...
