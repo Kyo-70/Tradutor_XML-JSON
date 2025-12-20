@@ -1,0 +1,20 @@
+{
+  "month": "2025-12",
+  "day": "2025-12-19",
+  "deepl": {
+    "chars": 324,
+    "requests": 2
+  },
+  "google": {
+    "chars": 0,
+    "requests": 0
+  },
+  "libre": {
+    "chars": 0,
+    "requests": 0
+  },
+  "mymemory": {
+    "chars_today": 0,
+    "requests": 0
+  }
+}

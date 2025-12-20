@@ -1,0 +1,12 @@
+{
+  "active_api": "deepl",
+  "apis": {
+    "libre": {
+      "server_url": "https://libretranslate.com",
+      "api_key": null
+    },
+    "deepl": {
+      "api_key": "9affebf9-7677-4029-8c03-8fcb23366aa7:fx"
+    }
+  }
+}

@@ -1,0 +1,861 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>tester1</Author>
+  <LastAuthor>dieman</LastAuthor>
+  <Created>2005-02-26T16:04:39Z</Created>
+  <LastSaved>2023-11-09T22:01:18Z</LastSaved>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <Colors>
+   <Color>
+    <Index>16</Index>
+    <RGB>#8080FF</RGB>
+   </Color>
+   <Color>
+    <Index>17</Index>
+    <RGB>#802060</RGB>
+   </Color>
+   <Color>
+    <Index>18</Index>
+    <RGB>#FFFFC0</RGB>
+   </Color>
+   <Color>
+    <Index>19</Index>
+    <RGB>#A0E0E0</RGB>
+   </Color>
+   <Color>
+    <Index>20</Index>
+    <RGB>#600080</RGB>
+   </Color>
+   <Color>
+    <Index>22</Index>
+    <RGB>#0080C0</RGB>
+   </Color>
+   <Color>
+    <Index>23</Index>
+    <RGB>#C0C0FF</RGB>
+   </Color>
+   <Color>
+    <Index>33</Index>
+    <RGB>#69FFFF</RGB>
+   </Color>
+   <Color>
+    <Index>36</Index>
+    <RGB>#A6CAF0</RGB>
+   </Color>
+   <Color>
+    <Index>37</Index>
+    <RGB>#CC9CCC</RGB>
+   </Color>
+   <Color>
+    <Index>39</Index>
+    <RGB>#E3E3E3</RGB>
+   </Color>
+   <Color>
+    <Index>42</Index>
+    <RGB>#339933</RGB>
+   </Color>
+   <Color>
+    <Index>43</Index>
+    <RGB>#999933</RGB>
+   </Color>
+   <Color>
+    <Index>44</Index>
+    <RGB>#996633</RGB>
+   </Color>
+   <Color>
+    <Index>45</Index>
+    <RGB>#996666</RGB>
+   </Color>
+   <Color>
+    <Index>48</Index>
+    <RGB>#3333CC</RGB>
+   </Color>
+   <Color>
+    <Index>49</Index>
+    <RGB>#336666</RGB>
+   </Color>
+   <Color>
+    <Index>52</Index>
+    <RGB>#663300</RGB>
+   </Color>
+   <Color>
+    <Index>55</Index>
+    <RGB>#424242</RGB>
+   </Color>
+  </Colors>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>5925</WindowHeight>
+  <WindowWidth>16455</WindowWidth>
+  <WindowTopX>32760</WindowTopX>
+  <WindowTopY>32760</WindowTopY>
+  <RefModeR1C1/>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss" ss:Color="#CC99FF"/>
+   <Interior ss:Color="#000000" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s63">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss" ss:Color="#CC99FF"/>
+   <Interior ss:Color="#000000" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss" ss:Color="#000000"/>
+   <Interior ss:Color="#92D050" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss" ss:Color="#000000"/>
+   <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s66">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+  </Style>
+  <Style ss:ID="s67">
+   <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s68">
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss"/>
+   <Interior ss:Color="#92D050" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s69">
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss"/>
+   <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s70">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s71">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s72">
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss" ss:Color="#FFFFFF"/>
+   <Interior ss:Color="#000000" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s73">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Interior ss:Color="#000000" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s74">
+   <Interior ss:Color="#FF0000" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s76">
+   <Interior ss:Color="#92D050" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s77">
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss"/>
+   <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s78">
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss"/>
+   <Interior/>
+  </Style>
+  <Style ss:ID="s79">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss"/>
+   <Interior/>
+  </Style>
+  <Style ss:ID="s80">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss"/>
+   <Interior/>
+  </Style>
+  <Style ss:ID="s81">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Interior/>
+  </Style>
+  <Style ss:ID="s83">
+   <Borders/>
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss" ss:Color="#000000"/>
+   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s84">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s85">
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"
+     ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"
+     ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"
+     ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"
+     ss:Color="#000000"/>
+   </Borders>
+   <Font ss:FontName="Arial" x:CharSet="204" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s87">
+   <Alignment ss:Vertical="Bottom"/>
+   <Font ss:FontName="Calibri" x:CharSet="204" x:Family="Swiss" ss:Color="#000000"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="tanks">
+  <Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="83" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="51.75" ss:DefaultRowHeight="12.5625">
+   <Column ss:Width="113.25"/>
+   <Column ss:Width="72"/>
+   <Column ss:Width="183"/>
+   <Column ss:AutoFitWidth="0" ss:Width="350.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="232.5"/>
+   <Column ss:Width="193.5"/>
+   <Column ss:Width="56.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="51"/>
+   <Column ss:Width="170.25"/>
+   <Column ss:Width="66"/>
+   <Column ss:Width="72"/>
+   <Column ss:Width="55.5"/>
+   <Column ss:Width="69"/>
+   <Row ss:AutoFitHeight="0" ss:StyleID="s62">
+    <Cell>sysnames:Type="String">sysname</Data></Cell>
+    <Cell>contents:Type="String">content</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">tooltip_name</Data><Comment
+      ss:Author="Urist McDorf"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><B><Font
+         html:Face="Tahoma" x:CharSet="204" x:Family="Swiss" html:Size="9"
+         html:Color="#000000">Urist McDorf:</Font></B><Font html:Face="Tahoma"
+        x:CharSet="204" x:Family="Swiss" html:Size="9" html:Color="#000000">&#10;Не меняйте размер этой колонки! Она как раз под ширину окошка тултипа.</Font></ss:Data></Comment></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">tooltip_desc</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">tooltip_add</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s64"><Data ss:Type="String">shell_120heat</Data></Cell>
+    <Cell ss:StyleID="s65">120mm HEAType="String">120mm HEAT</Data></Cell>
+    <Cell>Projéteis antitanque de alto explosivo de 120 mmder explosivo de 120 mm</Data></Cell>
+    <Cell ss:StyleID="s66">Projéteis multiuso de alto explosivo com capacidade antiblindagem e antipessoal.&#10;&#10;Eficazes contra infantaria, prédios e quase todos os tipos de veículos. &#10;&#10;Muito menos eficaz se o alvo tiver blindagem reativa, de grade ou de cerâmica.o, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s64"><Data ss:Type="String">shell_120du</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">120mm AP</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles perforadores de blindaje de 120 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra tanques y otros vehículos blindados pesados. &#10;&#10;Ineficaces contra infantería.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s64"><Data ss:Type="String">ammo_gun_plasma</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">H4500</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de plasma sin envoltorio</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier objetivo terrestre. Menos eficaces contra infantería debido a la falta de daño de fragmentación. &#10;&#10;Menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">ammo_gun_railcannon</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Rails</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de cañón de riel</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Extremadamente eficaces contra cualquier vehículo. &#10;&#10;Ineficaces contra infantería.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_90frag_he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">90mm HE</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de fragmentación de alto poder explosivo de 90 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería, vehículos ligeros y edificios débiles y medios.&#10;&#10;Ineficaces contra vehículos blindados pesados.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_90ap</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">90mm AP</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles perforadores de blindaje de 90 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra vehículos blindados. &#10;&#10;Eficaces contra tanques al impactar en los laterales o por detrás.&#10;&#10;Ineficaces contra infantería.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s67"><Data ss:Type="String">shell_155he_lgn</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">155mm HE</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">155mm high-explosive frag rounds</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Effective against any ground targets.</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Ammo Supply cost per item: %s&#10;Press the button to forbid usage of this ammo type.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s72"><Data ss:Type="String">#howitzers</Data></Cell>
+    <Cell ss:StyleID="s72"/>
+    <Cell ss:StyleID="s73"/>
+    <Cell ss:StyleID="s73"/>
+    <Cell ss:StyleID="s73"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="23.25">
+    <Cell ss:StyleID="s67"><Data ss:Type="String">ammo_rhw_plasma</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">H3700</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Shellless plasma rounds</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Effective against any ground targets.&#10;&#10;Less effective if the target has reactive, cage or ceramic armor.&#10;&#10;Require stationary firing position.</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Ammo Supply cost per item: %s&#10;Press the button to forbid usage of this ammo type.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_155he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">155mm HE</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de fragmentación de alto poder explosivo de 155 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier objetivo terrestre.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_105hw_frag_he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">105mm HE</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de fragmentación de alto poder explosivo de 105 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería, vehículos ligeros y edificios débiles y medios. &#10;&#10;Ineficaces contra vehículos blindados pesados, pero pueden provocar daños tras un impacto directo desde arriba.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">ammo_hw_plasma</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">H4700</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de plasma sin envoltorio</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier objetivo terrestre.&#10;&#10;Menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="51">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_81frag_he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">81mm HE</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de fragmentación de alto poder explosivo de 81 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería, vehículos ligeros y edificios débiles. &#10;&#10;Ineficaces contra vehículos blindados, pero pueden provocar daños tras un impacto directo desde arriba.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s72"><Data ss:Type="String">#rocker_launchers</Data></Cell>
+    <Cell ss:StyleID="s72"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="51">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">missile_tow</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">ATGM (TOW)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Misiles antitanque guiados</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier vehículo. Menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Tienen más velocidad y alcance de disparo que los misiles antitanque guiados portátiles. Sin embargo, su probabilidad de fallar es mayor debido al control semiautomático.&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">missile_stinger</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">SAM</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Misiles superficie-aire</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra helicópteros y aeronaves. &#10;&#10;Sumamente eficaces en trayectorias de persecución.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="89.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">missile_er</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">227mm HE</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes de fragmentación de alto poder explosivo de 227 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier objetivo.&#10;&#10;Requieren una posición de disparo inmóvil.&#10;&#10;Para evitar un desperdicio innecesario de munición costosa, la unidad no puede abrir fuego sin una orden directa (el botón de ataque del panel de mando).</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">missile_hydra70_short</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">70mm FFAR</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes de fragmentación de alto poder explosivo de 70 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes aéreos de disparo frontal que se usan para el sistema de lanzacohetes múltiples de las arañas. Sumamente eficaces contra infantería, vehículos ligeros y edificios débiles y medios.&#10;&#10;Ineficaces contra vehículos blindados pesados.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s74"><Data ss:Type="String">missile_sidewinder</Data></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">AAM</Data></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="String">Misiles aire-aire</Data></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">Eficaz contra helicópteros y aviones.&#10;&#10;Más eficaz en rutas de persecución.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="76.5">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">missile_agm114</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">ATGM</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Misiles antitanque guiados</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier vehículo. &#10;Menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Tienen más velocidad y alcance de disparo que los misiles antitanque guiados portátiles.&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">missile_hydra70</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">70mm FFAR</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes de fragmentación de alto poder explosivo de 70 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes aéreos de disparo frontal. &#10;&#10;Sumamente eficaces contra infantería, vehículos ligeros y edificios débiles y medios.&#10;&#10;Ineficaces contra vehículos blindados pesados.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">missile_plasma_ffar</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Plasma FFAR</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes aéreos de disparo frontal de plasma</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería, vehículos ligeros y edificios débiles y medios.&#10;Menos eficaces contra vehículos blindados pesados, pero pueden provocar daños tras un impacto directo desde los laterales, por atrás o desde arriba.&#10;&#10;Mucho menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s72"><Data ss:Type="String">#chainguns</Data></Cell>
+    <Cell ss:StyleID="s72"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_25hei</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">25mm HEI</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles incendiarios de alto poder explosivo de 25 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería y vehículos ligeros.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_25du</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">25mm AP</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles perforadores de blindaje de 25 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra vehículos blindados.&#10;&#10;Pueden dañar incluso el blindaje de un tanque (excepto de carbono) al impactar en los laterales o por detrás.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_20api</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">20mm API</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles incendiarios perforadores de blindaje de 20 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra vehículos blindados no pesados.&#10;&#10;Ineficaces contra tanques.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_20hei</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">20mm HEI</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles incendiarios de alto poder explosivo de 20 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería y vehículos ligeros.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_30hei</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">30mm HEI</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles incendiarios de alto poder explosivo de 30 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería y vehículos ligeros.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">shell_30du</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">30mm AP</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles perforadores de blindaje de 30 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra vehículos blindados.&#10;&#10;Pueden dañar incluso el blindaje de un tanque al impactar en los laterales o por detrás.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">ammo_plasma_cg</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">H2600</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de cañón automático de plasma</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería y cualquier vehículo.&#10;&#10;Pueden dañar el blindaje de un tanque al impactar en los laterales o por detrás.&#10;&#10;Mucho menos eficaces o totalmente ineficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s72"><Data ss:Type="String">#flare</Data></Cell>
+    <Cell ss:StyleID="s72"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">light_flare</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Flares</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Contramedidas de bengalas</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Las contramedidas de bengalas proporcionan falsos objetivos para misiles superficie-aire (SAM) y misiles aire-aire (AAM).&#10;&#10;Se aplican automáticamente.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">heavy_sg</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Smokes</Data></Cell>
+    <Cell><Data ss:Type="String">Granadas de humo</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Se usan para crear una cortina de humo. La precisión y la cadencia de tiro de todas las unidades que disparen a través del humo se ven reducidas.&#10;&#10;Usa el botón de la capacidad «¡Humo!» para crear una cortina de humo.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">heavy_sg_inf</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Smokes (E)</Data></Cell>
+    <Cell><Data ss:Type="String">Granadas de humo de mano mejoradas</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Se usan para crear una cortina de humo. La precisión y la cadencia de tiro de todas las unidades que disparen a través del humo se ven reducidas.&#10;La versión mejorada cubre una zona mayor.&#10;&#10;Usa el botón de la capacidad «¡Humo!» para crear una cortina de humo.&#10;</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">light_sg</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Smokes</Data></Cell>
+    <Cell><Data ss:Type="String">Granadas de humo de mano</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Se usan para crear una cortina de humo. La precisión y la cadencia de tiro de todas las unidades que disparen a través del humo se ven reducidas.&#10;&#10;Usa el botón de la capacidad «¡Humo!» para crear una cortina de humo.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">muss_ammo</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">APS</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles del sistema de protección activo</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Derriban misiles y cohetes antitanque que se aproximen.&#10;&#10;Se aplican automáticamente.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s72"><Data ss:Type="String">#machineguns</Data></Cell>
+    <Cell ss:StyleID="s72"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_762x51</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">7.62x51</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles de calibre 7,62 x 51 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de ametralladora estándar.&#10;&#10;Eficaz contra infantería y vehículos ligeros.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_762x51_mg</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">7.62x51</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles de calibre 7,62 x 51 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de ametralladora multicañón.&#10;&#10;Eficaz contra infantería y vehículos ligeros.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_762x51_mg_m</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">7.62x51</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles de calibre 7,62 x 51 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de ametralladora estándar.&#10;&#10;Eficaz contra infantería y vehículos ligeros.&#10;&#10;Requiere una posición de disparo inmóvil y tiempo para desplegar.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_762x67</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">.300 WM</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles .300 Win Mag (7,62 x 67 mm)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de francotirador para el fusil de francotirador M2010.&#10;&#10;Eficaz contra infantería y vehículos ligeros.&#10;&#10;Requiere una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_50cal</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">.50 BMG</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles .50 BMG (12,7 x 99 mm)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición estándar para ametralladora pesada.&#10;&#10;Eficaz contra infantería y vehículos ligeros y medios.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_50cal_m</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">.50 BMG</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles .50 BMG (12,7 x 99 mm)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición estándar para ametralladora pesada.&#10;&#10;Eficaz contra infantería y vehículos ligeros y medios.&#10;&#10;Requiere una posición de disparo inmóvil y tiempo para desplegar.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="51">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_50cal_s</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">.50 BMG (S)</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles de francotirador .50 BMG (12,7 x 99 mm)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de francotirador para el fusil de francotirador de gran calibre M99.&#10;&#10;Eficaz contra infantería, incluso la que está en edificios, y vehículos ligeros y medios.&#10;&#10;Requiere una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_762x39</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">7.62</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles de calibre 7,62 x 39 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición estándar.&#10;&#10;Eficaz contra infantería.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_556</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">5.56</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles de calibre 5,56 x 45 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición para la variante semiautomática civil del fusil AR-15.&#10;&#10;Eficaz contra infantería.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_556</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">5.56 (A)</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles de calibre 5,56 x 45 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de fusil de asalto M4 estándar.&#10;&#10;Eficaz contra infantería.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_68x51</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">6.8</Data></Cell>
+    <Cell><Data ss:Type="String">Proyectiles de calibre 6,8 x 51 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de fusil de asalto avanzado NGSW-R.&#10;&#10;Eficaz contra infantería.&#10;&#10;La exposición de larga duración puede dañar incluso vehículos de blindaje ligero.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_86x64</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">8.6x64</Data></Cell>
+    <Cell><Data ss:Type="String">Munición de calibre .338NM (8,6 x 64 mm)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de ametralladora avanzada LWMMG.&#10;&#10;Eficaz contra infantería y vehículos ligeros.&#10;&#10;Requiere una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_12cal</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">12-Gauge</Data></Cell>
+    <Cell><Data ss:Type="String">Munición de escopeta del calibre 12</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">A corta distancia, es extremadamente eficaz contra infantería.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_shotgun_plasma</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">12-Ga Plasma</Data></Cell>
+    <Cell><Data ss:Type="String">Munición de escopeta de plasma del calibre 12</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">A corta distancia, es extremadamente eficaz contra infantería y vehículos ligeros y medios.&#10;Puede dañar incluso vehículos de blindaje pesado al impactar en los laterales o por detrás.&#10;&#10;Mucho menos eficaz o totalmente ineficaz si el objetivo tiene blindaje reactivo, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_9mm</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">9mm</Data></Cell>
+    <Cell><Data ss:Type="String">Munición de calibre 9 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de pistola de 9 mm.&#10;&#10;Eficaz contra infantería.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_9mm</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">9mm (SMG)</Data></Cell>
+    <Cell><Data ss:Type="String">Munición de calibre 9 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Munición de subfusil de 9 mm.&#10;&#10;Eficaz contra infantería.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s67"><Data ss:Type="String">ammo_9mm_silencer</Data></Cell>
+    <Cell ss:StyleID="s77"><Data ss:Type="String">9mm</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">9mm caliber ammo</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">9mm pistol ammo.&#10;&#10;Effective against infantry.</Data></Cell>
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Ammo Supply cost per item: %s&#10;Press the button to forbid usage of this ammo type.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_40mm</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">40mm Frag</Data></Cell>
+    <Cell><Data ss:Type="String">Granadas de fragmentación de 40 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Granadas de 40 mm para lanzagranadas.&#10;&#10;Sumamente eficaces contra infantería y vehículos ligeros.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">ammo_40mm_mk19</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">40mm Frag</Data></Cell>
+    <Cell><Data ss:Type="String">Granadas de fragmentación de 40 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Granadas de 40 mm para lanzagranadas.&#10;&#10;Sumamente eficaces contra infantería y vehículos ligeros.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">inf_hg</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">Grenades</Data></Cell>
+    <Cell><Data ss:Type="String">Granadas de fragmentación de mano</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería y vehículos ligeros.&#10;&#10;Se aplican automáticamente.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">inf_emp_grenade</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">EMP</Data></Cell>
+    <Cell><Data ss:Type="String">Granadas PEM</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">La granada desactiva temporalmente la infantería de Legión y los vehículos.&#10;&#10;Usa el botón de la capacidad «Granada PEM» para lanzar una granada.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s70"><Data ss:Type="String">inf_emp_grenade_big</Data></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">EMP(E)</Data></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="String">Granadas EMP mejoradas</Data></Cell>
+    <Cell ss:StyleID="s87"><Data ss:Type="String">Versión mejorada de las granadas EMP estándar. Incapacita temporalmente a la infantería y los vehículos de Legión con un radio de acción más amplio y una mayor duración.&#10;&#10;Usa el botón de habilidad &quot;Granada EMP&quot; para lanzar una granada.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="51">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">inf_atm</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">ATGM</Data></Cell>
+    <Cell><Data ss:Type="String">Misiles antitanque guiados portátiles</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier vehículo. &#10;Menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Tienen menos velocidad y alcance de disparo que los misiles antitanque guiados montados en vehículo.&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="51">
+    <Cell ss:StyleID="s76"><Data ss:Type="String">inf_aam</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">SAM</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Misiles superficie-aire portátiles</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra helicópteros y aeronaves. &#10;&#10;Sumamente eficaces en trayectorias de persecución.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_m72law_heat</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HEAT (LAW)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes antitanque HE de 66 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra vehículos blindados. &#10;&#10;Mucho menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_m72law_frag_he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HE (LAW)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes de fragmentación de alto poder explosivo de 66 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería y vehículos ligeros. &#10;&#10;Se usan automáticamente contra infantería que esté dentro de edificios. Usa el botón «Ataquen con todas las armas» para dar una orden directa de atacar a objetivos de infantería que estén fuera de edificios.&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_rpg7heat</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HEAT (RPG-7)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Lanzacohetes antitanque de alto poder explosivo</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Granadas propulsadas por cohetes HEAT. Sumamente eficaces contra vehículos blindados. &#10;&#10;Mucho menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="76.5">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_rpg7he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HE (RPG-7)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Lanzacohetes de fragmentación de alto poder explosivo</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Granadas propulsadas por cohetes de fragmentación HE. Eficaces contra infantería y vehículos ligeros. &#10;&#10;Se usan automáticamente contra infantería que esté dentro de edificios. Usa el botón «Ataquen con todas las armas» para dar una orden directa de atacar a objetivos de infantería que estén fuera de edificios.&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_smaw_heat</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HEAT (SMAW)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes antitanque HE de 83 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra vehículos blindados. &#10;&#10;Mucho menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_smaw_frag_he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HE (SMAW)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes de fragmentación de alto poder explosivo de 83 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería y vehículos ligeros. &#10;&#10;Se usan automáticamente contra infantería que esté dentro de edificios. Usa el botón «Ataquen con todas las armas» para dar una orden directa de atacar a objetivos de infantería que estén fuera de edificios.&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_sraw_heat</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HEAT (SRAW)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes antitanque HE de 139 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier vehículo. &#10;&#10;Menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_sraw_he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HE (SRAW)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cohetes de fragmentación de alto poder explosivo de 139 mm</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería, vehículos ligeros y edificios débiles y medios.&#10;&#10;Se usan automáticamente contra infantería que esté dentro de edificios. Usa el botón «Ataquen con todas las armas» para dar una orden directa de atacar a objetivos de infantería que estén fuera de edificios.&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_spg_heat</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HEAT (M20)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles antitanque de alto poder explosivo</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier vehículo. &#10;&#10;Mucho menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_spg_plasma</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Plasma (M20)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de plasma</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier vehículo.&#10;Menos eficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.&#10;&#10;No se usan contra infantería en modo automático (incluida la infantería en edificios).&#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_spg_he</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HE (M20)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de fragmentación de alto poder explosivo</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería y vehículos ligeros.&#10;&#10;Se usan automáticamente contra infantería que esté dentro de edificios. Usa el botón «Ataquen con todas las armas» para dar una orden directa de atacar a objetivos de infantería que estén fuera de edificios.&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="63.75">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_spg_he2</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">HE (M20)</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de fragmentación de alto poder explosivo</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Sumamente eficaces contra infantería y vehículos ligeros. &#10;&#10;Requieren una posición de disparo inmóvil.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_mine</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">AP mines</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Minas antipersona</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería. &#10;&#10;Ineficaces contra vehículos.&#10;&#10;¡Usa el botón de la capacidad «Colocar minas» para colocar las minas!</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_at_mine</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">AT mines</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Minas antitanque</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier vehículo. &#10;&#10;La infantería no las activa.&#10;&#10;¡Usa el botón de la capacidad «Colocar minas» para colocar las minas!</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_c4</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">C4</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cargas explosivas por control remoto</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra cualquier objetivo terrestre. &#10;Usa el botón de la capacidad «Explosivos por control remoto» para colocar cargas.&#10;&#10;Explotan cuando pulsas el botón de encima una vez colocadas.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">ammo_plasma_rifle</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">H900</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de fusil de plasma</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería y vehículos ligeros.&#10;&#10;Mucho menos eficaces o totalmente ineficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">ammo_plasma_mg</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">H940</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de ametralladora de plasma</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería y vehículos ligeros y medios.&#10;&#10;Mucho menos eficaces o totalmente ineficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">ammo_plasma_mg_hc</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">H1100</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de ametralladora pesada de plasma</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería y vehículos ligeros y medios.&#10;Pueden dañar incluso vehículos de blindaje pesado (excepto tanques) al impactar en los laterales o por detrás.&#10;&#10;Mucho menos eficaces o totalmente ineficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">ammo_laser_sniper</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">X12</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Proyectiles de fusil de francotirador láser</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Extremadamente eficaces contra infantería y vehículos ligeros. Eficaces contra vehículos blindados no pesados.&#10; &#10;Mucho menos eficaces o totalmente ineficaces si el objetivo tiene blindaje reactivo, de rejas o cerámico.</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Coste de suministros de munición por objeto: %s&#10;Pulsa el botón para prohibir el uso de este tipo de munición.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">inf_swarm_explosive</Data></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Explosives</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Cargas explosivas</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Eficaces contra infantería, vehículos ligeros y edificios débiles.</Data></Cell>
+    <Cell ss:StyleID="s70"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+    <Cell ss:Index="2" ss:StyleID="s78"/>
+    <Cell ss:StyleID="s79"/>
+    <Cell ss:StyleID="s80"/>
+    <Cell ss:StyleID="s81"/>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Data="&amp;Я"/>
+    <Footer x:Data="Page &amp;С"/>
+    <PageMargins x:Bottom="0.984251969" x:Left="0.78740157499999996"
+     x:Right="0.78740157499999996" x:Top="0.984251969"/>
+   </PageSetup>
+   <Unsynced/>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>300</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+    <Gridlines/>
+   </Print>
+   <Selected/>
+   <FreezePanes/>
+   <FrozenNoSplit/>
+   <SplitHorizontal>1</SplitHorizontal>
+   <TopRowBottomPane>52</TopRowBottomPane>
+   <SplitVertical>1</SplitVertical>
+   <LeftColumnRightPane>1</LeftColumnRightPane>
+   <ActivePane>0</ActivePane>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+    </Pane>
+    <Pane>
+     <Number>1</Number>
+    </Pane>
+    <Pane>
+     <Number>2</Number>
+     <ActiveRow>1</ActiveRow>
+    </Pane>
+    <Pane>
+     <Number>0</Number>
+     <ActiveRow>61</ActiveRow>
+     <ActiveCol>2</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>
