@@ -317,6 +317,7 @@ class DatabaseViewerDialog(QDialog):
         self.setGeometry(150, 150, 1000, 600)
         
         self._create_ui()
+        self._restore_window_geometry()
         self._restore_column_widths()
         self._load_data()
     
@@ -532,6 +533,29 @@ class DatabaseViewerDialog(QDialog):
             except Exception as e:
                 app_logger.error(f"Erro ao salvar largura da coluna do DB viewer: {e}")
     
+    def _restore_window_geometry(self):
+        """Restaura geometria da janela do visualizador de banco de dados"""
+        try:
+            settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
+            geometry = settings.value("db_viewer_geometry", None)
+            if geometry:
+                success = self.restoreGeometry(geometry)
+                if success:
+                    app_logger.info("Geometria do DB viewer restaurada")
+                else:
+                    app_logger.warning("Falha ao restaurar geometria do DB viewer - usando geometria padrão")
+        except Exception as e:
+            app_logger.error(f"Erro ao restaurar geometria do DB viewer: {e}")
+    
+    def _save_window_geometry(self):
+        """Salva geometria da janela do visualizador de banco de dados"""
+        try:
+            settings = QSettings(SETTINGS_ORG_NAME, SETTINGS_APP_NAME)
+            settings.setValue("db_viewer_geometry", self.saveGeometry())
+            app_logger.info("Geometria do DB viewer salva")
+        except Exception as e:
+            app_logger.error(f"Erro ao salvar geometria do DB viewer: {e}")
+    
     def _restore_column_widths(self):
         """Restaura larguras das colunas do banco de dados"""
         try:
@@ -629,6 +653,11 @@ class DatabaseViewerDialog(QDialog):
                 f"Importados: {imported}\nErros: {errors}"
             )
             self._load_data()
+    
+    def closeEvent(self, event):
+        """Evento de fechamento da janela - salva configurações"""
+        self._save_window_geometry()
+        event.accept()
 
 class EditTranslationDialog(QDialog):
     """Diálogo para editar uma tradução"""
@@ -2054,15 +2083,17 @@ class MainWindow(QMainWindow):
         self.table.blockSignals(True)  # Bloqueia sinais durante atualização
         
         pasted_count = 0
-        for i, row in enumerate(selected_rows):
-            if i >= len(clipboard_lines):
+        clipboard_index = 0  # Índice separado para as linhas da área de transferência
+        
+        for row in selected_rows:
+            if clipboard_index >= len(clipboard_lines):
                 break
             
             if row >= len(self.entries):
                 continue
             
             # Parse da linha (formato: Original\tTradução ou apenas Tradução)
-            parts = clipboard_lines[i].split('\t')
+            parts = clipboard_lines[clipboard_index].split('\t')
             
             # Extrai a tradução baseado no número de campos
             if len(parts) >= 2:
@@ -2076,6 +2107,7 @@ class MainWindow(QMainWindow):
             # Atualiza apenas se há tradução não vazia
             # strip() já remove espaços, então a verificação 'not translation' é suficiente
             if not translation:
+                clipboard_index += 1  # Avança para próxima linha da área de transferência
                 continue
             
             # Atualiza entrada
@@ -2106,6 +2138,7 @@ class MainWindow(QMainWindow):
                 if item:
                     item.setBackground(TableColors.TRANSLATED_ROW)
             
+            clipboard_index += 1  # Avança para próxima linha da área de transferência
             pasted_count += 1
         
         self.table.blockSignals(False)  # Reativa sinais
