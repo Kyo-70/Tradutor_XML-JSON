@@ -1948,13 +1948,19 @@ class MainWindow(QMainWindow):
         - Atualiza o status visual para "pendente" (⏳)
         - Atualiza as entradas de tradução
         - Atualiza estatísticas
+        - Suporta exclusão de múltiplas linhas selecionadas
         
         Operações:
         - Bloqueia sinais durante a limpeza para evitar triggers múltiplos
         - Remove cor de fundo das linhas limpas
         - Registra operação no log
         """
-        selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        # Obtém todas as linhas selecionadas (suporta seleção múltipla)
+        selected_indexes = self.table.selectionModel().selectedRows()
+        if selected_indexes:
+            selected_rows = sorted(set(index.row() for index in selected_indexes))
+        else:
+            selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
         
         if not selected_rows:
             self.status_label.setText("Nenhuma linha selecionada")
@@ -2043,7 +2049,7 @@ class MainWindow(QMainWindow):
     
     def paste_rows(self):
         """
-        Cola dados da área de transferência nas linhas selecionadas.
+        Cola dados da área de transferência nas linhas selecionadas SEM tradução.
         
         Formatos aceitos:
         - TSV completo: "Original\\tTradução" (uma linha por entrada)
@@ -2055,6 +2061,7 @@ class MainWindow(QMainWindow):
         - Ignora traduções vazias após strip()
         - Atualiza automaticamente a memória de tradução
         - Valida null para todos os items da tabela
+        - Cola APENAS em linhas que NÃO possuem tradução, respeitando a seleção
         
         Não requer parâmetros - opera nas linhas selecionadas e na área de transferência.
         """
@@ -2064,8 +2071,12 @@ class MainWindow(QMainWindow):
             self.status_label.setText("Área de transferência vazia")
             return
         
-        # Pega linhas selecionadas
-        selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        # Pega linhas selecionadas (suporta seleção múltipla)
+        selected_indexes = self.table.selectionModel().selectedRows()
+        if selected_indexes:
+            selected_rows = sorted(set(index.row() for index in selected_indexes))
+        else:
+            selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
         
         # Parse do conteúdo da área de transferência
         # Formato esperado: Original\tTradução (uma linha por entrada)
@@ -2081,14 +2092,31 @@ class MainWindow(QMainWindow):
             )
             return
         
-        # Se há mais dados para colar do que linhas selecionadas
-        if len(clipboard_lines) > len(selected_rows):
+        # Filtra apenas as linhas selecionadas que NÃO possuem tradução
+        rows_without_translation = []
+        for row in selected_rows:
+            if row < len(self.entries):
+                existing_translation = self.entries[row].translated_text
+                if not existing_translation or not existing_translation.strip():
+                    rows_without_translation.append(row)
+        
+        if not rows_without_translation:
+            QMessageBox.information(
+                self,
+                "Informação",
+                "Todas as linhas selecionadas já possuem tradução.\n"
+                "A colagem só ocorre em linhas sem tradução."
+            )
+            return
+        
+        # Se há mais dados para colar do que linhas sem tradução
+        if len(clipboard_lines) > len(rows_without_translation):
             reply = QMessageBox.question(
                 self,
                 "Confirmar Colagem",
                 f"Há {len(clipboard_lines)} linha(s) na área de transferência, "
-                f"mas apenas {len(selected_rows)} linha(s) selecionada(s).\n\n"
-                "As primeiras linhas serão coladas nas selecionadas. Continuar?",
+                f"mas apenas {len(rows_without_translation)} linha(s) sem tradução na seleção.\n\n"
+                "As primeiras linhas serão coladas nas linhas sem tradução. Continuar?",
                 QMessageBox.Yes | QMessageBox.No
             )
             if reply != QMessageBox.Yes:
@@ -2100,7 +2128,7 @@ class MainWindow(QMainWindow):
         pasted_count = 0
         clipboard_index = 0  # Índice separado para as linhas da área de transferência
         
-        for row in selected_rows:
+        for row in rows_without_translation:
             if clipboard_index >= len(clipboard_lines):
                 break
             
@@ -2164,7 +2192,11 @@ class MainWindow(QMainWindow):
         # Atualiza estatísticas
         self._update_statistics()
         
-        self.status_label.setText(f"{pasted_count} tradução(ões) colada(s)")
+        skipped_count = len(selected_rows) - len(rows_without_translation)
+        if skipped_count > 0:
+            self.status_label.setText(f"{pasted_count} tradução(ões) colada(s), {skipped_count} linha(s) ignorada(s) (já traduzidas)")
+        else:
+            self.status_label.setText(f"{pasted_count} tradução(ões) colada(s)")
         app_logger.info(f"Coladas {pasted_count} traduções da área de transferência")
     
     def apply_smart_translations(self):
