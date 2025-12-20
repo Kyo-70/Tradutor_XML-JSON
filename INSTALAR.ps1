@@ -1,7 +1,7 @@
-# Game Translator - Instalador v1.0.7
+# Game Translator - Instalador v1.0.8
 # Requer PowerShell 5.1 ou superior
 
-$Host.UI.RawUI.WindowTitle = "Game Translator - Instalador v1.0.7"
+$Host.UI.RawUI.WindowTitle = "Game Translator - Instalador v1.0.8"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # Cores personalizadas
@@ -20,7 +20,7 @@ function Show-Menu {
     Write-Host ""
     Write-Host "========================================================================" -ForegroundColor $ColorTitulo
     Write-Host "                                                                        " -ForegroundColor $ColorTitulo
-    Write-Host "     GAME TRANSLATOR - INSTALADOR v1.0.7                               " -ForegroundColor $ColorTitulo
+    Write-Host "     GAME TRANSLATOR - INSTALADOR v1.0.8                               " -ForegroundColor $ColorTitulo
     Write-Host "                                                                        " -ForegroundColor $ColorTitulo
     Write-Host "     Sistema Profissional de Traducao para Jogos e Mods                " -ForegroundColor $ColorTitulo
     Write-Host "                                                                        " -ForegroundColor $ColorTitulo
@@ -37,6 +37,8 @@ function Show-Menu {
     Write-Host "Criar Executavel (.exe)"
     Write-Host "  [5] " -ForegroundColor $ColorInfo -NoNewline
     Write-Host "Executar Programa (modo desenvolvedor)"
+    Write-Host "  [6] " -ForegroundColor $ColorInfo -NoNewline
+    Write-Host "Limpar Arquivos Temporarios"
     Write-Host "  [0] " -ForegroundColor $ColorInfo -NoNewline
     Write-Host "Sair"
     Write-Host ""
@@ -52,6 +54,156 @@ function Test-Python {
     return $false
 }
 
+function Clear-TempFiles {
+    param(
+        [bool]$Silent = $false
+    )
+    
+    if (-not $Silent) {
+        Write-Host ""
+        Write-Host "Limpando arquivos temporarios..." -ForegroundColor $ColorInfo
+        Write-Host ""
+    }
+    
+    $totalRemoved = 0
+    
+    # Lista de pastas a serem removidas
+    $foldersToRemove = @(
+        "build",
+        "dist",
+        "__pycache__",
+        "src\__pycache__",
+        "src\gui\__pycache__"
+    )
+    
+    # Remove pastas principais
+    foreach ($folder in $foldersToRemove) {
+        $folderPath = Join-Path $ScriptDir $folder
+        if (Test-Path $folderPath) {
+            try {
+                Remove-Item -Path $folderPath -Recurse -Force -ErrorAction Stop
+                if (-not $Silent) {
+                    Write-Host "  [OK] Removido: $folder" -ForegroundColor $ColorSucesso
+                }
+                $totalRemoved++
+            }
+            catch {
+                if (-not $Silent) {
+                    Write-Host "  [ERRO] Falha ao remover: $folder" -ForegroundColor $ColorErro
+                }
+            }
+        }
+    }
+    
+    # Remove arquivos .spec
+    $specFiles = Get-ChildItem -Path $ScriptDir -Filter "*.spec" -ErrorAction SilentlyContinue
+    foreach ($file in $specFiles) {
+        try {
+            Remove-Item -Path $file.FullName -Force
+            if (-not $Silent) {
+                Write-Host "  [OK] Removido: $($file.Name)" -ForegroundColor $ColorSucesso
+            }
+            $totalRemoved++
+        }
+        catch {
+            if (-not $Silent) {
+                Write-Host "  [ERRO] Falha ao remover: $($file.Name)" -ForegroundColor $ColorErro
+            }
+        }
+    }
+    
+    # Busca e remove __pycache__ em subpastas recursivamente
+    $pycacheFolders = Get-ChildItem -Path $ScriptDir -Directory -Recurse -Filter "__pycache__" -ErrorAction SilentlyContinue
+    foreach ($pycache in $pycacheFolders) {
+        try {
+            Remove-Item -Path $pycache.FullName -Recurse -Force
+            if (-not $Silent) {
+                Write-Host "  [OK] Removido: $($pycache.FullName.Replace($ScriptDir, '.'))" -ForegroundColor $ColorSucesso
+            }
+            $totalRemoved++
+        }
+        catch {
+            if (-not $Silent) {
+                Write-Host "  [ERRO] Falha ao remover: $($pycache.FullName)" -ForegroundColor $ColorErro
+            }
+        }
+    }
+    
+    # Remove arquivos .pyc soltos
+    $pycFiles = Get-ChildItem -Path $ScriptDir -Filter "*.pyc" -Recurse -ErrorAction SilentlyContinue
+    foreach ($pyc in $pycFiles) {
+        try {
+            Remove-Item -Path $pyc.FullName -Force
+            if (-not $Silent) {
+                Write-Host "  [OK] Removido: $($pyc.FullName.Replace($ScriptDir, '.'))" -ForegroundColor $ColorSucesso
+            }
+            $totalRemoved++
+        }
+        catch {
+            if (-not $Silent) {
+                Write-Host "  [ERRO] Falha ao remover: $($pyc.Name)" -ForegroundColor $ColorErro
+            }
+        }
+    }
+    
+    # Remove arquivos .pyo soltos
+    $pyoFiles = Get-ChildItem -Path $ScriptDir -Filter "*.pyo" -Recurse -ErrorAction SilentlyContinue
+    foreach ($pyo in $pyoFiles) {
+        try {
+            Remove-Item -Path $pyo.FullName -Force
+            if (-not $Silent) {
+                Write-Host "  [OK] Removido: $($pyo.FullName.Replace($ScriptDir, '.'))" -ForegroundColor $ColorSucesso
+            }
+            $totalRemoved++
+        }
+        catch {
+            if (-not $Silent) {
+                Write-Host "  [ERRO] Falha ao remover: $($pyo.Name)" -ForegroundColor $ColorErro
+            }
+        }
+    }
+    
+    if (-not $Silent) {
+        Write-Host ""
+        Write-Host "  Total de itens removidos: $totalRemoved" -ForegroundColor $ColorInfo
+    }
+    
+    return $totalRemoved
+}
+
+function Show-CleanMenu {
+    Clear-Host
+    Write-Host ""
+    Write-Host "========================================================================" -ForegroundColor $ColorSecao
+    Write-Host "  LIMPEZA DE ARQUIVOS TEMPORARIOS" -ForegroundColor $ColorSecao
+    Write-Host "========================================================================" -ForegroundColor $ColorSecao
+    Write-Host ""
+    Write-Host "Esta funcao remove os seguintes arquivos/pastas:" -ForegroundColor $ColorInfo
+    Write-Host ""
+    Write-Host "  - build/          (pasta de compilacao do PyInstaller)" -ForegroundColor $ColorDestaque
+    Write-Host "  - dist/           (pasta do executavel gerado)" -ForegroundColor $ColorDestaque
+    Write-Host "  - __pycache__/    (cache do Python em todas as pastas)" -ForegroundColor $ColorDestaque
+    Write-Host "  - *.spec          (arquivos de especificacao do PyInstaller)" -ForegroundColor $ColorDestaque
+    Write-Host "  - *.pyc           (arquivos compilados do Python)" -ForegroundColor $ColorDestaque
+    Write-Host "  - *.pyo           (arquivos otimizados do Python)" -ForegroundColor $ColorDestaque
+    Write-Host ""
+    
+    $response = Read-Host "Deseja continuar com a limpeza? (S/N)"
+    if ($response -eq "S" -or $response -eq "s" -or $response -eq "Y" -or $response -eq "y") {
+        Clear-TempFiles -Silent $false
+        Write-Host ""
+        Write-Host "========================================================================" -ForegroundColor $ColorSucesso
+        Write-Host "  [OK] Limpeza concluida!" -ForegroundColor $ColorSucesso
+        Write-Host "========================================================================" -ForegroundColor $ColorSucesso
+    } else {
+        Write-Host ""
+        Write-Host "Limpeza cancelada." -ForegroundColor $ColorAviso
+    }
+    
+    Write-Host ""
+    Read-Host "Pressione Enter para continuar"
+}
+
 function Install-Complete {
     Clear-Host
     Write-Host ""
@@ -60,7 +212,7 @@ function Install-Complete {
     Write-Host "========================================================================" -ForegroundColor $ColorSecao
     Write-Host ""
     
-    Write-Host "[1/4] Verificando Python..." -ForegroundColor $ColorInfo
+    Write-Host "[1/5] Verificando Python..." -ForegroundColor $ColorInfo
     Write-Host ""
     
     if (-not (Test-Python)) {
@@ -77,7 +229,12 @@ function Install-Complete {
     Write-Host "[OK] $pythonVersion encontrado" -ForegroundColor $ColorSucesso
     
     Write-Host ""
-    Write-Host "[2/4] Instalando dependencias..." -ForegroundColor $ColorInfo
+    Write-Host "[2/5] Limpando arquivos temporarios anteriores..." -ForegroundColor $ColorInfo
+    Clear-TempFiles -Silent $true
+    Write-Host "[OK] Arquivos temporarios removidos" -ForegroundColor $ColorSucesso
+    
+    Write-Host ""
+    Write-Host "[3/5] Instalando dependencias..." -ForegroundColor $ColorInfo
     Write-Host ""
     
     Write-Host "   Atualizando pip..." -ForegroundColor $ColorInfo
@@ -93,15 +250,12 @@ function Install-Complete {
     Write-Host "[OK] Dependencias instaladas!" -ForegroundColor $ColorSucesso
     Write-Host ""
     
-    Write-Host "[3/4] Criando executavel..." -ForegroundColor $ColorInfo
+    Write-Host "[4/5] Criando executavel..." -ForegroundColor $ColorInfo
     Write-Host ""
     Write-Host "   Isso pode levar alguns minutos, aguarde..." -ForegroundColor $ColorAviso
     Write-Host ""
     
     Set-Location $ScriptDir
-    
-    if (Test-Path "build") { Remove-Item -Recurse -Force "build" }
-    if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
     
     $srcPath = Join-Path $ScriptDir "src"
     $mainPath = Join-Path $srcPath "main.py"
@@ -117,18 +271,31 @@ function Install-Complete {
         "$mainPath"
     
     Write-Host ""
-    Write-Host "[4/4] Verificando resultado..." -ForegroundColor $ColorInfo
+    Write-Host "[5/5] Verificando resultado e limpando temporarios..." -ForegroundColor $ColorInfo
     Write-Host ""
     
     $exePath = Join-Path $ScriptDir "dist\GameTranslator.exe"
     
     if (Test-Path $exePath) {
+        # Limpa arquivos temporarios apos build bem-sucedido (mantem dist/)
+        if (Test-Path "build") { Remove-Item -Recurse -Force "build" }
+        $specFiles = Get-ChildItem -Path $ScriptDir -Filter "*.spec" -ErrorAction SilentlyContinue
+        foreach ($file in $specFiles) {
+            Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
+        }
+        # Limpa __pycache__ recursivamente
+        Get-ChildItem -Path $ScriptDir -Directory -Recurse -Filter "__pycache__" -ErrorAction SilentlyContinue | ForEach-Object {
+            Remove-Item -Path $_.FullName -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        
         Write-Host "========================================================================" -ForegroundColor $ColorSucesso
         Write-Host "                                                                        " -ForegroundColor $ColorSucesso
         Write-Host "  [OK] INSTALACAO CONCLUIDA COM SUCESSO!                              " -ForegroundColor $ColorSucesso
         Write-Host "                                                                        " -ForegroundColor $ColorSucesso
         Write-Host "  Executavel criado em:                                               " -ForegroundColor $ColorSucesso
         Write-Host "  $exePath" -ForegroundColor $ColorSucesso
+        Write-Host "                                                                        " -ForegroundColor $ColorSucesso
+        Write-Host "  Arquivos temporarios foram limpos automaticamente.                  " -ForegroundColor $ColorSucesso
         Write-Host "                                                                        " -ForegroundColor $ColorSucesso
         Write-Host "========================================================================" -ForegroundColor $ColorSucesso
         Write-Host ""
@@ -237,13 +404,15 @@ function Build-Executable {
     }
     
     Write-Host ""
+    Write-Host "Limpando arquivos temporarios anteriores..." -ForegroundColor $ColorInfo
+    Clear-TempFiles -Silent $true
+    Write-Host "[OK] Arquivos temporarios removidos" -ForegroundColor $ColorSucesso
+    
+    Write-Host ""
     Write-Host "Criando executavel (isso pode levar alguns minutos)..." -ForegroundColor $ColorInfo
     Write-Host ""
     
     Set-Location $ScriptDir
-    
-    if (Test-Path "build") { Remove-Item -Recurse -Force "build" }
-    if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
     
     $srcPath = Join-Path $ScriptDir "src"
     $mainPath = Join-Path $srcPath "main.py"
@@ -263,8 +432,21 @@ function Build-Executable {
     $exePath = Join-Path $ScriptDir "dist\GameTranslator.exe"
     
     if (Test-Path $exePath) {
+        # Limpa arquivos temporarios apos build bem-sucedido (mantem dist/)
+        if (Test-Path "build") { Remove-Item -Recurse -Force "build" }
+        $specFiles = Get-ChildItem -Path $ScriptDir -Filter "*.spec" -ErrorAction SilentlyContinue
+        foreach ($file in $specFiles) {
+            Remove-Item -Path $file.FullName -Force -ErrorAction SilentlyContinue
+        }
+        # Limpa __pycache__ recursivamente
+        Get-ChildItem -Path $ScriptDir -Directory -Recurse -Filter "__pycache__" -ErrorAction SilentlyContinue | ForEach-Object {
+            Remove-Item -Path $_.FullName -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        
         Write-Host "[OK] Executavel criado com sucesso!" -ForegroundColor $ColorSucesso
         Write-Host "Local: $exePath" -ForegroundColor $ColorInfo
+        Write-Host ""
+        Write-Host "[OK] Arquivos temporarios limpos automaticamente." -ForegroundColor $ColorSucesso
         Write-Host ""
         
         $response = Read-Host "Abrir pasta? (S/N)"
@@ -317,6 +499,7 @@ do {
         "3" { Install-Dependencies }
         "4" { Build-Executable }
         "5" { Start-Program }
+        "6" { Show-CleanMenu }
         "0" { 
             Write-Host ""
             Write-Host "Obrigado por usar o Game Translator!" -ForegroundColor $ColorDestaque
