@@ -1,15 +1,15 @@
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║                    GAME TRANSLATOR - BUILD SCRIPT v2.0.0                     ║
-# ║                     Visual Moderno com Animações                             ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
+# ============================================================================
+#                    GAME TRANSLATOR - BUILD SCRIPT v2.0.1
+#                     Visual Moderno com Animacoes
+# ============================================================================
 # Requer PowerShell 5.1 ou superior
 
-$Host.UI.RawUI.WindowTitle = "⚙️ Game Translator - Build Script"
+$Host.UI.RawUI.WindowTitle = "Game Translator - Build Script"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# CONFIGURAÇÃO DE CORES MODERNAS
-# ═══════════════════════════════════════════════════════════════════════════════
+# ============================================================================
+# CONFIGURACAO DE CORES MODERNAS
+# ============================================================================
 $script:Colors = @{
     Primary    = "Cyan"
     Secondary  = "Magenta"
@@ -23,12 +23,12 @@ $script:Colors = @{
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# FUNÇÕES DE ANIMAÇÃO E VISUAL
-# ═══════════════════════════════════════════════════════════════════════════════
+# ============================================================================
+# FUNCOES DE ANIMACAO E VISUAL
+# ============================================================================
 
 function Write-GradientLine {
-    param([string]$Char = "═", [int]$Length = 76)
+    param([string]$Char = "=", [int]$Length = 76)
     $colors = @("DarkBlue", "Blue", "Cyan", "DarkCyan", "Cyan", "Blue", "DarkBlue")
     $segmentLength = [math]::Ceiling($Length / $colors.Count)
     
@@ -51,25 +51,25 @@ function Write-CenteredText {
 
 function Show-Spinner {
     param([string]$Message, [int]$Duration = 2)
-    $spinChars = @("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏")
+    $spinChars = @("|", "/", "-", "\")
     $endTime = (Get-Date).AddSeconds($Duration)
     $i = 0
     
     while ((Get-Date) -lt $endTime) {
-        Write-Host "`r  $($spinChars[$i % $spinChars.Count]) $Message" -NoNewline -ForegroundColor $Colors.Primary
-        Start-Sleep -Milliseconds 80
+        Write-Host "`r  [$($spinChars[$i % $spinChars.Count])] $Message" -NoNewline -ForegroundColor $Colors.Primary
+        Start-Sleep -Milliseconds 100
         $i++
     }
-    Write-Host "`r  ✓ $Message                              " -ForegroundColor $Colors.Success
+    Write-Host "`r  [+] $Message                              " -ForegroundColor $Colors.Success
 }
 
 function Show-BuildAnimation {
     $frames = @(
-        @("  ⚙️  ", "     ", "     "),
-        @("     ", "  ⚙️  ", "     "),
-        @("     ", "     ", "  ⚙️  "),
-        @("     ", "  ⚙️  ", "     "),
-        @("  ⚙️  ", "     ", "     ")
+        @("  [*]  ", "       ", "       "),
+        @("       ", "  [*]  ", "       "),
+        @("       ", "       ", "  [*]  "),
+        @("       ", "  [*]  ", "       "),
+        @("  [*]  ", "       ", "       ")
     )
     
     for ($j = 0; $j -lt 3; $j++) {
@@ -81,7 +81,7 @@ function Show-BuildAnimation {
             Start-Sleep -Milliseconds 150
         }
     }
-    Write-Host "`r  Compilando ⚙️ ⚙️ ⚙️                    " -ForegroundColor $Colors.Success
+    Write-Host "`r  Compilando [*] [*] [*]                    " -ForegroundColor $Colors.Success
 }
 
 function Show-ProgressBar {
@@ -90,28 +90,28 @@ function Show-ProgressBar {
     $empty = 20 - $filled
     
     Write-Host "`r  $Task [" -NoNewline -ForegroundColor $Colors.Info
-    Write-Host ("█" * $filled) -NoNewline -ForegroundColor $Colors.Primary
-    Write-Host ("░" * $empty) -NoNewline -ForegroundColor $Colors.Dim
+    Write-Host ("#" * $filled) -NoNewline -ForegroundColor $Colors.Primary
+    Write-Host ("." * $empty) -NoNewline -ForegroundColor $Colors.Dim
     Write-Host "] $Percent%" -NoNewline -ForegroundColor $Colors.Info
 }
 
 function Show-Header {
     Clear-Host
     Write-Host ""
-    Write-GradientLine "═" 76
+    Write-GradientLine "=" 76
     Write-Host ""
     
     $gears = @(
-        "       ⚙️     ⚙️     ⚙️",
-        "         \\   |   /",
-        "          \\  |  /",
-        "           \\ | /",
-        "            \\|/",
-        "         ════╪════",
-        "            /|\\",
-        "           / | \\",
-        "          /  |  \\",
-        "         /   |   \\"
+        "       [*]     [*]     [*]",
+        "         \     |     /",
+        "          \    |    /",
+        "           \   |   /",
+        "            \  |  /",
+        "         =====[+]=====",
+        "            /  |  \",
+        "           /   |   \",
+        "          /    |    \",
+        "         /     |     \"
     )
     
     $gearColors = @("Cyan", "DarkCyan", "DarkCyan", "Blue", "Blue", "Magenta", "Blue", "DarkCyan", "DarkCyan", "Cyan")
@@ -122,53 +122,53 @@ function Show-Header {
     }
     
     Write-Host ""
-    Write-CenteredText "═══════════════════════════════════════════════════════════" "DarkGray" 76
+    Write-CenteredText "============================================================" "DarkGray" 76
     Write-Host ""
     Write-CenteredText "GAME TRANSLATOR" "Cyan" 76
-    Write-CenteredText "Build Script - Criação do Executável" "DarkCyan" 76
+    Write-CenteredText "Build Script - Criacao do Executavel" "DarkCyan" 76
     Write-Host ""
-    Write-CenteredText "═══════════════════════════════════════════════════════════" "DarkGray" 76
+    Write-CenteredText "============================================================" "DarkGray" 76
     Write-Host ""
 }
 
 function Show-SuccessBox {
     param([string]$Message, [string]$Path = "")
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor $Colors.Success
-    Write-Host "  ║                                                                   ║" -ForegroundColor $Colors.Success
-    Write-Host "  ║  ✅ " -NoNewline -ForegroundColor $Colors.Success
-    Write-Host $Message.PadRight(60) -NoNewline -ForegroundColor "White"
-    Write-Host "║" -ForegroundColor $Colors.Success
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Success
+    Write-Host "  |                                                                   |" -ForegroundColor $Colors.Success
+    Write-Host "  |  [OK] " -NoNewline -ForegroundColor $Colors.Success
+    Write-Host $Message.PadRight(58) -NoNewline -ForegroundColor "White"
+    Write-Host "|" -ForegroundColor $Colors.Success
     if ($Path) {
-        Write-Host "  ║                                                                   ║" -ForegroundColor $Colors.Success
-        Write-Host "  ║  📁 " -NoNewline -ForegroundColor $Colors.Success
-        Write-Host $Path.PadRight(60) -NoNewline -ForegroundColor $Colors.Primary
-        Write-Host "║" -ForegroundColor $Colors.Success
+        Write-Host "  |                                                                   |" -ForegroundColor $Colors.Success
+        Write-Host "  |  [>] " -NoNewline -ForegroundColor $Colors.Success
+        Write-Host $Path.PadRight(59) -NoNewline -ForegroundColor $Colors.Primary
+        Write-Host "|" -ForegroundColor $Colors.Success
     }
-    Write-Host "  ║                                                                   ║" -ForegroundColor $Colors.Success
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor $Colors.Success
+    Write-Host "  |                                                                   |" -ForegroundColor $Colors.Success
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Success
     Write-Host ""
 }
 
 function Show-ErrorBox {
     param([string]$Message)
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor $Colors.Error
-    Write-Host "  ║  ❌ " -NoNewline -ForegroundColor $Colors.Error
-    Write-Host $Message.PadRight(60) -NoNewline -ForegroundColor "White"
-    Write-Host "║" -ForegroundColor $Colors.Error
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor $Colors.Error
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Error
+    Write-Host "  |  [X] " -NoNewline -ForegroundColor $Colors.Error
+    Write-Host $Message.PadRight(59) -NoNewline -ForegroundColor "White"
+    Write-Host "|" -ForegroundColor $Colors.Error
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Error
     Write-Host ""
 }
 
 function Show-InfoBox {
     param([string]$Message)
     Write-Host ""
-    Write-Host "  ┌───────────────────────────────────────────────────────────────────┐" -ForegroundColor $Colors.Primary
-    Write-Host "  │  💡 " -NoNewline -ForegroundColor $Colors.Primary
-    Write-Host $Message.PadRight(60) -NoNewline -ForegroundColor $Colors.Info
-    Write-Host "│" -ForegroundColor $Colors.Primary
-    Write-Host "  └───────────────────────────────────────────────────────────────────┘" -ForegroundColor $Colors.Primary
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Primary
+    Write-Host "  |  [i] " -NoNewline -ForegroundColor $Colors.Primary
+    Write-Host $Message.PadRight(59) -NoNewline -ForegroundColor $Colors.Info
+    Write-Host "|" -ForegroundColor $Colors.Primary
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Primary
     Write-Host ""
 }
 
@@ -181,27 +181,27 @@ function Write-Step {
 
 function Write-SubStepSuccess {
     param([string]$Message)
-    Write-Host "       ✓ " -NoNewline -ForegroundColor $Colors.Success
+    Write-Host "       [+] " -NoNewline -ForegroundColor $Colors.Success
     Write-Host $Message -ForegroundColor $Colors.Info
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# LÓGICA PRINCIPAL
-# ═══════════════════════════════════════════════════════════════════════════════
+# ============================================================================
+# LOGICA PRINCIPAL
+# ============================================================================
 
 Show-Header
 
-Write-Host "  🚀 Iniciando processo de build..." -ForegroundColor $Colors.Info
+Write-Host "  [*] Iniciando processo de build..." -ForegroundColor $Colors.Info
 Write-Host ""
 
 # ETAPA 1: Verificar Python
 Write-Step 1 4 "Verificando Python..."
 try {
     $pythonVersion = py --version 2>&1
-    if ($LASTEXITCODE -ne 0) { throw "Python não encontrado" }
+    if ($LASTEXITCODE -ne 0) { throw "Python nao encontrado" }
     Write-SubStepSuccess "Python encontrado: $pythonVersion"
 } catch {
-    Show-ErrorBox "Python não encontrado! Instale primeiro."
+    Show-ErrorBox "Python nao encontrado! Instale primeiro."
     Read-Host "  Pressione Enter para sair"
     exit 1
 }
@@ -227,7 +227,7 @@ if (Test-Path "dist") {
 Get-ChildItem -Path $ScriptDir -Filter "*.spec" -ErrorAction SilentlyContinue | Remove-Item -Force
 
 # ETAPA 4: Compilar
-Write-Step 4 4 "Compilando executável..."
+Write-Step 4 4 "Compilando executavel..."
 Show-InfoBox "Este processo pode levar alguns minutos..."
 Write-Host ""
 
@@ -267,36 +267,36 @@ Write-Host ""
 $exePath = Join-Path $ScriptDir "dist\GameTranslator.exe"
 
 if (Test-Path $exePath) {
-    # Limpar arquivos temporários
+    # Limpar arquivos temporarios
     if (Test-Path "build") { Remove-Item -Recurse -Force "build" }
     Get-ChildItem -Path $ScriptDir -Filter "*.spec" -ErrorAction SilentlyContinue | Remove-Item -Force
     Get-ChildItem -Path $ScriptDir -Directory -Recurse -Filter "__pycache__" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
     
-    Write-GradientLine "═" 76
-    Show-SuccessBox "BUILD CONCLUÍDO COM SUCESSO!" "dist\GameTranslator.exe"
+    Write-GradientLine "=" 76
+    Show-SuccessBox "BUILD CONCLUIDO COM SUCESSO!" "dist\GameTranslator.exe"
     
-    # Informações do arquivo
+    # Informacoes do arquivo
     $fileInfo = Get-Item $exePath
     $fileSize = [math]::Round($fileInfo.Length / 1MB, 2)
     
-    Write-Host "  📊 Informações do executável:" -ForegroundColor $Colors.Info
-    Write-Host "     • Tamanho: " -NoNewline -ForegroundColor $Colors.Dim
+    Write-Host "  [*] Informacoes do executavel:" -ForegroundColor $Colors.Info
+    Write-Host "     - Tamanho: " -NoNewline -ForegroundColor $Colors.Dim
     Write-Host "$fileSize MB" -ForegroundColor $Colors.Primary
-    Write-Host "     • Criado em: " -NoNewline -ForegroundColor $Colors.Dim
+    Write-Host "     - Criado em: " -NoNewline -ForegroundColor $Colors.Dim
     Write-Host "$($fileInfo.CreationTime)" -ForegroundColor $Colors.Primary
     Write-Host ""
     
-    Write-Host "  Abrir pasta do executável? " -NoNewline -ForegroundColor $Colors.Info
+    Write-Host "  Abrir pasta do executavel? " -NoNewline -ForegroundColor $Colors.Info
     Write-Host "(S/N) " -NoNewline -ForegroundColor $Colors.Primary
     $response = Read-Host
     if ($response -match "^[SsYy]$") {
         explorer (Join-Path $ScriptDir "dist")
     }
 } else {
-    Show-ErrorBox "Falha ao criar executável! Verifique os erros acima."
+    Show-ErrorBox "Falha ao criar executavel! Verifique os erros acima."
 }
 
 Write-Host ""
-Write-GradientLine "═" 76
+Write-GradientLine "=" 76
 Write-Host ""
 Read-Host "  Pressione Enter para sair"

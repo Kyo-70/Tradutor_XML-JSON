@@ -1,15 +1,15 @@
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║                 GAME TRANSLATOR - VERIFICAÇÃO DO SISTEMA v2.0.0              ║
-# ║                     Visual Moderno com Animações                             ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
+# ============================================================================
+#                 GAME TRANSLATOR - VERIFICACAO DO SISTEMA v2.0.1
+#                     Visual Moderno com Animacoes
+# ============================================================================
 # Requer PowerShell 5.1 ou superior
 
-$Host.UI.RawUI.WindowTitle = "🔍 Game Translator - Verificação do Sistema"
+$Host.UI.RawUI.WindowTitle = "Game Translator - Verificacao do Sistema"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# CONFIGURAÇÃO DE CORES MODERNAS
-# ═══════════════════════════════════════════════════════════════════════════════
+# ============================================================================
+# CONFIGURACAO DE CORES MODERNAS
+# ============================================================================
 $script:Colors = @{
     Primary    = "Cyan"
     Secondary  = "Magenta"
@@ -23,12 +23,12 @@ $script:Colors = @{
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# FUNÇÕES DE ANIMAÇÃO E VISUAL
-# ═══════════════════════════════════════════════════════════════════════════════
+# ============================================================================
+# FUNCOES DE ANIMACAO E VISUAL
+# ============================================================================
 
 function Write-GradientLine {
-    param([string]$Char = "═", [int]$Length = 76)
+    param([string]$Char = "=", [int]$Length = 76)
     $colors = @("DarkBlue", "Blue", "Cyan", "DarkCyan", "Cyan", "Blue", "DarkBlue")
     $segmentLength = [math]::Ceiling($Length / $colors.Count)
     
@@ -52,16 +52,16 @@ function Write-CenteredText {
 function Show-ScanAnimation {
     param([int]$Duration = 2)
     $frames = @(
-        "  [■□□□□□□□□□] 10%  ",
-        "  [■■□□□□□□□□] 20%  ",
-        "  [■■■□□□□□□□] 30%  ",
-        "  [■■■■□□□□□□] 40%  ",
-        "  [■■■■■□□□□□] 50%  ",
-        "  [■■■■■■□□□□] 60%  ",
-        "  [■■■■■■■□□□] 70%  ",
-        "  [■■■■■■■■□□] 80%  ",
-        "  [■■■■■■■■■□] 90%  ",
-        "  [■■■■■■■■■■] 100% "
+        "  [#         ] 10%  ",
+        "  [##        ] 20%  ",
+        "  [###       ] 30%  ",
+        "  [####      ] 40%  ",
+        "  [#####     ] 50%  ",
+        "  [######    ] 60%  ",
+        "  [#######   ] 70%  ",
+        "  [########  ] 80%  ",
+        "  [######### ] 90%  ",
+        "  [##########] 100% "
     )
     
     foreach ($frame in $frames) {
@@ -73,30 +73,30 @@ function Show-ScanAnimation {
 
 function Show-Spinner {
     param([string]$Message, [int]$Duration = 2)
-    $spinChars = @("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏")
+    $spinChars = @("|", "/", "-", "\")
     $endTime = (Get-Date).AddSeconds($Duration)
     $i = 0
     
     while ((Get-Date) -lt $endTime) {
-        Write-Host "`r  $($spinChars[$i % $spinChars.Count]) $Message" -NoNewline -ForegroundColor $Colors.Primary
-        Start-Sleep -Milliseconds 80
+        Write-Host "`r  [$($spinChars[$i % $spinChars.Count])] $Message" -NoNewline -ForegroundColor $Colors.Primary
+        Start-Sleep -Milliseconds 100
         $i++
     }
-    Write-Host "`r  ✓ $Message                              " -ForegroundColor $Colors.Success
+    Write-Host "`r  [+] $Message                              " -ForegroundColor $Colors.Success
 }
 
 function Show-Header {
     Clear-Host
     Write-Host ""
-    Write-GradientLine "═" 76
+    Write-GradientLine "=" 76
     Write-Host ""
     
     $magnifier = @(
-        "         🔍",
-        "        /  ",
-        "       O   ",
-        "      /|\  ",
-        "      / \  "
+        "         (?) ",
+        "        /    ",
+        "       O     ",
+        "      /|\    ",
+        "      / \    "
     )
     
     foreach ($line in $magnifier) {
@@ -105,104 +105,104 @@ function Show-Header {
     }
     
     Write-Host ""
-    Write-CenteredText "═══════════════════════════════════════════════════════════" "DarkGray" 76
+    Write-CenteredText "============================================================" "DarkGray" 76
     Write-Host ""
     Write-CenteredText "GAME TRANSLATOR" "Cyan" 76
-    Write-CenteredText "Verificação do Sistema" "DarkCyan" 76
+    Write-CenteredText "Verificacao do Sistema" "DarkCyan" 76
     Write-Host ""
-    Write-CenteredText "═══════════════════════════════════════════════════════════" "DarkGray" 76
+    Write-CenteredText "============================================================" "DarkGray" 76
     Write-Host ""
 }
 
 function Show-ErrorBox {
     param([string]$Message, [string]$SubMessage = "", [string]$Link = "")
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor $Colors.Error
-    Write-Host "  ║                                                                   ║" -ForegroundColor $Colors.Error
-    Write-Host "  ║  ❌ " -NoNewline -ForegroundColor $Colors.Error
-    Write-Host $Message.PadRight(60) -NoNewline -ForegroundColor "White"
-    Write-Host "║" -ForegroundColor $Colors.Error
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Error
+    Write-Host "  |                                                                   |" -ForegroundColor $Colors.Error
+    Write-Host "  |  [X] " -NoNewline -ForegroundColor $Colors.Error
+    Write-Host $Message.PadRight(59) -NoNewline -ForegroundColor "White"
+    Write-Host "|" -ForegroundColor $Colors.Error
     if ($SubMessage) {
-        Write-Host "  ║                                                                   ║" -ForegroundColor $Colors.Error
-        Write-Host "  ║     " -NoNewline -ForegroundColor $Colors.Error
-        Write-Host $SubMessage.PadRight(60) -NoNewline -ForegroundColor $Colors.Dim
-        Write-Host "║" -ForegroundColor $Colors.Error
+        Write-Host "  |                                                                   |" -ForegroundColor $Colors.Error
+        Write-Host "  |      " -NoNewline -ForegroundColor $Colors.Error
+        Write-Host $SubMessage.PadRight(59) -NoNewline -ForegroundColor $Colors.Dim
+        Write-Host "|" -ForegroundColor $Colors.Error
     }
     if ($Link) {
-        Write-Host "  ║                                                                   ║" -ForegroundColor $Colors.Error
-        Write-Host "  ║  🔗 " -NoNewline -ForegroundColor $Colors.Error
-        Write-Host $Link.PadRight(60) -NoNewline -ForegroundColor $Colors.Primary
-        Write-Host "║" -ForegroundColor $Colors.Error
+        Write-Host "  |                                                                   |" -ForegroundColor $Colors.Error
+        Write-Host "  |  [>] " -NoNewline -ForegroundColor $Colors.Error
+        Write-Host $Link.PadRight(59) -NoNewline -ForegroundColor $Colors.Primary
+        Write-Host "|" -ForegroundColor $Colors.Error
     }
-    Write-Host "  ║                                                                   ║" -ForegroundColor $Colors.Error
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor $Colors.Error
+    Write-Host "  |                                                                   |" -ForegroundColor $Colors.Error
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Error
     Write-Host ""
 }
 
 function Show-InfoBox {
     param([string]$Message)
     Write-Host ""
-    Write-Host "  ┌───────────────────────────────────────────────────────────────────┐" -ForegroundColor $Colors.Primary
-    Write-Host "  │  💡 " -NoNewline -ForegroundColor $Colors.Primary
-    Write-Host $Message.PadRight(60) -NoNewline -ForegroundColor $Colors.Info
-    Write-Host "│" -ForegroundColor $Colors.Primary
-    Write-Host "  └───────────────────────────────────────────────────────────────────┘" -ForegroundColor $Colors.Primary
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Primary
+    Write-Host "  |  [i] " -NoNewline -ForegroundColor $Colors.Primary
+    Write-Host $Message.PadRight(59) -NoNewline -ForegroundColor $Colors.Info
+    Write-Host "|" -ForegroundColor $Colors.Primary
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Primary
     Write-Host ""
 }
 
 function Show-SuccessBox {
     param([string]$Message)
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor $Colors.Success
-    Write-Host "  ║  ✅ " -NoNewline -ForegroundColor $Colors.Success
-    Write-Host $Message.PadRight(60) -NoNewline -ForegroundColor "White"
-    Write-Host "║" -ForegroundColor $Colors.Success
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor $Colors.Success
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Success
+    Write-Host "  |  [OK] " -NoNewline -ForegroundColor $Colors.Success
+    Write-Host $Message.PadRight(58) -NoNewline -ForegroundColor "White"
+    Write-Host "|" -ForegroundColor $Colors.Success
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Success
     Write-Host ""
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# LÓGICA PRINCIPAL
-# ═══════════════════════════════════════════════════════════════════════════════
+# ============================================================================
+# LOGICA PRINCIPAL
+# ============================================================================
 
 Show-Header
 
-Write-Host "  🔎 Iniciando verificação do sistema..." -ForegroundColor $Colors.Info
+Write-Host "  [?] Iniciando verificacao do sistema..." -ForegroundColor $Colors.Info
 Write-Host ""
 
 Show-ScanAnimation 1
 
 Write-Host ""
-Show-Spinner "Verificando instalação do Python" 1
+Show-Spinner "Verificando instalacao do Python" 1
 
-# Verifica se Python está disponível
+# Verifica se Python esta disponivel
 try {
     $result = py --version 2>&1
-    if ($LASTEXITCODE -ne 0) { throw "Python não encontrado" }
+    if ($LASTEXITCODE -ne 0) { throw "Python nao encontrado" }
     
     $pythonVersion = $result
     Write-Host ""
-    Write-Host "  ┌─────────────────────────────────────────────────────────────────┐" -ForegroundColor $Colors.Success
-    Write-Host "  │  🐍 Python encontrado: " -NoNewline -ForegroundColor $Colors.Success
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Success
+    Write-Host "  |  [*] Python encontrado: " -NoNewline -ForegroundColor $Colors.Success
     Write-Host "$pythonVersion".PadRight(40) -NoNewline -ForegroundColor $Colors.Info
-    Write-Host "│" -ForegroundColor $Colors.Success
-    Write-Host "  └─────────────────────────────────────────────────────────────────┘" -ForegroundColor $Colors.Success
+    Write-Host "|" -ForegroundColor $Colors.Success
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Success
     Write-Host ""
     
 } catch {
-    Show-ErrorBox "Python não encontrado!" "O Python é necessário para executar este programa." "https://www.python.org/downloads/"
-    Show-InfoBox "Durante a instalação, marque 'Add Python to PATH'"
+    Show-ErrorBox "Python nao encontrado!" "O Python e necessario para executar este programa." "https://www.python.org/downloads/"
+    Show-InfoBox "Durante a instalacao, marque 'Add Python to PATH'"
     
     Write-Host ""
-    Write-GradientLine "═" 76
+    Write-GradientLine "=" 76
     Write-Host ""
     Read-Host "  Pressione Enter para sair"
     exit 1
 }
 
-Write-Host "  📋 Executando verificação detalhada..." -ForegroundColor $Colors.Info
+Write-Host "  [*] Executando verificacao detalhada..." -ForegroundColor $Colors.Info
 Write-Host ""
-Write-GradientLine "─" 76
+Write-GradientLine "-" 76
 Write-Host ""
 
 # Executa o script Python com cores
@@ -212,18 +212,18 @@ py verificar_sistema.py --auto-instalar
 $exitCode = $LASTEXITCODE
 
 Write-Host ""
-Write-GradientLine "─" 76
+Write-GradientLine "-" 76
 
 if ($exitCode -eq 0) {
-    Show-SuccessBox "Verificação concluída com sucesso!"
+    Show-SuccessBox "Verificacao concluida com sucesso!"
 } else {
-    Show-ErrorBox "Verificação encontrou problemas." "Código de saída: $exitCode"
+    Show-ErrorBox "Verificacao encontrou problemas." "Codigo de saida: $exitCode"
 }
 
 Write-Host ""
-Write-GradientLine "═" 76
+Write-GradientLine "=" 76
 Write-Host ""
 Read-Host "  Pressione Enter para sair"
 
-# Retorna o código de saída do script Python
+# Retorna o codigo de saida do script Python
 exit $exitCode
