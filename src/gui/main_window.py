@@ -24,7 +24,8 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                               QFileDialog, QComboBox, QProgressBar, QMessageBox,
                               QHeaderView, QLineEdit, QDialog, QTextEdit, QGroupBox,
                               QTabWidget, QSpinBox, QCheckBox, QSplitter, QFrame,
-                              QStatusBar, QToolBar, QMenu, QMenuBar, QApplication)
+                              QStatusBar, QToolBar, QMenu, QMenuBar, QApplication,
+                              QScrollArea)
 from PySide6.QtCore import Qt, QThread, Signal, QTimer, QSettings
 from PySide6.QtGui import QPalette, QColor, QFont, QAction, QIcon, QKeySequence, QShortcut
 
@@ -203,6 +204,213 @@ class FileLoadWorker(QThread):
 # ============================================================================
 # DIÁLOGOS
 # ============================================================================
+
+class ShortcutsGuideDialog(QDialog):
+    """
+    Diálogo interativo com guia completo de atalhos de teclado.
+    
+    Exibe todos os atalhos organizados por categoria com descrições
+    detalhadas do que cada atalho faz.
+    """
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        
+        self.setWindowTitle("⌨️ Guia de Atalhos de Teclado")
+        self.setMinimumSize(700, 600)
+        self.setModal(True)
+        
+        self._create_ui()
+    
+    def _create_ui(self):
+        """Cria interface do diálogo"""
+        layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+        
+        # Título
+        title_label = QLabel("<h1>⌨️ Guia de Atalhos de Teclado</h1>")
+        title_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title_label)
+        
+        subtitle_label = QLabel("<p style='color: gray;'>Clique em uma categoria para ver os atalhos disponíveis</p>")
+        subtitle_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(subtitle_label)
+        
+        # Área de scroll para os atalhos
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QFrame.NoFrame)
+        
+        scroll_content = QWidget()
+        scroll_layout = QVBoxLayout(scroll_content)
+        scroll_layout.setSpacing(15)
+        
+        # Categorias de atalhos
+        categories = self._get_shortcuts_data()
+        
+        for category in categories:
+            group = self._create_category_group(category)
+            scroll_layout.addWidget(group)
+        
+        scroll_layout.addStretch()
+        scroll_area.setWidget(scroll_content)
+        layout.addWidget(scroll_area)
+        
+        # Botão Fechar
+        btn_close = QPushButton("✅ Fechar")
+        btn_close.setMinimumHeight(40)
+        btn_close.clicked.connect(self.accept)
+        layout.addWidget(btn_close)
+    
+    def _get_shortcuts_data(self):
+        """
+        Retorna os dados de todos os atalhos organizados por categoria.
+        
+        Returns:
+            list: Lista de dicionários com categorias e seus atalhos
+        """
+        return [
+            {
+                'icon': '✏️',
+                'title': 'Edição',
+                'description': 'Atalhos para editar e manipular traduções na tabela',
+                'shortcuts': [
+                    ('F2', 'Editar linha selecionada', 'Abre a célula de tradução para edição direta'),
+                    ('Enter', 'Editar linha selecionada', 'Mesmo que F2 - inicia edição da linha'),
+                    ('Ctrl+C', 'Copiar linhas selecionadas', 'Copia o texto original e tradução das linhas selecionadas'),
+                    ('Ctrl+V', 'Colar traduções', 'Cola traduções copiadas nas linhas selecionadas'),
+                    ('Delete', 'Limpar traduções', 'Remove as traduções das linhas selecionadas'),
+                    ('Ctrl+Z', 'Desfazer', 'Desfaz a última ação (até 50 ações)'),
+                ]
+            },
+            {
+                'icon': '📁',
+                'title': 'Arquivo',
+                'description': 'Atalhos para gerenciar arquivos e projetos',
+                'shortcuts': [
+                    ('Ctrl+O', 'Importar arquivo', 'Abre diálogo para importar arquivo XML ou JSON'),
+                    ('Ctrl+S', 'Salvar arquivo', 'Salva as traduções no arquivo atual'),
+                    ('Ctrl+D', 'Abrir banco de dados', 'Abre um banco de dados de traduções existente'),
+                    ('Ctrl+Shift+N', 'Novo banco de dados', 'Cria um novo banco de dados de traduções'),
+                    ('Ctrl+Q', 'Sair', 'Fecha o aplicativo (solicita salvar se houver alterações)'),
+                ]
+            },
+            {
+                'icon': '🗄️',
+                'title': 'Banco de Dados',
+                'description': 'Atalhos para gerenciar a memória de tradução',
+                'shortcuts': [
+                    ('Ctrl+B', 'Visualizar banco', 'Abre janela para ver e editar traduções salvas'),
+                    ('Ctrl+E', 'Exportar para CSV', 'Exporta todas as traduções para arquivo CSV'),
+                ]
+            },
+            {
+                'icon': '🌐',
+                'title': 'Tradução',
+                'description': 'Atalhos para traduzir textos automaticamente',
+                'shortcuts': [
+                    ('F5', 'Traduzir via API', 'Traduz automaticamente usando a API configurada'),
+                ]
+            },
+            {
+                'icon': '🛠️',
+                'title': 'Ferramentas',
+                'description': 'Atalhos para acessar ferramentas e configurações',
+                'shortcuts': [
+                    ('Ctrl+P', 'Perfis regex', 'Gerencia perfis de expressões regulares'),
+                    ('Ctrl+I', 'Importar traduções', 'Importa traduções de arquivo externo'),
+                    ('Ctrl+,', 'Configurações', 'Abre diálogo de configurações do aplicativo'),
+                ]
+            },
+            {
+                'icon': '❓',
+                'title': 'Ajuda',
+                'description': 'Atalhos para acessar ajuda e informações',
+                'shortcuts': [
+                    ('F1', 'Guia de atalhos', 'Mostra esta janela com todos os atalhos'),
+                ]
+            },
+        ]
+    
+    def _create_category_group(self, category):
+        """
+        Cria um grupo visual para uma categoria de atalhos.
+        
+        Args:
+            category: Dicionário com dados da categoria
+        
+        Returns:
+            QGroupBox: Widget do grupo criado
+        """
+        group = QGroupBox(f"{category['icon']} {category['title']}")
+        group.setStyleSheet("""
+            QGroupBox {
+                font-size: 14px;
+                font-weight: bold;
+                border: 1px solid #555;
+                border-radius: 8px;
+                margin-top: 10px;
+                padding-top: 10px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px;
+            }
+        """)
+        
+        layout = QVBoxLayout()
+        layout.setSpacing(8)
+        
+        # Descrição da categoria
+        desc_label = QLabel(f"<i>{category['description']}</i>")
+        desc_label.setStyleSheet("color: gray; padding-left: 10px;")
+        layout.addWidget(desc_label)
+        
+        # Tabela de atalhos
+        table = QTableWidget()
+        table.setColumnCount(3)
+        table.setHorizontalHeaderLabels(["Atalho", "Ação", "Descrição"])
+        table.setRowCount(len(category['shortcuts']))
+        table.setEditTriggers(QTableWidget.NoEditTriggers)
+        table.setSelectionMode(QTableWidget.NoSelection)
+        table.setAlternatingRowColors(True)
+        table.verticalHeader().setVisible(False)
+        
+        # Configura largura das colunas
+        header = table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
+        
+        # Preenche a tabela
+        for row, (shortcut, action, description) in enumerate(category['shortcuts']):
+            # Coluna do atalho (com estilo especial)
+            shortcut_item = QTableWidgetItem(shortcut)
+            shortcut_item.setFont(QFont("Consolas", 10, QFont.Bold))
+            shortcut_item.setBackground(QColor(60, 60, 80))
+            shortcut_item.setForeground(QColor(100, 200, 255))
+            table.setItem(row, 0, shortcut_item)
+            
+            # Coluna da ação
+            action_item = QTableWidgetItem(action)
+            action_item.setFont(QFont("Segoe UI", 10, QFont.Bold))
+            table.setItem(row, 1, action_item)
+            
+            # Coluna da descrição
+            desc_item = QTableWidgetItem(description)
+            desc_item.setForeground(QColor(180, 180, 180))
+            table.setItem(row, 2, desc_item)
+        
+        # Ajusta altura da tabela baseado no conteúdo
+        table.setMinimumHeight(len(category['shortcuts']) * 35 + 30)
+        table.setMaximumHeight(len(category['shortcuts']) * 35 + 35)
+        
+        layout.addWidget(table)
+        group.setLayout(layout)
+        
+        return group
+
 
 class DatabaseSelectorDialog(QDialog):
     """Diálogo para selecionar ou criar banco de dados"""
@@ -1526,6 +1734,12 @@ class MainWindow(QMainWindow):
         self.btn_settings.clicked.connect(self.open_settings)
         layout.addWidget(self.btn_settings)
         
+        # Botão Guia de Atalhos
+        self.btn_shortcuts_guide = QPushButton("⌨️ Atalhos")
+        self.btn_shortcuts_guide.setToolTip("Abrir guia de atalhos de teclado (F1)")
+        self.btn_shortcuts_guide.clicked.connect(self._show_shortcuts_guide)
+        layout.addWidget(self.btn_shortcuts_guide)
+        
         layout.addStretch()
         
         return layout
@@ -2602,11 +2816,30 @@ class MainWindow(QMainWindow):
             )
     
     def _show_shortcuts(self):
-        """Mostra diálogo de atalhos de teclado"""
+        """Mostra diálogo de atalhos de teclado (versão simples para F1)"""
+        self._show_shortcuts_guide()
+    
+    def _show_shortcuts_guide(self):
+        """
+        Mostra um guia interativo completo de atalhos de teclado.
+        
+        Exibe uma janela organizada por categorias com todos os atalhos
+        disponíveis e suas descrições detalhadas.
+        """
+        try:
+            dialog = ShortcutsGuideDialog(self)
+            dialog.exec()
+        except Exception as e:
+            app_logger.error(f"Erro ao mostrar guia de atalhos: {e}", exc_info=True)
+            # Fallback para versão simples
+            self._show_shortcuts_simple()
+    
+    def _show_shortcuts_simple(self):
+        """Versão simplificada do guia de atalhos (fallback)"""
         shortcuts = """
         <h2>⌨️ Atalhos de Teclado</h2>
         
-        <h3>Arquivo</h3>
+        <h3>📁 Arquivo</h3>
         <table>
         <tr><td><b>Ctrl+O</b></td><td>Importar arquivo</td></tr>
         <tr><td><b>Ctrl+S</b></td><td>Salvar arquivo</td></tr>
@@ -2615,22 +2848,20 @@ class MainWindow(QMainWindow):
         <tr><td><b>Ctrl+Q</b></td><td>Sair</td></tr>
         </table>
         
-        <h3>Banco de Dados</h3>
+        <h3>🗄️ Banco de Dados</h3>
         <table>
         <tr><td><b>Ctrl+B</b></td><td>Visualizar banco de dados</td></tr>
         <tr><td><b>Ctrl+E</b></td><td>Exportar para CSV</td></tr>
         </table>
         
-        <h3>Ferramentas</h3>
+        <h3>🛠️ Ferramentas</h3>
         <table>
         <tr><td><b>Ctrl+P</b></td><td>Gerenciar perfis regex</td></tr>
         <tr><td><b>Ctrl+I</b></td><td>Importar traduções</td></tr>
         <tr><td><b>Ctrl+,</b></td><td>Configurações</td></tr>
         </table>
         
-        <h3>Tradução</h3>
-        <table>
-        <tr><td><b>F5</b></td        <h3>Edição</h3>
+        <h3>✏️ Edição</h3>
         <table>
         <tr><td><b>F2 / Enter</b></td><td>Editar linha selecionada</td></tr>
         <tr><td><b>Ctrl+C</b></td><td>Copiar linhas selecionadas</td></tr>
@@ -2639,9 +2870,14 @@ class MainWindow(QMainWindow):
         <tr><td><b>Ctrl+Z</b></td><td>Desfazer última ação</td></tr>
         </table>
         
-        <h3>Ajuda</h3>
+        <h3>🌐 Tradução</h3>
         <table>
-        <tr><td><b>F1</b></td><td>Mostrar atalhos</td></tr>
+        <tr><td><b>F5</b></td><td>Traduzir automaticamente via API</td></tr>
+        </table>
+        
+        <h3>❓ Ajuda</h3>
+        <table>
+        <tr><td><b>F1</b></td><td>Mostrar este guia de atalhos</td></tr>
         </table>
         """
         
