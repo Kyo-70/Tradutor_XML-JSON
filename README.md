@@ -82,10 +82,6 @@ python src/main.py
 
 Contribuições são sempre bem-vindas! Sinta-se à vontade para abrir *issues* ou enviar *pull requests* com melhorias, correções de bugs ou novas funcionalidades.
 
-## 📜 Licença
-
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
 ---
 
 <p align="center">Desenvolvido com 💙 por Manus AI</p>
