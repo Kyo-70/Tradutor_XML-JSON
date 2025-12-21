@@ -12,7 +12,7 @@ Sistema profissional de tradução para arquivos JSON e XML de jogos e mods, com
 ### Método 1: Instalador Automático (Recomendado)
 
 1. **Baixe** ou extraia todos os arquivos do projeto
-2. **Execute** `INSTALAR.bat` como administrador
+2. **Execute** `INSTALAR.ps1` no PowerShell como administrador
 3. **Selecione** a opção `[1] Instalação Completa`
 4. **Aguarde** a instalação automática
 5. **Pronto!** O executável estará em `dist\GameTranslator.exe`
@@ -20,28 +20,26 @@ Sistema profissional de tradução para arquivos JSON e XML de jogos e mods, com
 ### Método 2: Execução Direta (Desenvolvimento)
 
 1. Certifique-se de ter Python 3.8+ instalado
-2. Execute `EXECUTAR.bat`
+2. Execute `EXECUTAR.ps1` no PowerShell
 3. As dependências serão instaladas automaticamente
 
 ### 🔄 Manter Atualizado
 
 Para manter o Game Translator sempre atualizado:
 
-1. **Execute** `ATUALIZAR.bat`
-2. **Selecione** a opção `[1] Atualizar Repositório Completo`
-3. **Aguarde** a sincronização com a versão mais recente
-4. **Pronto!** Todas as melhorias e correções serão aplicadas automaticamente
+1. Use `git pull` para obter a versão mais recente
+2. Reinstale as dependências se necessário com `pip install -r requirements.txt`
+3. **Pronto!** Todas as melhorias e correções serão aplicadas automaticamente
 
-> 💡 **Dica**: Execute `ATUALIZAR.bat` regularmente para obter novos recursos e correções de bugs!
+> 💡 **Dica**: Mantenha o repositório atualizado regularmente para obter novos recursos e correções de bugs!
 
 ## 📋 Arquivos do Instalador
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `INSTALAR.bat` | 🚀 Instalador completo com menu interativo |
-| `EXECUTAR.bat` | ▶️ Executa o programa rapidamente |
-| `VERIFICAR_SISTEMA.bat` | 🔍 Verifica compatibilidade do sistema com **cores no terminal** |
-| `ATUALIZAR.bat` | 🔄 Atualiza o repositório e dependências automaticamente |
+| `INSTALAR.ps1` | 🚀 Instalador completo com menu interativo (PowerShell) |
+| `EXECUTAR.ps1` | ▶️ Executa o programa rapidamente (PowerShell) |
+| `VERIFICAR_SISTEMA.ps1` | 🔍 Verifica compatibilidade do sistema com **cores no terminal** (PowerShell) |
 
 > **Novo! 🎨** Os scripts agora utilizam **cores personalizadas no terminal**:
 > - ✅ **Verde brilhante** para operações bem-sucedidas
@@ -52,15 +50,7 @@ Para manter o Game Translator sempre atualizado:
 > - 🌟 **Branco brilhante** para destaques
 > - 💜 **Magenta brilhante** para títulos
 
-### 🔄 Novo: Sistema de Atualização Automática
 
-O arquivo `ATUALIZAR.bat` oferece:
-- **Atualização Completa**: Sincroniza o repositório Git e atualiza todas as dependências
-- **Verificação de Atualizações**: Verifica se há novas versões disponíveis
-- **Atualização de Dependências**: Atualiza apenas os pacotes Python
-- **Recriar Executável**: Reconstrói o arquivo .exe após atualizações
-- **Verificação de Estado**: Mostra o estado atual do repositório Git
-- **Interface Colorida**: Menu interativo com cores personalizadas para melhor visualização
 
 ## 🎯 Características Principais
 
@@ -127,7 +117,7 @@ Ao iniciar, o programa solicita um banco de dados:
 | **Memória** | Clique em "⚡ Aplicar Memória" (aplica a todas ou apenas às linhas selecionadas) |
 | **API** | Clique em "🤖 Traduzir Auto" (traduz todas ou apenas as linhas selecionadas) |
 
-> 💡 **Novo!** Use **Ctrl+C** e **Ctrl+V** para copiar múltiplas linhas e editar no Notepad! Veja [COPIAR_COLAR.md](COPIAR_COLAR.md) para detalhes.
+> 💡 **Novo!** Use **Ctrl+C** e **Ctrl+V** para copiar múltiplas linhas e editar no Notepad!
 
 > 💡 **Dica de Tradução Seletiva**: Selecione linhas específicas antes de usar "⚡ Aplicar Memória" ou "🤖 Traduzir Auto" para traduzir apenas essas linhas!
 
@@ -187,10 +177,11 @@ Acesse via **Menu > Banco de Dados > Visualizar** ou botão **"🗄️ Ver Banco
 
 ```
 game-translator/
-├── 📄 INSTALAR.bat          # Instalador principal
-├── 📄 EXECUTAR.bat          # Execução rápida
-├── 📄 VERIFICAR_SISTEMA.bat # Verificação de compatibilidade (com cores!)
-├── 📄 ATUALIZAR.bat         # Atualizador do repositório (NOVO!)
+├── 📄 INSTALAR.ps1          # Instalador principal (PowerShell)
+├── 📄 EXECUTAR.ps1          # Execução rápida (PowerShell)
+├── 📄 VERIFICAR_SISTEMA.ps1 # Verificação de compatibilidade (PowerShell)
+├── 📄 build_exe.ps1         # Script de build do executável (PowerShell)
+├── 📄 build.sh              # Script de build alternativo (Bash)
 ├── 📄 requirements.txt      # Dependências Python
 ├── 📄 README.md             # Este arquivo
 ├── 📁 src/                  # Código-fonte
@@ -204,8 +195,11 @@ game-translator/
 │   ├── logger.py            # Sistema de logs
 │   ├── verificar_sistema.py # Verificação do sistema com cores
 │   └── gui/
-│       └── main_window.py   # Interface gráfica
+│       ├── main_window.py   # Interface gráfica principal
+│       └── regex_editor.py  # Editor de perfis de regex
 ├── 📁 profiles/             # Perfis de regex salvos
+├── 📁 bds/                  # Bancos de dados de tradução
+├── 📁 docs/                 # Documentação adicional
 ├── 📁 logs/                 # Arquivos de log
 └── 📁 dist/                 # Executável gerado
     └── GameTranslator.exe
@@ -255,7 +249,7 @@ O programa implementa múltiplas camadas de proteção:
 ```
 
 **Solução:**
-1. Execute `VERIFICAR_SISTEMA.bat`
+1. Execute `VERIFICAR_SISTEMA.ps1` no PowerShell
 2. Instale dependências faltantes
 3. Tente novamente
 
