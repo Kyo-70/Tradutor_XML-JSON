@@ -1123,6 +1123,10 @@ class MainWindow(QMainWindow):
         self.current_file = None
         self.entries = []
         
+        # Histórico de ações para desfazer (Undo)
+        self.undo_stack = []  # Lista de estados anteriores
+        self.max_undo_stack = 50  # Máximo de ações que podem ser desfeitas
+        
         # Monitor de recursos
         self.resource_monitor = ResourceMonitor()
         
@@ -1488,6 +1492,24 @@ class MainWindow(QMainWindow):
         self.btn_smart_translate.setEnabled(False)
         layout.addWidget(self.btn_smart_translate)
         
+        # Checkbox para auto-preencher ao aplicar memória
+        self.chk_auto_fill = QCheckBox("Auto-preencher")
+        self.chk_auto_fill.setToolTip(
+            "Quando ativado, preenche automaticamente as traduções\n"
+            "ao aplicar a memória de tradução"
+        )
+        self.chk_auto_fill.setChecked(True)  # Ativado por padrão
+        layout.addWidget(self.chk_auto_fill)
+        
+        # Checkbox para busca case-sensitive
+        self.chk_case_sensitive = QCheckBox("Case-sensitive")
+        self.chk_case_sensitive.setToolTip(
+            "Quando ativado, diferencia maiúsculas de minúsculas\n"
+            "ao buscar traduções similares na memória"
+        )
+        self.chk_case_sensitive.setChecked(False)  # Desativado por padrão
+        layout.addWidget(self.chk_case_sensitive)
+        
         # Botão salvar
         self.btn_save = QPushButton("💾 Salvar")
         self.btn_save.clicked.connect(self.save_file)
@@ -1552,6 +1574,18 @@ class MainWindow(QMainWindow):
         # Adiciona atalho de Delete para limpar traduções
         delete_shortcut = QShortcut(QKeySequence.Delete, table)
         delete_shortcut.activated.connect(self._clear_selected_translations)
+        
+        # Adiciona atalho de Undo (Ctrl+Z) para desfazer alterações
+        undo_shortcut = QShortcut(QKeySequence.Undo, table)
+        undo_shortcut.activated.connect(self._undo_last_action)
+        
+        # Adiciona atalho F2 para editar linha selecionada
+        f2_shortcut = QShortcut(Qt.Key_F2, table)
+        f2_shortcut.activated.connect(self._edit_selected_row)
+        
+        # Adiciona atalho Enter para editar linha selecionada
+        enter_shortcut = QShortcut(Qt.Key_Return, table)
+        enter_shortcut.activated.connect(self._edit_selected_row)
         
         return table
     
@@ -1849,6 +1883,66 @@ class MainWindow(QMainWindow):
         
         self.table.blockSignals(False)  # Reativa sinais
     
+    def _get_selected_rows(self):
+        """
+        Obtém as linhas selecionadas de forma robusta e consistente.
+        
+        Funcionalidade:
+        - Tenta primeiro usar selectionModel().selectedRows() para obter linhas completas
+        - Faz fallback para selectedItems() se necessário
+        - Remove duplicatas automaticamente
+        - Retorna lista ordenada de índices de linhas
+        - Valida se selectionModel() existe
+        
+        Returns:
+            list: Lista ordenada de índices de linhas selecionadas (sem duplicatas)
+                  Retorna lista vazia se nenhuma linha estiver selecionada
+        
+        Raises:
+            None: Nunca levanta exceção, retorna lista vazia em caso de erro
+        """
+        try:
+            selected_rows = []
+            
+            # Valida se a tabela e o modelo de seleção existem
+            if not self.table or not self.table.selectionModel():
+                app_logger.warning("Tabela ou modelo de seleção não disponível")
+                return selected_rows
+            
+            # Método 1: Tenta obter linhas selecionadas via selectionModel().selectedRows()
+            # Este é o método mais confiável quando SelectionBehavior é SelectRows
+            selected_indexes = self.table.selectionModel().selectedRows()
+            
+            if selected_indexes:
+                # Extrai os números das linhas dos índices
+                selected_rows = [index.row() for index in selected_indexes]
+                app_logger.debug(f"Linhas selecionadas via selectedRows(): {len(selected_rows)}")
+            else:
+                # Método 2: Fallback para selectedItems() se selectedRows() não retornar nada
+                # Isso pode acontecer se o usuário selecionou células individuais
+                selected_items = self.table.selectedItems()
+                if selected_items:
+                    selected_rows = [item.row() for item in selected_items]
+                    app_logger.debug(f"Linhas selecionadas via selectedItems(): {len(selected_rows)} (antes de remover duplicatas)")
+            
+            # Remove duplicatas e ordena
+            # Usa set() para remover duplicatas e sorted() para ordenar
+            selected_rows = sorted(set(selected_rows))
+            
+            # Valida se os índices estão dentro do range válido
+            valid_rows = [row for row in selected_rows if 0 <= row < len(self.entries)]
+            
+            if len(valid_rows) != len(selected_rows):
+                app_logger.warning(f"Algumas linhas selecionadas estão fora do range válido: {len(selected_rows) - len(valid_rows)} ignoradas")
+            
+            app_logger.debug(f"Total de linhas selecionadas (após validação): {len(valid_rows)}")
+            return valid_rows
+            
+        except Exception as e:
+            # Em caso de qualquer erro, registra e retorna lista vazia
+            app_logger.error(f"Erro ao obter linhas selecionadas: {e}", exc_info=True)
+            return []
+    
     def _auto_adjust_row_heights(self):
         """
         Auto-ajusta a altura das linhas baseado no conteúdo.
@@ -1913,6 +2007,9 @@ class MainWindow(QMainWindow):
         
         row = item.row()
         if row < len(self.entries):
+            # Salva estado para undo antes de editar
+            self._save_undo_state(f"Editar tradução da linha {row + 1}")
+            
             # Atualiza entrada
             self.entries[row].translated_text = item.text()
             
@@ -1956,11 +2053,7 @@ class MainWindow(QMainWindow):
         - Registra operação no log
         """
         # Obtém todas as linhas selecionadas (suporta seleção múltipla)
-        selected_indexes = self.table.selectionModel().selectedRows()
-        if selected_indexes:
-            selected_rows = sorted(set(index.row() for index in selected_indexes))
-        else:
-            selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        selected_rows = self._get_selected_rows()
         
         if not selected_rows:
             self.status_label.setText("Nenhuma linha selecionada")
@@ -1976,6 +2069,9 @@ class MainWindow(QMainWindow):
         
         if reply != QMessageBox.Yes:
             return
+        
+        # Salva estado para undo
+        self._save_undo_state("Limpar traduções")
         
         # Bloqueia sinais durante atualização
         self.table.blockSignals(True)
@@ -2026,7 +2122,7 @@ class MainWindow(QMainWindow):
         Atualiza o status da interface e registra a operação no log.
         Não requer parâmetros - opera nas linhas selecionadas na tabela.
         """
-        selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        selected_rows = self._get_selected_rows()
         
         if not selected_rows:
             self.status_label.setText("Nenhuma linha selecionada para copiar")
@@ -2071,12 +2167,11 @@ class MainWindow(QMainWindow):
             self.status_label.setText("Área de transferência vazia")
             return
         
+        # Salva estado para undo
+        self._save_undo_state("Colar traduções")
+        
         # Pega linhas selecionadas (suporta seleção múltipla)
-        selected_indexes = self.table.selectionModel().selectedRows()
-        if selected_indexes:
-            selected_rows = sorted(set(index.row() for index in selected_indexes))
-        else:
-            selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        selected_rows = self._get_selected_rows()
         
         # Parse do conteúdo da área de transferência
         # Formato esperado: Original\tTradução (uma linha por entrada)
@@ -2206,10 +2301,13 @@ class MainWindow(QMainWindow):
             return
         
         try:
+            # Salva estado para undo
+            self._save_undo_state("Aplicar memória de tradução")
+            
             self.status_label.setText("Aplicando traduções inteligentes...")
             
             # Verifica se há linhas selecionadas
-            selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+            selected_rows = self._get_selected_rows()
             
             if selected_rows:
                 # Aplica apenas às linhas selecionadas que não têm tradução
@@ -2240,24 +2338,42 @@ class MainWindow(QMainWindow):
             # Aplica tradução inteligente
             translations = self.smart_translator.auto_translate_batch(untranslated)
             
+            # Verifica se auto-preencher está ativado
+            auto_fill_enabled = self.chk_auto_fill.isChecked()
+            
             # Atualiza entradas
             count = 0
-            for entry in self.entries:
-                if not entry.translated_text and entry.original_text in translations:
-                    entry.translated_text = translations[entry.original_text]
-                    count += 1
+            if auto_fill_enabled:
+                # Modo auto-preencher: aplica as traduções automaticamente
+                for entry in self.entries:
+                    if not entry.translated_text and entry.original_text in translations:
+                        entry.translated_text = translations[entry.original_text]
+                        count += 1
+            else:
+                # Modo manual: apenas mostra as traduções encontradas sem aplicar
+                count = len(translations)
             
             # Atualiza tabela
             self._populate_table()
             self._update_statistics()
             
-            self.status_label.setText(f"Traduções inteligentes aplicadas: {count}")
-            QMessageBox.information(
-                self, 
-                "Sucesso", 
-                f"{count} traduções aplicadas automaticamente em {info_message}!\n\n"
-                "💡 Dica: Selecione linhas específicas para aplicar tradução apenas a elas."
-            )
+            if auto_fill_enabled:
+                self.status_label.setText(f"Traduções inteligentes aplicadas: {count}")
+                QMessageBox.information(
+                    self, 
+                    "Sucesso", 
+                    f"{count} traduções aplicadas automaticamente em {info_message}!\n\n"
+                    "💡 Dica: Selecione linhas específicas para aplicar tradução apenas a elas."
+                )
+            else:
+                self.status_label.setText(f"Encontradas {count} traduções na memória")
+                QMessageBox.information(
+                    self, 
+                    "Traduções Encontradas", 
+                    f"{count} traduções encontradas na memória para {info_message}.\n\n"
+                    "Auto-preencher está desativado. As traduções não foram aplicadas.\n"
+                    "Ative a opção 'Auto-preencher' para aplicar automaticamente."
+                )
             
             app_logger.info(f"Traduções inteligentes aplicadas: {count}")
             
@@ -2277,7 +2393,7 @@ class MainWindow(QMainWindow):
             return
         
         # Verifica se há linhas selecionadas
-        selected_rows = sorted(set(item.row() for item in self.table.selectedItems()))
+        selected_rows = self._get_selected_rows()
         
         if selected_rows:
             # Traduz apenas as linhas selecionadas que não têm tradução
@@ -2322,6 +2438,9 @@ class MainWindow(QMainWindow):
         
         if reply != QMessageBox.Yes:
             return
+        
+        # Salva estado para undo
+        self._save_undo_state("Tradução automática via API")
         
         # Inicia worker thread
         self.status_label.setText("Traduzindo automaticamente...")
@@ -2511,9 +2630,13 @@ class MainWindow(QMainWindow):
         
         <h3>Tradução</h3>
         <table>
-        <tr><td><b>F5</b></td><td>Traduzir automaticamente</td></tr>
+        <tr><td><b>F5</b></td        <h3>Edição</h3>
+        <table>
+        <tr><td><b>F2 / Enter</b></td><td>Editar linha selecionada</td></tr>
         <tr><td><b>Ctrl+C</b></td><td>Copiar linhas selecionadas</td></tr>
         <tr><td><b>Ctrl+V</b></td><td>Colar traduções</td></tr>
+        <tr><td><b>Delete</b></td><td>Limpar traduções selecionadas</td></tr>
+        <tr><td><b>Ctrl+Z</b></td><td>Desfazer última ação</td></tr>
         </table>
         
         <h3>Ajuda</h3>
@@ -2592,6 +2715,175 @@ class MainWindow(QMainWindow):
         except Exception as e:
             app_logger.error(f"Erro ao restaurar configurações da janela: {e}")
             # Continua com geometria padrão em caso de erro
+    
+    def _save_undo_state(self, action_description=""):
+        """
+        Salva o estado atual das traduções no histórico de undo.
+        
+        Args:
+            action_description: Descrição da ação que está sendo realizada
+        """
+        try:
+            # Cria cópia profunda das traduções atuais
+            current_state = {
+                'entries': [(e.original_text, e.translated_text) for e in self.entries],
+                'action': action_description
+            }
+            
+            # Adiciona ao stack
+            self.undo_stack.append(current_state)
+            
+            # Limita o tamanho do stack
+            if len(self.undo_stack) > self.max_undo_stack:
+                self.undo_stack.pop(0)  # Remove o mais antigo
+            
+            app_logger.debug(f"Estado salvo no undo stack: {action_description} (total: {len(self.undo_stack)})")
+            
+        except Exception as e:
+            app_logger.error(f"Erro ao salvar estado no undo stack: {e}", exc_info=True)
+    
+    def _undo_last_action(self):
+        """
+        Desfaz a última ação realizada (Ctrl+Z).
+        
+        Restaura o estado anterior das traduções a partir do histórico.
+        """
+        try:
+            if not self.undo_stack:
+                self.status_label.setText("Nenhuma ação para desfazer")
+                QMessageBox.information(self, "Desfazer", "Não há ações para desfazer.")
+                return
+            
+            # Recupera o último estado
+            last_state = self.undo_stack.pop()
+            
+            # Restaura as traduções
+            self.table.blockSignals(True)  # Bloqueia sinais durante restauração
+            
+            for i, (original, translation) in enumerate(last_state['entries']):
+                if i < len(self.entries):
+                    self.entries[i].translated_text = translation
+                    
+                    # Atualiza item da tabela
+                    translation_item = self.table.item(i, 2)
+                    if translation_item:
+                        translation_item.setText(translation or "")
+                    
+                    # Atualiza status visual
+                    status_item = self.table.item(i, 3)
+                    if translation:
+                        if status_item:
+                            status_item.setText("✅")
+                        for col in range(4):
+                            item = self.table.item(i, col)
+                            if item:
+                                item.setBackground(TableColors.TRANSLATED_ROW)
+                    else:
+                        if status_item:
+                            status_item.setText("⏳")
+                        for col in range(4):
+                            item = self.table.item(i, col)
+                            if item:
+                                if i % 2 == 0:
+                                    item.setBackground(TableColors.BASE_ROW)
+                                else:
+                                    item.setBackground(TableColors.ALTERNATE_ROW)
+            
+            self.table.blockSignals(False)  # Reativa sinais
+            
+            # Atualiza estatísticas
+            self._update_statistics()
+            
+            action_desc = last_state.get('action', 'Ação')
+            self.status_label.setText(f"Desfeito: {action_desc}")
+            app_logger.info(f"Ação desfeita: {action_desc}")
+            
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao desfazer ação:\n{str(e)}")
+            app_logger.error(f"Erro ao desfazer ação: {e}", exc_info=True)
+    
+    def _edit_selected_row(self):
+        """
+        Inicia edição da linha selecionada (F2 ou Enter).
+        
+        Abre a célula de tradução para edição direta.
+        """
+        try:
+            selected_rows = self._get_selected_rows()
+            
+            if not selected_rows:
+                self.status_label.setText("Nenhuma linha selecionada para editar")
+                return
+            
+            # Edita a primeira linha selecionada
+            row = selected_rows[0]
+            
+            if row < self.table.rowCount():
+                # Auto-ajusta altura antes de editar
+                self._auto_adjust_row_heights()
+                
+                # Seleciona e inicia edição da célula de tradução (coluna 2)
+                translation_item = self.table.item(row, 2)
+                if translation_item:
+                    self.table.setCurrentItem(translation_item)
+                    self.table.editItem(translation_item)
+                    app_logger.debug(f"Edição iniciada na linha {row}")
+                else:
+                    self.status_label.setText("Erro: item de tradução não encontrado")
+            
+        except Exception as e:
+            app_logger.error(f"Erro ao editar linha selecionada: {e}", exc_info=True)
+            self.status_label.setText(f"Erro ao editar linha: {str(e)}")
+    
+    def _calculate_similarity(self, text1, text2):
+        """
+        Calcula similaridade entre dois textos usando Levenshtein distance.
+        
+        Args:
+            text1: Primeiro texto
+            text2: Segundo texto
+        
+        Returns:
+            float: Similaridade entre 0.0 e 1.0
+        """
+        try:
+            if text1 == text2:
+                return 1.0
+            
+            if not text1 or not text2:
+                return 0.0
+            
+            # Implementação simples de Levenshtein distance
+            len1, len2 = len(text1), len(text2)
+            
+            # Matriz de distâncias
+            matrix = [[0] * (len2 + 1) for _ in range(len1 + 1)]
+            
+            for i in range(len1 + 1):
+                matrix[i][0] = i
+            for j in range(len2 + 1):
+                matrix[0][j] = j
+            
+            for i in range(1, len1 + 1):
+                for j in range(1, len2 + 1):
+                    cost = 0 if text1[i-1] == text2[j-1] else 1
+                    matrix[i][j] = min(
+                        matrix[i-1][j] + 1,      # deleção
+                        matrix[i][j-1] + 1,      # inserção
+                        matrix[i-1][j-1] + cost  # substituição
+                    )
+            
+            distance = matrix[len1][len2]
+            max_len = max(len1, len2)
+            
+            # Converte distância para similaridade
+            similarity = 1.0 - (distance / max_len)
+            
+            return similarity
+            
+        except Exception as e:
+            app_logger.error(f"Erro ao calcular similaridade: {e}", exc_info=True)
+            return 0.0
     
     def closeEvent(self, event):
         """Evento de fechamento da janela"""
