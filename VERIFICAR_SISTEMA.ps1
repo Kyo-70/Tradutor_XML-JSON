@@ -161,6 +161,155 @@ function Show-SuccessBox {
     Write-Host ""
 }
 
+function Export-SystemReport {
+    param([string]$OutputPath = "")
+
+    if (-not $OutputPath) {
+        $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+        $OutputPath = Join-Path $ScriptDir "system_report_$timestamp.txt"
+    }
+
+    $report = @()
+    $report += "============================================================================"
+    $report += "          GAME TRANSLATOR - RELATORIO DO SISTEMA"
+    $report += "          Gerado em: $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')"
+    $report += "============================================================================"
+    $report += ""
+
+    # PowerShell Info
+    $report += "[POWERSHELL]"
+    $report += "  Versao: $($PSVersionTable.PSVersion)"
+    $report += "  Edicao: $($PSVersionTable.PSEdition)"
+    $report += ""
+
+    # Sistema Operacional
+    $report += "[SISTEMA OPERACIONAL]"
+    try {
+        $os = Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue
+        if ($os) {
+            $report += "  Nome: $($os.Caption)"
+            $report += "  Versao: $($os.Version)"
+            $report += "  Arquitetura: $($os.OSArchitecture)"
+        }
+    } catch {
+        $report += "  Nao foi possivel obter informacoes do SO"
+    }
+    $report += ""
+
+    # Memoria
+    $report += "[MEMORIA]"
+    try {
+        $mem = Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue
+        if ($mem) {
+            $totalMem = [math]::Round($mem.TotalVisibleMemorySize / 1MB, 2)
+            $freeMem = [math]::Round($mem.FreePhysicalMemory / 1MB, 2)
+            $report += "  Total: $totalMem GB"
+            $report += "  Livre: $freeMem GB"
+        }
+    } catch {}
+    $report += ""
+
+    # Disco
+    $report += "[ESPACO EM DISCO]"
+    try {
+        $drives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Used -gt 0 }
+        foreach ($drive in $drives) {
+            $total = [math]::Round(($drive.Used + $drive.Free) / 1GB, 2)
+            $free = [math]::Round($drive.Free / 1GB, 2)
+            $used = [math]::Round(($drive.Used / ($drive.Used + $drive.Free)) * 100, 1)
+            $report += "  $($drive.Name): $free GB livres de $total GB ($used% usado)"
+        }
+    } catch {}
+    $report += ""
+
+    # Python
+    $report += "[PYTHON]"
+    try {
+        $pythonVersion = py --version 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            $report += "  Versao: $pythonVersion"
+            $pipVersion = py -m pip --version 2>&1
+            $report += "  Pip: $pipVersion"
+
+            # Pacotes instalados
+            $report += ""
+            $report += "  [PACOTES PRINCIPAIS]"
+            $packages = @("PySide6", "requests", "psutil", "colorama", "pyinstaller")
+            foreach ($pkg in $packages) {
+                try {
+                    $pkgInfo = py -m pip show $pkg 2>&1
+                    if ($LASTEXITCODE -eq 0) {
+                        $version = ($pkgInfo | Select-String "Version:").ToString().Replace("Version: ", "").Trim()
+                        $report += "    $pkg : $version [OK]"
+                    } else {
+                        $report += "    $pkg : NAO INSTALADO"
+                    }
+                } catch {
+                    $report += "    $pkg : ERRO AO VERIFICAR"
+                }
+            }
+        } else {
+            $report += "  Status: NAO INSTALADO"
+        }
+    } catch {
+        $report += "  Status: ERRO AO VERIFICAR"
+    }
+    $report += ""
+
+    # Projeto
+    $report += "[PROJETO GAME TRANSLATOR]"
+    $report += "  Diretorio: $ScriptDir"
+
+    $exePath = Join-Path $ScriptDir "dist\GameTranslator.exe"
+    if (Test-Path $exePath) {
+        $exeInfo = Get-Item $exePath
+        $report += "  Executavel: ENCONTRADO"
+        $report += "    Tamanho: $([math]::Round($exeInfo.Length / 1MB, 2)) MB"
+        $report += "    Criado: $($exeInfo.CreationTime)"
+        $report += "    Modificado: $($exeInfo.LastWriteTime)"
+    } else {
+        $report += "  Executavel: NAO COMPILADO"
+    }
+    $report += ""
+
+    $report += "============================================================================"
+    $report += "                    FIM DO RELATORIO"
+    $report += "============================================================================"
+
+    try {
+        $report | Out-File -FilePath $OutputPath -Encoding UTF8
+        return $OutputPath
+    } catch {
+        return $null
+    }
+}
+
+function Show-ExportMenu {
+    Write-Host ""
+    Write-Host "  [*] Deseja exportar o relatorio do sistema? " -NoNewline -ForegroundColor $Colors.Info
+    Write-Host "(S/N) " -NoNewline -ForegroundColor $Colors.Primary
+    $response = Read-Host
+
+    if ($response -match "^[SsYy]$") {
+        Write-Host ""
+        Write-Host "  Exportando relatorio..." -ForegroundColor $Colors.Primary
+        $reportPath = Export-SystemReport
+        if ($reportPath) {
+            Write-Host "  [+] Relatorio salvo em: " -NoNewline -ForegroundColor $Colors.Success
+            Write-Host $reportPath -ForegroundColor $Colors.Info
+            Write-Host ""
+            Write-Host "  Abrir o arquivo? " -NoNewline -ForegroundColor $Colors.Info
+            Write-Host "(S/N) " -NoNewline -ForegroundColor $Colors.Primary
+            $openFile = Read-Host
+            if ($openFile -match "^[SsYy]$") {
+                Start-Process notepad $reportPath
+            }
+        } else {
+            Write-Host "  [X] Falha ao exportar relatorio" -ForegroundColor $Colors.Error
+        }
+    }
+}
+
 # ============================================================================
 # LOGICA PRINCIPAL
 # ============================================================================
@@ -219,6 +368,9 @@ if ($exitCode -eq 0) {
 } else {
     Show-ErrorBox "Verificacao encontrou problemas." "Codigo de saida: $exitCode"
 }
+
+# Opcao de exportar relatorio
+Show-ExportMenu
 
 Write-Host ""
 Write-GradientLine "=" 76
