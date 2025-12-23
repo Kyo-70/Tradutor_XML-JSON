@@ -1304,7 +1304,7 @@ class MainWindow(QMainWindow):
         self.resource_monitor = ResourceMonitor()
 
         # Configura interface
-        self.setWindowTitle("Bannerlord Localization Helper v2.1")
+        self.setWindowTitle("Game Translator - Sistema de Tradução para Jogos e Mods")
         self.setGeometry(DEFAULT_WINDOW_X, DEFAULT_WINDOW_Y, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
 
         # Inicializa gerenciador de temas
@@ -2016,7 +2016,7 @@ class MainWindow(QMainWindow):
         layout.setSpacing(0)
 
         # Título principal
-        title = QLabel("Bannerlord Localization Helper v2.1")
+        title = QLabel("Game Translator v2.1")
         title.setFont(QFont("Consolas", 20, QFont.Bold))
         title.setAlignment(Qt.AlignLeft)
         title.setStyleSheet("color: #e8a624; padding: 5px 0; font-family: 'Consolas', 'Monaco', monospace;")
@@ -2026,26 +2026,30 @@ class MainWindow(QMainWindow):
         return layout
     
     def _create_toolbar(self):
-        """Cria a barra de ferramentas - Estilo Bannerlord"""
+        """Cria a barra de ferramentas com novo estilo visual"""
         layout = QHBoxLayout()
         layout.setSpacing(8)
 
-        # === GRUPO ESQUERDO ===
-
-        # Botão Select File
-        self.btn_import = QPushButton("Select File")
+        # Botão importar arquivo
+        self.btn_import = QPushButton("Importar Arquivo")
         self.btn_import.setToolTip("Selecionar arquivo para tradução (Ctrl+O)")
         self.btn_import.clicked.connect(self.import_file)
         layout.addWidget(self.btn_import)
 
-        # Botão Clear Table
-        self.btn_clear_table = QPushButton("Clear Table")
-        self.btn_clear_table.setToolTip("Limpar tabela de traduções")
-        self.btn_clear_table.clicked.connect(self._clear_table)
-        layout.addWidget(self.btn_clear_table)
+        # Seletor de perfil
+        layout.addWidget(QLabel("Perfil:"))
+        self.combo_profile = QComboBox()
+        self.combo_profile.addItems(self.profile_manager.get_all_profile_names())
+        layout.addWidget(self.combo_profile)
 
-        # Botão Translate
-        self.btn_auto_translate = QPushButton("Translate")
+        # Botão editar perfis
+        self.btn_edit_profiles = QPushButton("Perfis")
+        self.btn_edit_profiles.setToolTip("Gerenciar Perfis Regex (Ctrl+P)")
+        self.btn_edit_profiles.clicked.connect(self._open_profile_manager)
+        layout.addWidget(self.btn_edit_profiles)
+
+        # Botão traduzir automaticamente
+        self.btn_auto_translate = QPushButton("Traduzir API")
         self.btn_auto_translate.setToolTip(
             "Traduzir usando API:\n"
             "• Sem seleção: traduz todas as linhas não traduzidas\n"
@@ -2056,8 +2060,8 @@ class MainWindow(QMainWindow):
         self.btn_auto_translate.setEnabled(False)
         layout.addWidget(self.btn_auto_translate)
 
-        # Botão Import Translations
-        self.btn_smart_translate = QPushButton("Import Translations")
+        # Botão aplicar traduções inteligentes
+        self.btn_smart_translate = QPushButton("Aplicar Memória")
         self.btn_smart_translate.setToolTip(
             "Aplicar traduções da memória:\n"
             "• Sem seleção: aplica a todas as linhas não traduzidas\n"
@@ -2067,133 +2071,43 @@ class MainWindow(QMainWindow):
         self.btn_smart_translate.setEnabled(False)
         layout.addWidget(self.btn_smart_translate)
 
-        # Indicador de velocidade
-        speed_container = QHBoxLayout()
-        speed_container.setSpacing(5)
-        speed_label = QLabel("Speed:")
-        speed_label.setStyleSheet("color: #888;")
-        speed_container.addWidget(speed_label)
-
-        self.speed_indicator = QLabel("Slow")
-        self.speed_indicator.setStyleSheet("""
-            color: #4ecdc4;
-            font-weight: bold;
-            padding: 2px 8px;
-            border: 1px solid #4ecdc4;
-            border-radius: 3px;
-        """)
-        speed_container.addWidget(self.speed_indicator)
-        layout.addLayout(speed_container)
+        # Botão toggle memória sensível
+        self.btn_toggle_sensitive = QPushButton("Sensível: ON")
+        self.btn_toggle_sensitive.setToolTip(
+            "Memória Sensível a Padrões:\n"
+            "Quando ATIVADA, traduz automaticamente padrões numéricos.\n"
+            "Exemplo: Se 'Soldier 01' = 'Soldado 01',\n"
+            "então 'Soldier 02' será 'Soldado 02' automaticamente.\n\n"
+            "Clique para alternar ON/OFF"
+        )
+        self.btn_toggle_sensitive.clicked.connect(self._toggle_sensitive_memory)
+        self.btn_toggle_sensitive.setStyleSheet(
+            "background-color: #2d5a27; border: 1px solid #4ecdc4; color: #4ecdc4;"
+        )
+        layout.addWidget(self.btn_toggle_sensitive)
 
         layout.addStretch()
 
-        # === GRUPO DIREITO ===
+        # Botão visualizar banco
+        self.btn_view_db = QPushButton("Ver Banco")
+        self.btn_view_db.setToolTip("Visualizar banco de dados (Ctrl+B)")
+        self.btn_view_db.clicked.connect(self._view_database)
+        layout.addWidget(self.btn_view_db)
 
-        # Botão Pause Translate
-        self.btn_pause_translate = QPushButton("Pause Translate")
-        self.btn_pause_translate.setToolTip("Pausar tradução em andamento")
-        self.btn_pause_translate.setEnabled(False)
-        self.btn_pause_translate.clicked.connect(self._pause_translation)
-        layout.addWidget(self.btn_pause_translate)
-
-        # Botão Clear Translated
-        self.btn_clear_translated = QPushButton("Clear Translated")
-        self.btn_clear_translated.setToolTip("Limpar todas as traduções")
-        self.btn_clear_translated.clicked.connect(self._clear_all_translations)
-        layout.addWidget(self.btn_clear_translated)
-
-        # Botão Save
-        self.btn_save = QPushButton("Save")
+        # Botão salvar
+        self.btn_save = QPushButton("Salvar")
         self.btn_save.setToolTip("Salvar arquivo (Ctrl+S)")
         self.btn_save.clicked.connect(self.save_file)
         self.btn_save.setEnabled(False)
         layout.addWidget(self.btn_save)
 
-        # Seletor de perfil (oculto, mas necessário para funcionalidade)
-        self.combo_profile = QComboBox()
-        self.combo_profile.addItems(self.profile_manager.get_all_profile_names())
-        self.combo_profile.setVisible(False)  # Oculto na nova interface
-        layout.addWidget(self.combo_profile)
-
-        # Botões antigos ocultos para manter compatibilidade
-        self.btn_toggle_sensitive = QPushButton("Sensível: ON")
-        self.btn_toggle_sensitive.clicked.connect(self._toggle_sensitive_memory)
-        self.btn_toggle_sensitive.setVisible(False)
-
-        self.btn_view_db = QPushButton("Ver Banco")
-        self.btn_view_db.clicked.connect(self._view_database)
-        self.btn_view_db.setVisible(False)
-
+        # Botão configurações
         self.btn_settings = QPushButton("Config")
+        self.btn_settings.setToolTip("Configurações (Ctrl+,)")
         self.btn_settings.clicked.connect(self.open_settings)
-        self.btn_settings.setVisible(False)
-
-        self.btn_edit_profiles = QPushButton("Editar Perfis")
-        self.btn_edit_profiles.clicked.connect(self._open_profile_manager)
-        self.btn_edit_profiles.setVisible(False)
+        layout.addWidget(self.btn_settings)
 
         return layout
-
-    def _clear_table(self):
-        """Limpa a tabela de traduções"""
-        if not self.entries:
-            return
-
-        reply = QMessageBox.question(
-            self,
-            "Confirmar Limpeza",
-            "Deseja limpar a tabela de traduções?\nIsso não afeta o banco de dados.",
-            QMessageBox.Yes | QMessageBox.No
-        )
-
-        if reply == QMessageBox.Yes:
-            self.table.setRowCount(0)
-            self.entries = []
-            self.current_file = None
-            self.status_label.setText("Tabela limpa")
-            self._update_statistics()
-            self.btn_save.setEnabled(False)
-            self.btn_auto_translate.setEnabled(False)
-            self.btn_smart_translate.setEnabled(False)
-
-    def _pause_translation(self):
-        """Pausa a tradução em andamento"""
-        if hasattr(self, 'translation_worker') and self.translation_worker:
-            self.translation_worker.cancel()
-            self.status_label.setText("Tradução pausada")
-            self.btn_pause_translate.setEnabled(False)
-
-    def _clear_all_translations(self):
-        """Limpa todas as traduções da tabela"""
-        if not self.entries:
-            return
-
-        reply = QMessageBox.question(
-            self,
-            "Confirmar Limpeza",
-            "Deseja limpar todas as traduções?\nIsso não afeta o banco de dados.",
-            QMessageBox.Yes | QMessageBox.No
-        )
-
-        if reply == QMessageBox.Yes:
-            self.table.blockSignals(True)
-            for row, entry in enumerate(self.entries):
-                entry.translated_text = ""
-                if self.table.item(row, 2):
-                    self.table.item(row, 2).setText("")
-                if self.table.item(row, 3):
-                    self.table.item(row, 3).setText("⏳")
-                # Reset cores
-                for col in range(4):
-                    item = self.table.item(row, col)
-                    if item:
-                        if row % 2 == 0:
-                            item.setBackground(TableColors.BASE_ROW)
-                        else:
-                            item.setBackground(TableColors.ALTERNATE_ROW)
-            self.table.blockSignals(False)
-            self._update_statistics()
-            self.status_label.setText("Traduções limpas")
     
     def _create_translation_table(self):
         """Cria a tabela de traduções"""
@@ -3475,19 +3389,19 @@ class MainWindow(QMainWindow):
         """Mostra diálogo Sobre"""
         QMessageBox.about(
             self,
-            "About Bannerlord Localization Helper",
-            "<h2 style='color: #e8a624;'>Bannerlord Localization Helper v2.1</h2>"
-            "<p>Professional Translation System for Mount & Blade II: Bannerlord</p>"
-            "<p><b>Features:</b></p>"
+            "Sobre Game Translator",
+            "<h2 style='color: #e8a624;'>Game Translator v2.1</h2>"
+            "<p>Sistema Profissional de Tradução para Jogos e Mods</p>"
+            "<p><b>Características:</b></p>"
             "<ul>"
-            "<li>Full file structure preservation</li>"
-            "<li>Translation memory with SQLite</li>"
-            "<li>Intelligent pattern-based translation</li>"
-            "<li>Multiple API support (DeepL, Google, MyMemory, LibreTranslate)</li>"
-            "<li>Integrated security system</li>"
-            "<li>Batch processing support</li>"
+            "<li>Preservação total da estrutura de arquivos</li>"
+            "<li>Memória de tradução com SQLite</li>"
+            "<li>Tradução inteligente com padrões</li>"
+            "<li>Suporte a múltiplas APIs (DeepL, Google, MyMemory, LibreTranslate)</li>"
+            "<li>Sistema de segurança integrado</li>"
+            "<li>Processamento em lote</li>"
             "</ul>"
-            "<p style='color: #666;'>This software may not be copied, reproduced, or modified without permission.</p>"
+            "<p style='color: #666;'>Desenvolvido por Manus AI</p>"
         )
     
     def _on_main_table_column_resized(self, logicalIndex, oldSize, newSize):
