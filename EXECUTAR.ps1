@@ -1,180 +1,205 @@
 # ============================================================================
-#                    GAME TRANSLATOR - EXECUCAO RAPIDA v3.0.0
-#                     Visual Ultra Moderno com Animacoes
+#                    GAME TRANSLATOR - EXECUCAO RAPIDA v2.0.1
+#                     Visual Moderno com Animacoes
 # ============================================================================
 # Requer PowerShell 5.1 ou superior
 
 $Host.UI.RawUI.WindowTitle = "Game Translator - Execucao Rapida"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+# ============================================================================
+# CONFIGURACAO DE CORES MODERNAS
+# ============================================================================
+$script:Colors = @{
+    Primary    = "Cyan"
+    Secondary  = "Magenta"
+    Success    = "Green"
+    Error      = "Red"
+    Warning    = "Yellow"
+    Info       = "White"
+    Accent     = "Blue"
+    Dim        = "DarkGray"
+}
+
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # ============================================================================
-# IMPORTAR MODULO DE UI
+# FUNCOES DE ANIMACAO E VISUAL
 # ============================================================================
 
-$ModulePath = Join-Path $ScriptDir "GameTranslatorUI.psm1"
-if (Test-Path $ModulePath) {
-    Import-Module $ModulePath -Force -DisableNameChecking
-} else {
-    Write-Host "ERRO: Modulo UI nao encontrado!" -ForegroundColor Red
-    exit 1
-}
-
-# Definir tema - Opcoes: Neon, Ocean, Sunset, Matrix, Cyberpunk, Arctic
-Set-UITheme -ThemeName "Neon" | Out-Null
-
-# ============================================================================
-# HEADER ANIMADO - FOGUETE
-# ============================================================================
-
-function Show-LaunchHeader {
-    Clear-Host
-    Write-Host ""
-    Write-GradientLine -Char "═" -Length 76 -Animated
-
-    Write-Host ""
-
-    $rocket = @(
-        "                      ▄▄████▄▄                      ",
-        "                    ▄██████████▄                    ",
-        "                   ████████████████                 ",
-        "                   ████████████████                 ",
-        "                   ████████████████                 ",
-        "                   ██████▀▀██████▀▀                 ",
-        "                  ▐█████    █████▌                  ",
-        "                  ▐█████    █████▌                  ",
-        "                 ▄█████▌    ▐█████▄                 ",
-        "                ████████    ████████                ",
-        "               ▀▀▀▀▀▀██▌    ▐██▀▀▀▀▀▀               ",
-        "                     ▐█▌    ▐█▌                     ",
-        "                    ▄███    ███▄                    ",
-        "                   █████    █████                   ",
-        "                  ▀▀ ▀▀      ▀▀ ▀▀                  "
-    )
-
-    $rocketColors = @("Magenta", "Magenta", "Cyan", "Cyan", "Cyan", "Yellow", "Yellow", "Yellow", "Cyan", "Cyan", "Yellow", "Red", "Red", "Yellow", "Yellow")
-
-    for ($i = 0; $i -lt $rocket.Count; $i++) {
-        Write-CenteredText $rocket[$i] $rocketColors[$i] 76
-        Start-Sleep -Milliseconds 40
-    }
-
-    Write-Host ""
-    Write-GradientLine -Char "─" -Length 76
-    Write-Host ""
-    Write-CenteredRainbow "GAME TRANSLATOR" 76
-    Write-CenteredText "Execucao Rapida v3.0.0" "DarkGray" 76
-    Write-Host ""
-    Write-GradientLine -Char "═" -Length 76
-    Write-Host ""
-}
-
-# ============================================================================
-# ANIMACAO DE LANCAMENTO
-# ============================================================================
-
-function Show-LaunchSequence {
-    param([string]$Message)
-
-    Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor $Colors.Primary
-    Write-Host "  ║                                                               ║" -ForegroundColor $Colors.Primary
-    Write-Host "  ║  " -NoNewline -ForegroundColor $Colors.Primary
-
-    $frames = @("▸    ", "▸▸   ", "▸▸▸  ", "▸▸▸▸ ", "▸▸▸▸▸")
-
-    for ($i = 0; $i -lt 3; $i++) {
-        foreach ($frame in $frames) {
-            Write-Host "`r  ║  $frame " -NoNewline -ForegroundColor $Colors.Secondary
-            Write-Host $Message -NoNewline -ForegroundColor White
-            Write-Host " $frame" -NoNewline -ForegroundColor $Colors.Secondary
-            $padding = 59 - $Message.Length - 12
-            Write-Host (" " * [math]::Max(0, $padding)) -NoNewline
-            Write-Host "║" -NoNewline -ForegroundColor $Colors.Primary
-            Start-Sleep -Milliseconds 80
+function Write-GradientLine {
+    param([string]$Char = "=", [int]$Length = 76)
+    $colors = @("DarkBlue", "Blue", "Cyan", "DarkCyan", "Cyan", "Blue", "DarkBlue")
+    $segmentLength = [math]::Ceiling($Length / $colors.Count)
+    
+    for ($i = 0; $i -lt $colors.Count; $i++) {
+        $remaining = $Length - ($i * $segmentLength)
+        $currentLength = [math]::Min($segmentLength, $remaining)
+        if ($currentLength -gt 0) {
+            Write-Host ($Char * $currentLength) -NoNewline -ForegroundColor $colors[$i]
         }
     }
-
-    Write-Host ""
-    Write-Host "  ║                                                               ║" -ForegroundColor $Colors.Primary
-    Write-Host "  ╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor $Colors.Primary
     Write-Host ""
 }
 
-# ============================================================================
-# COUNTDOWN ANIMADO
-# ============================================================================
+function Write-CenteredText {
+    param([string]$Text, [string]$Color = "White", [int]$Width = 76)
+    $padding = [math]::Max(0, ($Width - $Text.Length) / 2)
+    Write-Host (" " * $padding) -NoNewline
+    Write-Host $Text -ForegroundColor $Color
+}
 
-function Show-CountdownExit {
-    param([int]$Seconds = 3)
-
-    Write-Host ""
-    Write-Host "  Fechando em " -NoNewline -ForegroundColor $Colors.Dim
-
-    for ($i = $Seconds; $i -ge 1; $i--) {
-        Write-Host "$i " -NoNewline -ForegroundColor $Colors.Primary
-        Start-Sleep -Milliseconds 300
-
-        # Efeito de pulse
-        Write-Host "`b`b" -NoNewline
-        Write-Host "$i " -NoNewline -ForegroundColor $Colors.Secondary
-        Start-Sleep -Milliseconds 300
-
-        Write-Host "`b`b" -NoNewline
-        Write-Host "$i " -NoNewline -ForegroundColor $Colors.Primary
-        Start-Sleep -Milliseconds 400
+function Show-Spinner {
+    param([string]$Message, [int]$Duration = 2)
+    $spinChars = @("|", "/", "-", "\")
+    $endTime = (Get-Date).AddSeconds($Duration)
+    $i = 0
+    
+    while ((Get-Date) -lt $endTime) {
+        Write-Host "`r  [$($spinChars[$i % $spinChars.Count])] $Message" -NoNewline -ForegroundColor $Colors.Primary
+        Start-Sleep -Milliseconds 100
+        $i++
     }
+    Write-Host "`r  [+] $Message                    " -ForegroundColor $Colors.Success
+}
 
+function Show-LoadingBar {
+    param([string]$Message, [int]$Steps = 30)
     Write-Host ""
+    Write-Host "  $Message" -ForegroundColor $Colors.Info
+    Write-Host "  [" -NoNewline -ForegroundColor $Colors.Dim
+    
+    for ($i = 0; $i -lt $Steps; $i++) {
+        $color = if ($i -lt $Steps/3) { "DarkCyan" } elseif ($i -lt $Steps*2/3) { "Cyan" } else { "White" }
+        Write-Host "#" -NoNewline -ForegroundColor $color
+        Start-Sleep -Milliseconds 30
+    }
+    
+    Write-Host "] " -NoNewline -ForegroundColor $Colors.Dim
+    Write-Host "OK!" -ForegroundColor $Colors.Success
+}
+
+function Show-Header {
+    Clear-Host
     Write-Host ""
-    Write-CenteredText "Ate a proxima!" $Colors.Success 76
+    Write-GradientLine "=" 76
     Write-Host ""
+    
+    $rocket = @(
+        "                    /\  ",
+        "                   /  \ ",
+        "                  / || \ ",
+        "                 /  ||  \ ",
+        "                /_______\ ",
+        "                   || ",
+        "                  /||\ ",
+        "                 * ** *"
+    )
+    
+    foreach ($line in $rocket) {
+        Write-CenteredText $line "Cyan" 76
+        Start-Sleep -Milliseconds 50
+    }
+    
+    Write-Host ""
+    Write-CenteredText "============================================================" "DarkGray" 76
+    Write-Host ""
+    Write-CenteredText "GAME TRANSLATOR" "Cyan" 76
+    Write-CenteredText "Execucao Rapida" "DarkCyan" 76
+    Write-Host ""
+    Write-CenteredText "============================================================" "DarkGray" 76
+    Write-Host ""
+}
+
+function Show-SuccessBox {
+    param([string]$Message)
+    Write-Host ""
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Success
+    Write-Host "  |  [OK] " -NoNewline -ForegroundColor $Colors.Success
+    Write-Host $Message.PadRight(58) -NoNewline -ForegroundColor "White"
+    Write-Host "|" -ForegroundColor $Colors.Success
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Success
+    Write-Host ""
+}
+
+function Show-ErrorBox {
+    param([string]$Message, [string]$SubMessage = "")
+    Write-Host ""
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Error
+    Write-Host "  |  [X] " -NoNewline -ForegroundColor $Colors.Error
+    Write-Host $Message.PadRight(59) -NoNewline -ForegroundColor "White"
+    Write-Host "|" -ForegroundColor $Colors.Error
+    if ($SubMessage) {
+        Write-Host "  |      " -NoNewline -ForegroundColor $Colors.Error
+        Write-Host $SubMessage.PadRight(59) -NoNewline -ForegroundColor $Colors.Dim
+        Write-Host "|" -ForegroundColor $Colors.Error
+    }
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Error
+    Write-Host ""
+}
+
+function Show-InfoBox {
+    param([string]$Message)
+    Write-Host ""
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Primary
+    Write-Host "  |  [i] " -NoNewline -ForegroundColor $Colors.Primary
+    Write-Host $Message.PadRight(59) -NoNewline -ForegroundColor $Colors.Info
+    Write-Host "|" -ForegroundColor $Colors.Primary
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Primary
+    Write-Host ""
+}
+
+function Write-SubStep {
+    param([string]$Message, [string]$Status = "")
+    Write-Host "     -> " -NoNewline -ForegroundColor $Colors.Dim
+    Write-Host $Message -NoNewline -ForegroundColor $Colors.Info
+    if ($Status) { Write-Host " $Status" -ForegroundColor $Colors.Dim }
+    else { Write-Host "" }
+}
+
+function Write-SubStepSuccess {
+    param([string]$Message)
+    Write-Host "     [+] " -NoNewline -ForegroundColor $Colors.Success
+    Write-Host $Message -ForegroundColor $Colors.Info
 }
 
 # ============================================================================
 # LOGICA PRINCIPAL
 # ============================================================================
 
-Show-LaunchHeader
+Show-Header
 
 $ExePath = Join-Path $ScriptDir "dist\GameTranslator.exe"
 
 # Verifica se o executavel existe
 if (Test-Path $ExePath) {
-    Show-AdvancedSpinner -Message "Localizando executavel" -Duration 1 -Style "Braille"
+    Show-Spinner "Localizando executavel" 1
     Write-SubStepSuccess "Executavel encontrado!"
     Write-Host ""
-
-    # Informacoes do arquivo
-    $fileInfo = Get-Item $ExePath
-    $fileSize = [math]::Round($fileInfo.Length / 1MB, 2)
-
-    Write-Host "  ┌─────────────────────────────────────────┐" -ForegroundColor $Colors.Dim
-    Write-Host "  │ " -NoNewline -ForegroundColor $Colors.Dim
-    Write-Host "Arquivo: GameTranslator.exe" -NoNewline -ForegroundColor $Colors.Info
-    Write-Host "            │" -ForegroundColor $Colors.Dim
-    Write-Host "  │ " -NoNewline -ForegroundColor $Colors.Dim
-    Write-Host "Tamanho: $fileSize MB".PadRight(37) -NoNewline -ForegroundColor $Colors.Secondary
-    Write-Host "│" -ForegroundColor $Colors.Dim
-    Write-Host "  └─────────────────────────────────────────┘" -ForegroundColor $Colors.Dim
+    
+    Show-LoadingBar "Iniciando Game Translator..." 25
+    
     Write-Host ""
-
-    Show-GradientProgressBar -Message "Iniciando Game Translator..." -Steps 25 -Delay 35
-
-    Show-LaunchSequence "LANCANDO APLICACAO"
-
+    Write-Host "  [*] " -NoNewline -ForegroundColor $Colors.Primary
+    Write-Host "Abrindo aplicacao..." -ForegroundColor $Colors.Info
+    
     Start-Process $ExePath
-
-    Show-SuccessBox "Game Translator iniciado com sucesso!" -Animated
-
-    Show-CountdownExit 3
+    
+    Show-SuccessBox "Game Translator iniciado com sucesso!"
+    
+    # Animacao de saida
+    Write-Host "  Fechando em " -NoNewline -ForegroundColor $Colors.Dim
+    for ($i = 3; $i -ge 1; $i--) {
+        Write-Host "$i " -NoNewline -ForegroundColor $Colors.Primary
+        Start-Sleep -Seconds 1
+    }
+    Write-Host ""
     exit 0
 }
 
-# Se nao existe o .exe, tenta via Python
-Write-Host ""
-Show-WarningBox "Executavel nao encontrado" "Iniciando via Python..."
+# Se nao existe, tenta via Python
+Write-Host "  [!] " -NoNewline -ForegroundColor $Colors.Warning
+Write-Host "Executavel nao encontrado. Iniciando via Python..." -ForegroundColor $Colors.Warning
 Write-Host ""
 
 # Verifica Python
@@ -189,49 +214,44 @@ try {
 }
 
 Write-Host ""
-Show-AdvancedSpinner -Message "Verificando dependencias" -Duration 1 -Style "Dots"
+Write-Host "  [*] Verificando dependencias..." -ForegroundColor $Colors.Info
 Write-Host ""
 
 # Verifica e instala dependencias se necessario
-$dependencies = @(
-    @{ Module = "PySide6"; Display = "PySide6 (Interface)" },
-    @{ Module = "requests"; Display = "Requests (HTTP)" },
-    @{ Module = "psutil"; Display = "PSUtil (Sistema)" },
-    @{ Module = "colorama"; Display = "Colorama (Cores)" }
-)
+$dependencies = @("PySide6", "requests", "psutil", "colorama")
 
 foreach ($dep in $dependencies) {
-    Write-SubStep "Verificando $($dep.Display)..."
-    $checkCmd = "import $($dep.Module)"
+    Write-SubStep "Verificando $dep..."
+    $checkCmd = "import $dep"
     $result = py -c $checkCmd 2>&1
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "`r       [!] Instalando $($dep.Display)...          " -NoNewline -ForegroundColor $Colors.Warning
-        py -m pip install $dep.Module --quiet 2>$null
-        Write-Host "`r       [✓] $($dep.Display) instalado                " -ForegroundColor $Colors.Success
+        Write-Host "`r     -> Instalando $dep...          " -NoNewline -ForegroundColor $Colors.Warning
+        py -m pip install $dep --quiet 2>$null
+        Write-Host "`r     [+] $dep instalado              " -ForegroundColor $Colors.Success
     } else {
-        Write-Host "`r       [✓] $($dep.Display) OK                       " -ForegroundColor $Colors.Success
+        Write-Host "`r     [+] $dep OK                     " -ForegroundColor $Colors.Success
     }
 }
 
 Write-Host ""
 Show-SuccessBox "Dependencias verificadas!"
 
-Show-GradientProgressBar -Message "Iniciando Game Translator..." -Steps 25 -Delay 35
+Show-LoadingBar "Iniciando Game Translator..." 25
 
 Write-Host ""
-Write-Host "  [★] " -NoNewline -ForegroundColor $Colors.Secondary
+Write-Host "  [*] " -NoNewline -ForegroundColor $Colors.Primary
 Write-Host "Executando aplicacao..." -ForegroundColor $Colors.Info
 Write-Host ""
-Write-GradientLine -Char "─" -Length 76
+Write-GradientLine "-" 76
 Write-Host ""
 
 Set-Location (Join-Path $ScriptDir "src")
 py main.py
 
 Write-Host ""
-Write-GradientLine -Char "─" -Length 76
+Write-GradientLine "-" 76
 Write-Host ""
-Write-Host "  [★] " -NoNewline -ForegroundColor $Colors.Primary
+Write-Host "  [*] " -NoNewline -ForegroundColor $Colors.Primary
 Write-Host "Programa encerrado." -ForegroundColor $Colors.Info
 Write-Host ""
 Read-Host "  Pressione Enter para sair"

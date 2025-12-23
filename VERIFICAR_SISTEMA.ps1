@@ -1,174 +1,163 @@
 # ============================================================================
-#                 GAME TRANSLATOR - VERIFICACAO DO SISTEMA v3.0.0
-#                     Visual Ultra Moderno com Animacoes
+#                 GAME TRANSLATOR - VERIFICACAO DO SISTEMA v2.0.1
+#                     Visual Moderno com Animacoes
 # ============================================================================
 # Requer PowerShell 5.1 ou superior
 
 $Host.UI.RawUI.WindowTitle = "Game Translator - Verificacao do Sistema"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+# ============================================================================
+# CONFIGURACAO DE CORES MODERNAS
+# ============================================================================
+$script:Colors = @{
+    Primary    = "Cyan"
+    Secondary  = "Magenta"
+    Success    = "Green"
+    Error      = "Red"
+    Warning    = "Yellow"
+    Info       = "White"
+    Accent     = "Blue"
+    Dim        = "DarkGray"
+}
+
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # ============================================================================
-# IMPORTAR MODULO DE UI
+# FUNCOES DE ANIMACAO E VISUAL
 # ============================================================================
 
-$ModulePath = Join-Path $ScriptDir "GameTranslatorUI.psm1"
-if (Test-Path $ModulePath) {
-    Import-Module $ModulePath -Force -DisableNameChecking
-} else {
-    Write-Host "ERRO: Modulo UI nao encontrado!" -ForegroundColor Red
-    exit 1
+function Write-GradientLine {
+    param([string]$Char = "=", [int]$Length = 76)
+    $colors = @("DarkBlue", "Blue", "Cyan", "DarkCyan", "Cyan", "Blue", "DarkBlue")
+    $segmentLength = [math]::Ceiling($Length / $colors.Count)
+    
+    for ($i = 0; $i -lt $colors.Count; $i++) {
+        $remaining = $Length - ($i * $segmentLength)
+        $currentLength = [math]::Min($segmentLength, $remaining)
+        if ($currentLength -gt 0) {
+            Write-Host ($Char * $currentLength) -NoNewline -ForegroundColor $colors[$i]
+        }
+    }
+    Write-Host ""
 }
 
-# Definir tema - Opcoes: Neon, Ocean, Sunset, Matrix, Cyberpunk, Arctic
-Set-UITheme -ThemeName "Ocean" | Out-Null
+function Write-CenteredText {
+    param([string]$Text, [string]$Color = "White", [int]$Width = 76)
+    $padding = [math]::Max(0, ($Width - $Text.Length) / 2)
+    Write-Host (" " * $padding) -NoNewline
+    Write-Host $Text -ForegroundColor $Color
+}
 
-# ============================================================================
-# HEADER ANIMADO - LUPA/SCANNER
-# ============================================================================
+function Show-ScanAnimation {
+    param([int]$Duration = 2)
+    $frames = @(
+        "  [#         ] 10%  ",
+        "  [##        ] 20%  ",
+        "  [###       ] 30%  ",
+        "  [####      ] 40%  ",
+        "  [#####     ] 50%  ",
+        "  [######    ] 60%  ",
+        "  [#######   ] 70%  ",
+        "  [########  ] 80%  ",
+        "  [######### ] 90%  ",
+        "  [##########] 100% "
+    )
+    
+    foreach ($frame in $frames) {
+        Write-Host "`r$frame" -NoNewline -ForegroundColor $Colors.Primary
+        Start-Sleep -Milliseconds ($Duration * 100)
+    }
+    Write-Host ""
+}
 
-function Show-ScannerHeader {
+function Show-Spinner {
+    param([string]$Message, [int]$Duration = 2)
+    $spinChars = @("|", "/", "-", "\")
+    $endTime = (Get-Date).AddSeconds($Duration)
+    $i = 0
+    
+    while ((Get-Date) -lt $endTime) {
+        Write-Host "`r  [$($spinChars[$i % $spinChars.Count])] $Message" -NoNewline -ForegroundColor $Colors.Primary
+        Start-Sleep -Milliseconds 100
+        $i++
+    }
+    Write-Host "`r  [+] $Message                              " -ForegroundColor $Colors.Success
+}
+
+function Show-Header {
     Clear-Host
     Write-Host ""
-    Write-GradientLine -Char "═" -Length 76 -Animated
-
+    Write-GradientLine "=" 76
     Write-Host ""
-
-    $scanner = @(
-        "               ╔═══════════════════════════╗               ",
-        "               ║    ◉ SYSTEM SCANNER ◉    ║               ",
-        "               ╚═══════════════════════════╝               ",
-        "                                                           ",
-        "                    ╭─────────────────╮                    ",
-        "                   ╱                   ╲                   ",
-        "                  │    ┌─────────┐     │                  ",
-        "                  │    │  ◎  ◎  │     │                  ",
-        "                  │    │ ═══════ │     │                  ",
-        "                  │    │  ▓▓▓▓▓  │     │                  ",
-        "                  │    └─────────┘     │                  ",
-        "                   ╲                   ╱                   ",
-        "                    ╰─────────────────╯                    "
+    
+    $magnifier = @(
+        "         (?) ",
+        "        /    ",
+        "       O     ",
+        "      /|\    ",
+        "      / \    "
     )
-
-    $scannerColors = @("Cyan", "White", "Cyan", "Blue", "DarkCyan", "Cyan", "Cyan", "Yellow", "White", "Green", "Cyan", "Cyan", "DarkCyan")
-
-    for ($i = 0; $i -lt $scanner.Count; $i++) {
-        Write-CenteredText $scanner[$i] $scannerColors[$i] 76
-        Start-Sleep -Milliseconds 50
+    
+    foreach ($line in $magnifier) {
+        Write-CenteredText $line "Cyan" 76
+        Start-Sleep -Milliseconds 80
     }
-
+    
     Write-Host ""
-    Write-GradientLine -Char "─" -Length 76
+    Write-CenteredText "============================================================" "DarkGray" 76
     Write-Host ""
-    Write-CenteredText "GAME TRANSLATOR" $Colors.Primary 76
-    Write-CenteredText "Verificacao do Sistema v3.0.0" "DarkGray" 76
+    Write-CenteredText "GAME TRANSLATOR" "Cyan" 76
+    Write-CenteredText "Verificacao do Sistema" "DarkCyan" 76
     Write-Host ""
-    Write-GradientLine -Char "═" -Length 76
+    Write-CenteredText "============================================================" "DarkGray" 76
     Write-Host ""
 }
 
-# ============================================================================
-# ANIMACAO DE SCAN
-# ============================================================================
-
-function Show-ScanningAnimation {
-    param([int]$Duration = 2)
-
-    $width = 50
-    $scanChar = "▓"
-    $emptyChar = "░"
-
+function Show-ErrorBox {
+    param([string]$Message, [string]$SubMessage = "", [string]$Link = "")
     Write-Host ""
-    Write-Host "  ╔$("═" * ($width + 2))╗" -ForegroundColor $Colors.Primary
-    Write-Host "  ║ " -NoNewline -ForegroundColor $Colors.Primary
-
-    for ($pos = 0; $pos -lt $width; $pos++) {
-        # Desenha a barra com a posição do scanner
-        Write-Host "`r  ║ " -NoNewline -ForegroundColor $Colors.Primary
-
-        for ($i = 0; $i -lt $width; $i++) {
-            if ($i -eq $pos -or $i -eq $pos - 1 -or $i -eq $pos + 1) {
-                Write-Host $scanChar -NoNewline -ForegroundColor $Colors.Secondary
-            } elseif ($i -lt $pos - 1) {
-                Write-Host $scanChar -NoNewline -ForegroundColor $Colors.Success
-            } else {
-                Write-Host $emptyChar -NoNewline -ForegroundColor $Colors.Dim
-            }
-        }
-
-        Write-Host " ║" -NoNewline -ForegroundColor $Colors.Primary
-        $percent = [math]::Floor(($pos / $width) * 100)
-        Write-Host " $percent%" -NoNewline -ForegroundColor $Colors.Info
-
-        Start-Sleep -Milliseconds ([math]::Floor($Duration * 1000 / $width))
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Error
+    Write-Host "  |                                                                   |" -ForegroundColor $Colors.Error
+    Write-Host "  |  [X] " -NoNewline -ForegroundColor $Colors.Error
+    Write-Host $Message.PadRight(59) -NoNewline -ForegroundColor "White"
+    Write-Host "|" -ForegroundColor $Colors.Error
+    if ($SubMessage) {
+        Write-Host "  |                                                                   |" -ForegroundColor $Colors.Error
+        Write-Host "  |      " -NoNewline -ForegroundColor $Colors.Error
+        Write-Host $SubMessage.PadRight(59) -NoNewline -ForegroundColor $Colors.Dim
+        Write-Host "|" -ForegroundColor $Colors.Error
     }
-
-    # Finaliza a barra completa
-    Write-Host "`r  ║ " -NoNewline -ForegroundColor $Colors.Primary
-    Write-Host ($scanChar * $width) -NoNewline -ForegroundColor $Colors.Success
-    Write-Host " ║" -NoNewline -ForegroundColor $Colors.Primary
-    Write-Host " 100% ✓" -ForegroundColor $Colors.Success
-
-    Write-Host "  ╚$("═" * ($width + 2))╝" -ForegroundColor $Colors.Primary
+    if ($Link) {
+        Write-Host "  |                                                                   |" -ForegroundColor $Colors.Error
+        Write-Host "  |  [>] " -NoNewline -ForegroundColor $Colors.Error
+        Write-Host $Link.PadRight(59) -NoNewline -ForegroundColor $Colors.Primary
+        Write-Host "|" -ForegroundColor $Colors.Error
+    }
+    Write-Host "  |                                                                   |" -ForegroundColor $Colors.Error
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Error
     Write-Host ""
 }
 
-# ============================================================================
-# RESULTADO DETALHADO
-# ============================================================================
-
-function Show-CheckResult {
-    param(
-        [string]$Component,
-        [bool]$Found,
-        [string]$Version = "",
-        [string]$Details = ""
-    )
-
-    $status = if ($Found) { "[✓]" } else { "[✗]" }
-    $statusColor = if ($Found) { $Colors.Success } else { $Colors.Error }
-    $statusText = if ($Found) { "OK" } else { "NAO ENCONTRADO" }
-
-    Write-Host "  ║ $status " -NoNewline -ForegroundColor $statusColor
-    Write-Host $Component.PadRight(20) -NoNewline -ForegroundColor $Colors.Info
-
-    if ($Version) {
-        Write-Host "│ " -NoNewline -ForegroundColor $Colors.Dim
-        Write-Host $Version.PadRight(18) -NoNewline -ForegroundColor $Colors.Secondary
-    } else {
-        Write-Host "│ " -NoNewline -ForegroundColor $Colors.Dim
-        Write-Host $statusText.PadRight(18) -NoNewline -ForegroundColor $statusColor
-    }
-
-    Write-Host "│ " -NoNewline -ForegroundColor $Colors.Dim
-    Write-Host $Details.PadRight(20) -NoNewline -ForegroundColor $Colors.Dim
-    Write-Host "║" -ForegroundColor $Colors.Primary
+function Show-InfoBox {
+    param([string]$Message)
+    Write-Host ""
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Primary
+    Write-Host "  |  [i] " -NoNewline -ForegroundColor $Colors.Primary
+    Write-Host $Message.PadRight(59) -NoNewline -ForegroundColor $Colors.Info
+    Write-Host "|" -ForegroundColor $Colors.Primary
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Primary
+    Write-Host ""
 }
 
-# ============================================================================
-# TABELA DE RESULTADOS
-# ============================================================================
-
-function Show-ResultsTable {
-    param([array]$Results)
-
+function Show-SuccessBox {
+    param([string]$Message)
     Write-Host ""
-    Write-Host "  ╔════════════════════════╤════════════════════╤══════════════════════╗" -ForegroundColor $Colors.Primary
-    Write-Host "  ║ " -NoNewline -ForegroundColor $Colors.Primary
-    Write-Host "COMPONENTE".PadRight(22) -NoNewline -ForegroundColor $Colors.Info
-    Write-Host "│ " -NoNewline -ForegroundColor $Colors.Dim
-    Write-Host "VERSAO/STATUS".PadRight(18) -NoNewline -ForegroundColor $Colors.Info
-    Write-Host "│ " -NoNewline -ForegroundColor $Colors.Dim
-    Write-Host "DETALHES".PadRight(20) -NoNewline -ForegroundColor $Colors.Info
-    Write-Host "║" -ForegroundColor $Colors.Primary
-    Write-Host "  ╠════════════════════════╪════════════════════╪══════════════════════╣" -ForegroundColor $Colors.Primary
-
-    foreach ($result in $Results) {
-        Show-CheckResult -Component $result.Component -Found $result.Found -Version $result.Version -Details $result.Details
-    }
-
-    Write-Host "  ╚════════════════════════╧════════════════════╧══════════════════════╝" -ForegroundColor $Colors.Primary
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Success
+    Write-Host "  |  [OK] " -NoNewline -ForegroundColor $Colors.Success
+    Write-Host $Message.PadRight(58) -NoNewline -ForegroundColor "White"
+    Write-Host "|" -ForegroundColor $Colors.Success
+    Write-Host "  +===================================================================+" -ForegroundColor $Colors.Success
     Write-Host ""
 }
 
@@ -176,33 +165,34 @@ function Show-ResultsTable {
 # LOGICA PRINCIPAL
 # ============================================================================
 
-Show-ScannerHeader
+Show-Header
 
-Write-Host "  [?] " -NoNewline -ForegroundColor $Colors.Secondary
-Write-Host "Iniciando verificacao do sistema..." -ForegroundColor $Colors.Info
+Write-Host "  [?] Iniciando verificacao do sistema..." -ForegroundColor $Colors.Info
 Write-Host ""
 
-Show-ScanningAnimation 2
+Show-ScanAnimation 1
 
 Write-Host ""
-Show-AdvancedSpinner -Message "Verificando instalacao do Python" -Duration 1 -Style "Braille"
+Show-Spinner "Verificando instalacao do Python" 1
 
 # Verifica se Python esta disponivel
-$results = @()
-
 try {
     $result = py --version 2>&1
     if ($LASTEXITCODE -ne 0) { throw "Python nao encontrado" }
-
+    
     $pythonVersion = $result
-    $results += @{ Component = "Python"; Found = $true; Version = $pythonVersion; Details = "Instalado" }
-
+    Write-Host ""
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Success
+    Write-Host "  |  [*] Python encontrado: " -NoNewline -ForegroundColor $Colors.Success
+    Write-Host "$pythonVersion".PadRight(40) -NoNewline -ForegroundColor $Colors.Info
+    Write-Host "|" -ForegroundColor $Colors.Success
+    Write-Host "  +-------------------------------------------------------------------+" -ForegroundColor $Colors.Success
+    Write-Host ""
+    
 } catch {
-    $results += @{ Component = "Python"; Found = $false; Version = ""; Details = "Necessario" }
-
     Show-ErrorBox "Python nao encontrado!" "O Python e necessario para executar este programa." "https://www.python.org/downloads/"
     Show-InfoBox "Durante a instalacao, marque 'Add Python to PATH'"
-
+    
     Write-Host ""
     Write-GradientLine "=" 76
     Write-Host ""
@@ -210,68 +200,9 @@ try {
     exit 1
 }
 
-# Verifica modulos Python
-$modules = @(
-    @{ Name = "PySide6"; DisplayName = "PySide6 (Qt6)"; Required = $true },
-    @{ Name = "requests"; DisplayName = "Requests"; Required = $true },
-    @{ Name = "psutil"; DisplayName = "PSUtil"; Required = $true },
-    @{ Name = "colorama"; DisplayName = "Colorama"; Required = $true },
-    @{ Name = "pyinstaller"; DisplayName = "PyInstaller"; Required = $false }
-)
-
-foreach ($module in $modules) {
-    Show-AdvancedSpinner -Message "Verificando $($module.DisplayName)" -Duration 0.5 -Style "Dots"
-
-    $checkResult = py -c "import $($module.Name); print($($module.Name).__version__ if hasattr($($module.Name), '__version__') else 'OK')" 2>&1
-    if ($LASTEXITCODE -eq 0) {
-        $version = $checkResult.Trim()
-        $results += @{
-            Component = $module.DisplayName
-            Found = $true
-            Version = $version
-            Details = if ($module.Required) { "Requerido" } else { "Opcional" }
-        }
-    } else {
-        $results += @{
-            Component = $module.DisplayName
-            Found = $false
-            Version = ""
-            Details = if ($module.Required) { "REQUERIDO!" } else { "Opcional" }
-        }
-    }
-}
-
-# Exibe tabela de resultados
+Write-Host "  [*] Executando verificacao detalhada..." -ForegroundColor $Colors.Info
 Write-Host ""
-Write-GradientLine -Char "═" -Length 76
-Write-CenteredText "RESULTADOS DA VERIFICACAO" $Colors.Primary 76
-Write-GradientLine -Char "─" -Length 76
-
-Show-ResultsTable -Results $results
-
-# Conta os que faltam
-$missing = ($results | Where-Object { -not $_.Found -and $_.Details -eq "REQUERIDO!" }).Count
-$total = $results.Count
-$found = ($results | Where-Object { $_.Found }).Count
-
-# Barra de status geral
-Write-Host "  ┌─────────────────────────────────────────────────────────────────────┐" -ForegroundColor $Colors.Dim
-Write-Host "  │  Status: " -NoNewline -ForegroundColor $Colors.Dim
-Write-Host "$found/$total componentes verificados" -NoNewline -ForegroundColor $Colors.Info
-if ($missing -gt 0) {
-    Write-Host " | " -NoNewline -ForegroundColor $Colors.Dim
-    Write-Host "$missing faltando" -NoNewline -ForegroundColor $Colors.Error
-}
-$padding = if ($missing -gt 0) { 25 } else { 40 }
-Write-Host (" " * $padding) -NoNewline
-Write-Host "│" -ForegroundColor $Colors.Dim
-Write-Host "  └─────────────────────────────────────────────────────────────────────┘" -ForegroundColor $Colors.Dim
-
-Write-Host ""
-Write-Host "  [*] " -NoNewline -ForegroundColor $Colors.Primary
-Write-Host "Executando verificacao detalhada via Python..." -ForegroundColor $Colors.Info
-Write-Host ""
-Write-GradientLine -Char "─" -Length 76
+Write-GradientLine "-" 76
 Write-Host ""
 
 # Executa o script Python com cores
@@ -281,16 +212,16 @@ py verificar_sistema.py --auto-instalar
 $exitCode = $LASTEXITCODE
 
 Write-Host ""
-Write-GradientLine -Char "─" -Length 76
+Write-GradientLine "-" 76
 
 if ($exitCode -eq 0) {
-    Show-SuccessBox "Verificacao concluida com sucesso!" -Animated
+    Show-SuccessBox "Verificacao concluida com sucesso!"
 } else {
     Show-ErrorBox "Verificacao encontrou problemas." "Codigo de saida: $exitCode"
 }
 
 Write-Host ""
-Write-GradientLine -Char "═" -Length 76
+Write-GradientLine "=" 76
 Write-Host ""
 Read-Host "  Pressione Enter para sair"
 
