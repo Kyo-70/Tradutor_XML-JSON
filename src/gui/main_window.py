@@ -78,6 +78,43 @@ except ImportError:
             KeyboardShortcutsManager, DragDropHandler
         )
 
+# Import do processador em lote
+try:
+    from batch_processor import BatchProcessor, BatchFileInfo, BatchResult
+    from gui.batch_dialog import BatchProcessorDialog
+except ImportError:
+    try:
+        from src.batch_processor import BatchProcessor, BatchFileInfo, BatchResult
+        from src.gui.batch_dialog import BatchProcessorDialog
+    except ImportError:
+        try:
+            from batch_dialog import BatchProcessorDialog
+        except ImportError:
+            BatchProcessor = None
+            BatchFileInfo = None
+            BatchResult = None
+            BatchProcessorDialog = None
+
+# Import do validador de placeholders
+try:
+    from placeholder_validator import PlaceholderValidator, validate_placeholders
+except ImportError:
+    try:
+        from src.placeholder_validator import PlaceholderValidator, validate_placeholders
+    except ImportError:
+        PlaceholderValidator = None
+        validate_placeholders = None
+
+# Import do motor de sugestões contextuais
+try:
+    from contextual_suggestions import ContextualSuggestionEngine, ContextualSuggestion
+except ImportError:
+    try:
+        from src.contextual_suggestions import ContextualSuggestionEngine, ContextualSuggestion
+    except ImportError:
+        ContextualSuggestionEngine = None
+        ContextualSuggestion = None
+
 # ============================================================================
 # UI CONSTANTS
 # ============================================================================
@@ -1252,6 +1289,7 @@ class MainWindow(QMainWindow):
         self.translation_memory = TranslationMemory()  # Sem conexão inicial
         self.profile_manager = RegexProfileManager()
         self.smart_translator = None  # Inicializado após conectar ao banco
+        self.suggestion_engine = None  # Motor de sugestões contextuais
         self.api_manager = TranslationAPIManager()
         self.file_processor = None
         self.current_file = None
@@ -1461,24 +1499,25 @@ class MainWindow(QMainWindow):
     def _register_shortcuts(self):
         """Registra todos os atalhos de teclado"""
         # Atalhos de arquivo
-        self.shortcuts.register("open_file", self._open_file, "Ctrl+O")
-        self.shortcuts.register("save_file", self._save_translations, "Ctrl+S")
+        self.shortcuts.register("open_file", self.import_file, "Ctrl+O")
+        self.shortcuts.register("save_file", self.save_file, "Ctrl+S")
 
         # Atalhos de tradução
-        self.shortcuts.register("translate_selected", self._translate_selected, "Ctrl+T")
-        self.shortcuts.register("translate_all", self._translate_all, "Ctrl+Shift+T")
+        self.shortcuts.register("translate_selected", self.apply_smart_translations, "Ctrl+T")
+        self.shortcuts.register("translate_all", self.auto_translate, "Ctrl+Shift+T")
 
         # Atalhos de busca
         self.shortcuts.register("search", self._focus_search, "Ctrl+F")
 
         # Atalhos de navegação
-        self.shortcuts.register("refresh", self._reload_file, "F5")
+        self.shortcuts.register("refresh", self._reload_file, "F6")
 
         # Atalhos de tema
         self.shortcuts.register("toggle_theme", self._toggle_theme, "Ctrl+Shift+D")
 
         # Atalhos de banco de dados
-        self.shortcuts.register("open_database", self._show_database_viewer, "Ctrl+D")
+        self.shortcuts.register("open_database", self._open_database, "Ctrl+D")
+        self.shortcuts.register("view_database", self._view_database, "Ctrl+B")
 
         # Atalho de ajuda
         self.shortcuts.register("help", self._show_shortcuts_help, "F1")
@@ -1513,11 +1552,12 @@ class MainWindow(QMainWindow):
 <table>
 <tr><td><b>Ctrl+O</b></td><td>Abrir arquivo</td></tr>
 <tr><td><b>Ctrl+S</b></td><td>Salvar traduções</td></tr>
-<tr><td><b>Ctrl+T</b></td><td>Traduzir selecionados</td></tr>
-<tr><td><b>Ctrl+Shift+T</b></td><td>Traduzir todos</td></tr>
+<tr><td><b>Ctrl+T</b></td><td>Aplicar memória de tradução</td></tr>
+<tr><td><b>Ctrl+Shift+T</b></td><td>Traduzir com API</td></tr>
 <tr><td><b>Ctrl+F</b></td><td>Buscar</td></tr>
-<tr><td><b>F5</b></td><td>Recarregar arquivo</td></tr>
+<tr><td><b>F6</b></td><td>Recarregar arquivo</td></tr>
 <tr><td><b>Ctrl+D</b></td><td>Abrir banco de dados</td></tr>
+<tr><td><b>Ctrl+B</b></td><td>Visualizar banco de dados</td></tr>
 <tr><td><b>Ctrl+Shift+D</b></td><td>Alternar tema claro/escuro</td></tr>
 <tr><td><b>F1</b></td><td>Mostrar esta ajuda</td></tr>
 <tr><td><b>Delete</b></td><td>Excluir tradução selecionada</td></tr>
@@ -1534,10 +1574,9 @@ class MainWindow(QMainWindow):
 
         if ext == 'db':
             # Arquivo de banco de dados
-            if self.translation_memory.connect(filepath):
-                self.smart_translator = SmartTranslator(self.translation_memory)
+            self._connect_database(filepath)
+            if self.translation_memory.is_connected():
                 self.toast.success(f"Banco de dados conectado: {os.path.basename(filepath)}")
-                self._update_db_info()
             else:
                 self.toast.error("Erro ao conectar ao banco de dados")
 
@@ -1551,7 +1590,7 @@ class MainWindow(QMainWindow):
 
         elif ext in ['json', 'xml']:
             # Arquivo de tradução
-            self._load_file(filepath)
+            self._load_translation_file(filepath)
             self.toast.success(f"Arquivo carregado: {os.path.basename(filepath)}")
 
     def dragEnterEvent(self, event):
@@ -1630,6 +1669,13 @@ class MainWindow(QMainWindow):
         action_import_trans.setShortcut("Ctrl+I")
         action_import_trans.triggered.connect(self._import_translations)
         tools_menu.addAction(action_import_trans)
+        
+        tools_menu.addSeparator()
+        
+        action_batch = QAction("Processamento em Lote...", self)
+        action_batch.setShortcut("Ctrl+Shift+B")
+        action_batch.triggered.connect(self._open_batch_processor)
+        tools_menu.addAction(action_batch)
         
         tools_menu.addSeparator()
         
@@ -1737,15 +1783,15 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.btn_edit_profiles)
         
         # Botão traduzir automaticamente
-        self.btn_auto_translate = QPushButton("🤖 Traduzir Auto (F5)")
+        self.btn_auto_translate = QPushButton("🤖 Traduzir Auto (Ctrl+Shift+T)")
         self.btn_auto_translate.setToolTip(
             "Traduzir usando API:\n"
             "• Sem seleção: traduz todas as linhas não traduzidas\n"
-            "• Com seleção: traduz apenas as linhas selecionadas"
+            "• Com seleção: traduz apenas as linhas selecionadas\n"
+            "Atalho: Ctrl+Shift+T"
         )
         self.btn_auto_translate.clicked.connect(self.auto_translate)
         self.btn_auto_translate.setEnabled(False)
-        self.btn_auto_translate.setShortcut("F5")
         layout.addWidget(self.btn_auto_translate)
         
         # Botão aplicar traduções inteligentes
@@ -1839,6 +1885,10 @@ class MainWindow(QMainWindow):
         delete_shortcut = QShortcut(QKeySequence.Delete, table)
         delete_shortcut.activated.connect(self._clear_selected_translations)
         
+        # Habilita menu de contexto personalizado
+        table.setContextMenuPolicy(Qt.CustomContextMenu)
+        table.customContextMenuRequested.connect(self._show_table_context_menu)
+        
         return table
     
     def _create_status_bar(self):
@@ -1884,6 +1934,10 @@ class MainWindow(QMainWindow):
         """Conecta a um banco de dados"""
         if self.translation_memory.connect(db_path):
             self.smart_translator = SmartTranslator(self.translation_memory)
+            
+            # Inicializa motor de sugestões contextuais
+            if ContextualSuggestionEngine is not None:
+                self.suggestion_engine = ContextualSuggestionEngine(self.translation_memory)
             
             stats = self.translation_memory.get_stats()
             self.db_info_label.setText(
@@ -2092,6 +2146,94 @@ class MainWindow(QMainWindow):
             self.status_label.setText("Erro ao carregar arquivo")
             self.progress_bar.setValue(0)
     
+    def _load_translation_file(self, filepath: str):
+        """
+        Carrega um arquivo de tradução diretamente (usado pelo drag-and-drop).
+        
+        Args:
+            filepath: Caminho do arquivo a ser carregado
+        """
+        # Verifica banco de dados
+        if not self.translation_memory.is_connected():
+            self.toast.warning("Conecte a um banco de dados primeiro")
+            return
+        
+        try:
+            self.status_label.setText("Validando arquivo...")
+            self.progress_bar.setValue(10)
+            
+            # Valida arquivo
+            ok, msg = SecurityValidator.validate_file_path(filepath)
+            if not ok:
+                self.toast.error(f"Arquivo inválido: {msg}")
+                return
+            
+            ok, msg = SecurityValidator.validate_file_size(filepath)
+            if not ok:
+                self.toast.error(f"Arquivo muito grande: {msg}")
+                return
+            
+            app_logger.info(f"Carregando arquivo via drag-drop: {filepath}")
+            
+            # Obtém perfil selecionado
+            profile_name = self.combo_profile.currentText()
+            profile = self.profile_manager.get_profile(profile_name)
+            
+            # Cria processador
+            self.file_processor = FileProcessor(profile)
+            
+            self.status_label.setText("Carregando arquivo...")
+            self.progress_bar.setValue(30)
+            
+            # Carrega arquivo
+            if not self.file_processor.load_file(filepath):
+                raise Exception("Falha ao carregar arquivo")
+            
+            self.status_label.setText("Extraindo textos...")
+            self.progress_bar.setValue(50)
+            
+            # Extrai textos
+            self.entries = self.file_processor.extract_texts()
+            
+            # Valida quantidade
+            if len(self.entries) > LIMITS.MAX_ENTRIES_PER_FILE:
+                self.toast.error(f"Arquivo muito grande: {len(self.entries)} entradas")
+                return
+            
+            self.status_label.setText("Aplicando memória de tradução...")
+            self.progress_bar.setValue(70)
+            
+            # Aplica traduções da memória
+            self._apply_memory_translations()
+            
+            self.status_label.setText("Atualizando interface...")
+            self.progress_bar.setValue(90)
+            
+            # Atualiza tabela
+            self._populate_table()
+            
+            # Atualiza status
+            self.current_file = filepath
+            self.status_label.setText(f"Arquivo carregado: {os.path.basename(filepath)}")
+            self.progress_bar.setValue(100)
+            self._update_statistics()
+            
+            # Atualiza label do arquivo atual
+            self._update_current_file_label(filepath)
+            
+            # Habilita botões
+            self.btn_auto_translate.setEnabled(True)
+            self.btn_smart_translate.setEnabled(True)
+            self.btn_save.setEnabled(True)
+            
+            app_logger.log_file_operation("import", filepath, True)
+            
+        except Exception as e:
+            self.toast.error(f"Erro ao carregar: {str(e)}")
+            app_logger.error(f"Erro ao carregar arquivo via drag-drop: {e}", exc_info=True)
+            self.status_label.setText("Erro ao carregar arquivo")
+            self.progress_bar.setValue(0)
+    
     def _apply_memory_translations(self):
         """Aplica traduções da memória aos textos extraídos"""
         if not self.smart_translator:
@@ -2211,6 +2353,26 @@ class MainWindow(QMainWindow):
             # Adiciona à memória
             original = self.entries[row].original_text
             translated = item.text()
+            
+            # Valida placeholders se o validador estiver disponível
+            if translated and validate_placeholders is not None:
+                validation = validate_placeholders(original, translated)
+                if not validation.is_valid:
+                    # Mostra aviso sobre placeholders
+                    warning_msg = "\n".join(validation.warnings)
+                    reply = QMessageBox.warning(
+                        self,
+                        "Aviso de Placeholder",
+                        f"Possível problema com placeholders:\n\n{warning_msg}\n\n"
+                        "Deseja manter a tradução mesmo assim?",
+                        QMessageBox.Yes | QMessageBox.No
+                    )
+                    if reply == QMessageBox.No:
+                        # Restaura texto anterior
+                        self.table.blockSignals(True)
+                        item.setText(self.entries[row].translated_text or "")
+                        self.table.blockSignals(False)
+                        return
             
             if translated and self.translation_memory.is_connected():
                 self.translation_memory.add_translation(original, translated)
@@ -2899,7 +3061,9 @@ class MainWindow(QMainWindow):
         
         <h3>Tradução</h3>
         <table>
-        <tr><td><b>F5</b></td><td>Traduzir automaticamente</td></tr>
+        <tr><td><b>Ctrl+T</b></td><td>Aplicar memória de tradução</td></tr>
+        <tr><td><b>Ctrl+Shift+T</b></td><td>Traduzir com API</td></tr>
+        <tr><td><b>F6</b></td><td>Recarregar arquivo</td></tr>
         <tr><td><b>Ctrl+C</b></td><td>Copiar linhas selecionadas</td></tr>
         <tr><td><b>Ctrl+V</b></td><td>Colar traduções</td></tr>
         </table>
@@ -3011,3 +3175,184 @@ class MainWindow(QMainWindow):
         
         app_logger.info("Aplicativo encerrado")
         event.accept()
+    
+    def _open_batch_processor(self):
+        """Abre o diálogo de processamento em lote"""
+        if BatchProcessor is None:
+            QMessageBox.warning(
+                self,
+                "Recurso Indisponível",
+                "O processamento em lote não está disponível nesta versão."
+            )
+            return
+        
+        if not self.translation_memory.is_connected():
+            reply = QMessageBox.question(
+                self,
+                "Banco de Dados",
+                "Nenhum banco de dados conectado.\nDeseja selecionar um agora?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            
+            if reply == QMessageBox.Yes:
+                self._prompt_database_selection()
+            
+            if not self.translation_memory.is_connected():
+                return
+        
+        dialog = BatchProcessorDialog(self, self.profile_manager, 
+                                       self.translation_memory, self.smart_translator)
+        dialog.exec()
+
+    def _show_table_context_menu(self, position):
+        """Mostra menu de contexto da tabela com opções de sugestões"""
+        item = self.table.itemAt(position)
+        if not item:
+            return
+        
+        row = item.row()
+        if row >= len(self.entries):
+            return
+        
+        menu = QMenu(self)
+        
+        # Opção de copiar
+        copy_action = menu.addAction("📋 Copiar")
+        copy_action.triggered.connect(self.copy_selected_rows)
+        
+        # Opção de colar
+        paste_action = menu.addAction("📥 Colar")
+        paste_action.triggered.connect(self.paste_rows)
+        
+        menu.addSeparator()
+        
+        # Opção de sugestões contextuais
+        if self.suggestion_engine is not None:
+            suggestions_action = menu.addAction("💡 Ver Sugestões Contextuais...")
+            suggestions_action.triggered.connect(lambda: self._show_suggestions_dialog(row))
+        
+        # Opção de limpar tradução
+        menu.addSeparator()
+        clear_action = menu.addAction("🗑️ Limpar Tradução")
+        clear_action.triggered.connect(self._clear_selected_translations)
+        
+        menu.exec(self.table.viewport().mapToGlobal(position))
+    
+    def _show_suggestions_dialog(self, row: int):
+        """Mostra diálogo com sugestões contextuais para uma linha"""
+        if row >= len(self.entries):
+            return
+        
+        original_text = self.entries[row].original_text
+        
+        if not self.suggestion_engine:
+            QMessageBox.warning(
+                self,
+                "Recurso Indisponível",
+                "Motor de sugestões não disponível. Conecte a um banco de dados."
+            )
+            return
+        
+        # Obtém sugestões
+        suggestions = self.suggestion_engine.get_suggestions(original_text, max_suggestions=15)
+        
+        if not suggestions:
+            QMessageBox.information(
+                self,
+                "Sugestões Contextuais",
+                "Nenhuma sugestão encontrada para este texto."
+            )
+            return
+        
+        # Cria diálogo de sugestões
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Sugestões Contextuais")
+        dialog.setMinimumSize(700, 500)
+        
+        layout = QVBoxLayout(dialog)
+        
+        # Texto original
+        layout.addWidget(QLabel(f"<b>Texto Original:</b> {original_text[:100]}{'...' if len(original_text) > 100 else ''}"))
+        
+        # Tabela de sugestões
+        table = QTableWidget()
+        table.setColumnCount(4)
+        table.setHorizontalHeaderLabels(["Relevância", "Texto Similar", "Tradução", "Tipo"])
+        table.setRowCount(len(suggestions))
+        
+        header = table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        
+        for i, suggestion in enumerate(suggestions):
+            # Relevância
+            relevance_item = QTableWidgetItem(f"{suggestion.relevance_score:.0%}")
+            table.setItem(i, 0, relevance_item)
+            
+            # Texto similar
+            table.setItem(i, 1, QTableWidgetItem(suggestion.original_text))
+            
+            # Tradução
+            table.setItem(i, 2, QTableWidgetItem(suggestion.translated_text))
+            
+            # Tipo
+            type_names = {
+                'exact': '✅ Exata',
+                'contains_term': '🔤 Termo',
+                'similar': '≈ Similar',
+                'pattern': '🔣 Padrão'
+            }
+            table.setItem(i, 3, QTableWidgetItem(type_names.get(suggestion.context_type, suggestion.context_type)))
+        
+        table.setSelectionBehavior(QTableWidget.SelectRows)
+        table.setSelectionMode(QTableWidget.SingleSelection)
+        layout.addWidget(table)
+        
+        # Botões
+        btn_layout = QHBoxLayout()
+        
+        btn_use = QPushButton("Usar Tradução Selecionada")
+        btn_use.clicked.connect(lambda: self._apply_suggestion(dialog, table, row))
+        btn_layout.addWidget(btn_use)
+        
+        btn_close = QPushButton("Fechar")
+        btn_close.clicked.connect(dialog.close)
+        btn_layout.addWidget(btn_close)
+        
+        layout.addLayout(btn_layout)
+        
+        dialog.exec()
+    
+    def _apply_suggestion(self, dialog: QDialog, table: QTableWidget, row: int):
+        """Aplica a sugestão selecionada à linha"""
+        selected = table.selectedItems()
+        if not selected:
+            QMessageBox.warning(dialog, "Aviso", "Selecione uma sugestão primeiro.")
+            return
+        
+        selected_row = selected[0].row()
+        translation = table.item(selected_row, 2).text()
+        
+        # Aplica tradução
+        self.table.blockSignals(True)
+        self.table.item(row, 2).setText(translation)
+        self.table.blockSignals(False)
+        
+        # Atualiza entrada
+        self.entries[row].translated_text = translation
+        
+        # Salva na memória
+        if self.translation_memory.is_connected():
+            original = self.entries[row].original_text
+            self.translation_memory.add_translation(original, translation)
+            
+            # Atualiza status visual
+            self.table.item(row, 3).setText("✅")
+            for col in range(4):
+                if self.table.item(row, col):
+                    self.table.item(row, col).setBackground(TableColors.TRANSLATED_ROW)
+        
+        self._update_statistics()
+        dialog.close()
