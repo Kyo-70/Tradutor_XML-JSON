@@ -132,17 +132,12 @@ DEFAULT_WINDOW_HEIGHT = 800
 SETTINGS_ORG_NAME = "ManusAI"  # Nome da organização/desenvolvedor
 SETTINGS_APP_NAME = "GameTranslator"  # Nome da aplicação
 
-# Cores para linhas da tabela (tema escuro Bannerlord)
+# Cores para linhas da tabela (tema escuro)
 class TableColors:
-    """Cores usadas nas tabelas para manter consistência visual - Estilo Bannerlord"""
-    BASE_ROW = QColor(20, 20, 20)           # Cor de fundo para linhas pares
-    ALTERNATE_ROW = QColor(26, 26, 26)      # Cor de fundo para linhas ímpares
-    TRANSLATED_ROW = QColor(35, 45, 30)     # Cor de fundo para linhas traduzidas (verde escuro)
-    HEADER_BG = QColor(26, 26, 26)          # Cor de fundo do cabeçalho
-    ACCENT = QColor(232, 166, 36)           # Cor de destaque laranja/dourado (#e8a624)
-    ACCENT_HOVER = QColor(255, 201, 71)     # Cor de destaque hover (#ffc947)
-    TEXT = QColor(232, 166, 36)             # Cor do texto principal
-    BORDER = QColor(58, 58, 58)             # Cor das bordas
+    """Cores usadas nas tabelas para manter consistência visual"""
+    BASE_ROW = QColor(40, 40, 40)           # Cor de fundo para linhas pares
+    ALTERNATE_ROW = QColor(50, 50, 50)      # Cor de fundo para linhas ímpares
+    TRANSLATED_ROW = QColor(40, 60, 40)     # Cor de fundo para linhas traduzidas
 
 # ============================================================================
 # WORKER THREADS
@@ -1340,272 +1335,149 @@ class MainWindow(QMainWindow):
         QTimer.singleShot(100, self._prompt_database_selection)
     
     def _apply_dark_theme(self):
-        """Aplica tema escuro estilo Bannerlord - laranja/dourado"""
+        """Aplica tema escuro profissional"""
         palette = QPalette()
-
-        # Cores principais - Estilo Bannerlord
-        palette.setColor(QPalette.Window, QColor(13, 13, 13))           # #0d0d0d
-        palette.setColor(QPalette.WindowText, QColor(232, 166, 36))    # #e8a624
-        palette.setColor(QPalette.Base, QColor(20, 20, 20))            # #141414
-        palette.setColor(QPalette.AlternateBase, QColor(26, 26, 26))   # #1a1a1a
-        palette.setColor(QPalette.ToolTipBase, QColor(26, 26, 26))
-        palette.setColor(QPalette.ToolTipText, QColor(232, 166, 36))
-        palette.setColor(QPalette.Text, QColor(232, 166, 36))          # #e8a624
-        palette.setColor(QPalette.Button, QColor(26, 26, 26))          # #1a1a1a
-        palette.setColor(QPalette.ButtonText, QColor(232, 166, 36))    # #e8a624
-        palette.setColor(QPalette.BrightText, QColor(255, 201, 71))    # #ffc947
-        palette.setColor(QPalette.Link, QColor(255, 201, 71))          # #ffc947
-        palette.setColor(QPalette.Highlight, QColor(232, 166, 36))     # #e8a624
-        palette.setColor(QPalette.HighlightedText, QColor(13, 13, 13)) # #0d0d0d
-
+        
+        # Cores principais
+        palette.setColor(QPalette.Window, QColor(30, 30, 30))
+        palette.setColor(QPalette.WindowText, QColor(220, 220, 220))
+        palette.setColor(QPalette.Base, QColor(40, 40, 40))
+        palette.setColor(QPalette.AlternateBase, QColor(50, 50, 50))
+        palette.setColor(QPalette.ToolTipBase, QColor(220, 220, 220))
+        palette.setColor(QPalette.ToolTipText, QColor(220, 220, 220))
+        palette.setColor(QPalette.Text, QColor(220, 220, 220))
+        palette.setColor(QPalette.Button, QColor(50, 50, 50))
+        palette.setColor(QPalette.ButtonText, QColor(220, 220, 220))
+        palette.setColor(QPalette.BrightText, Qt.red)
+        palette.setColor(QPalette.Link, QColor(42, 130, 218))
+        palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+        palette.setColor(QPalette.HighlightedText, Qt.black)
+        
         self.setPalette(palette)
-
-        # Estilo adicional - Bannerlord Theme
+        
+        # Estilo adicional
         self.setStyleSheet("""
             QMainWindow {
-                background-color: #0d0d0d;
+                background-color: #1e1e1e;
             }
             QPushButton {
-                background-color: transparent;
-                border: 1px solid #e8a624;
+                background-color: #3a3a3a;
+                border: 1px solid #555;
                 border-radius: 4px;
                 padding: 8px 16px;
-                color: #e8a624;
+                color: #dcdcdc;
                 font-weight: bold;
                 min-width: 80px;
-                font-family: 'Consolas', 'Monaco', monospace;
             }
             QPushButton:hover {
-                background-color: #e8a624;
-                color: #0d0d0d;
+                background-color: #4a4a4a;
+                border: 1px solid #666;
             }
             QPushButton:pressed {
-                background-color: #ffc947;
-                color: #0d0d0d;
+                background-color: #2a2a2a;
             }
             QPushButton:disabled {
-                background-color: transparent;
-                border-color: #3a3a3a;
+                background-color: #2a2a2a;
                 color: #666;
             }
             QTableWidget {
-                background-color: #141414;
-                alternate-background-color: #1a1a1a;
-                gridline-color: #2a2a2a;
-                border: 1px solid #3a3a3a;
-                color: #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
+                background-color: #282828;
+                alternate-background-color: #323232;
+                gridline-color: #444;
+                border: 1px solid #555;
             }
             QTableWidget::item {
-                padding: 8px;
-                color: #e8a624;
+                padding: 5px;
             }
             QTableWidget::item:selected {
-                background-color: #e8a624;
-                color: #0d0d0d;
+                background-color: #2a82da;
             }
             QHeaderView::section {
-                background-color: #1a1a1a;
-                padding: 10px;
-                border: none;
-                border-right: 1px solid #2a2a2a;
-                border-bottom: 1px solid #2a2a2a;
+                background-color: #3a3a3a;
+                padding: 8px;
+                border: 1px solid #555;
                 font-weight: bold;
-                color: #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
             }
             QComboBox {
-                background-color: #1a1a1a;
-                border: 1px solid #3a3a3a;
+                background-color: #3a3a3a;
+                border: 1px solid #555;
                 border-radius: 4px;
-                padding: 6px 10px;
-                color: #e8a624;
+                padding: 5px;
+                color: #dcdcdc;
                 min-width: 150px;
-                font-family: 'Consolas', 'Monaco', monospace;
             }
             QComboBox:hover {
-                border: 1px solid #e8a624;
+                border: 1px solid #666;
             }
             QComboBox::drop-down {
                 border: none;
-                width: 20px;
-            }
-            QComboBox::down-arrow {
-                image: none;
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
-                border-top: 5px solid #e8a624;
-                margin-right: 5px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: #1a1a1a;
-                color: #e8a624;
-                selection-background-color: #e8a624;
-                selection-color: #0d0d0d;
-                border: 1px solid #e8a624;
             }
             QProgressBar {
-                border: 1px solid #3a3a3a;
+                border: 1px solid #555;
                 border-radius: 4px;
                 text-align: center;
-                background-color: #141414;
-                color: #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
+                background-color: #282828;
             }
             QProgressBar::chunk {
-                background-color: #e8a624;
-                border-radius: 3px;
+                background-color: #2a82da;
             }
             QLineEdit {
-                background-color: #1a1a1a;
-                border: 1px solid #3a3a3a;
+                background-color: #3a3a3a;
+                border: 1px solid #555;
                 border-radius: 4px;
-                padding: 6px;
-                color: #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
-            }
-            QLineEdit:focus {
-                border-color: #e8a624;
+                padding: 5px;
+                color: #dcdcdc;
             }
             QLabel {
-                color: #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
+                color: #dcdcdc;
             }
             QGroupBox {
-                border: 1px solid #e8a624;
+                border: 1px solid #555;
                 border-radius: 4px;
-                margin-top: 12px;
-                padding-top: 12px;
+                margin-top: 10px;
+                padding-top: 10px;
                 font-weight: bold;
-                color: #e8a624;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
                 left: 10px;
-                padding: 0 8px;
-                color: #e8a624;
+                padding: 0 5px;
             }
             QMenuBar {
-                background-color: #0d0d0d;
-                color: #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
-                border-bottom: 1px solid #3a3a3a;
-            }
-            QMenuBar::item {
-                padding: 8px 12px;
+                background-color: #2a2a2a;
+                color: #dcdcdc;
             }
             QMenuBar::item:selected {
-                background-color: #e8a624;
-                color: #0d0d0d;
+                background-color: #3a3a3a;
             }
             QMenu {
-                background-color: #1a1a1a;
-                color: #e8a624;
-                border: 1px solid #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
-            }
-            QMenu::item {
-                padding: 8px 20px;
+                background-color: #2a2a2a;
+                color: #dcdcdc;
+                border: 1px solid #555;
             }
             QMenu::item:selected {
-                background-color: #e8a624;
-                color: #0d0d0d;
-            }
-            QMenu::separator {
-                height: 1px;
-                background-color: #3a3a3a;
-                margin: 5px 10px;
+                background-color: #2a82da;
             }
             QStatusBar {
-                background-color: #0d0d0d;
-                color: #e8a624;
-                border-top: 1px solid #3a3a3a;
-                font-family: 'Consolas', 'Monaco', monospace;
+                background-color: #2a2a2a;
+                color: #dcdcdc;
             }
             QTabWidget::pane {
-                border: 1px solid #3a3a3a;
+                border: 1px solid #555;
             }
             QTabBar::tab {
-                background-color: #1a1a1a;
-                color: #e8a624;
-                padding: 10px 20px;
-                border: 1px solid #3a3a3a;
-                border-bottom: none;
-                font-family: 'Consolas', 'Monaco', monospace;
+                background-color: #3a3a3a;
+                color: #dcdcdc;
+                padding: 8px 16px;
+                border: 1px solid #555;
             }
             QTabBar::tab:selected {
-                background-color: #e8a624;
-                color: #0d0d0d;
-            }
-            QTabBar::tab:hover:!selected {
-                background-color: #2a2a2a;
+                background-color: #2a82da;
             }
             QTextEdit {
-                background-color: #141414;
-                color: #e8a624;
-                border: 1px solid #3a3a3a;
-                font-family: 'Consolas', 'Monaco', monospace;
-            }
-            QTextEdit:focus {
-                border-color: #e8a624;
-            }
-            QScrollBar:vertical {
-                background-color: #0d0d0d;
-                width: 12px;
-            }
-            QScrollBar::handle:vertical {
-                background-color: #3a3a3a;
-                border-radius: 6px;
-                min-height: 30px;
-                margin: 2px;
-            }
-            QScrollBar::handle:vertical:hover {
-                background-color: #e8a624;
-            }
-            QScrollBar:horizontal {
-                background-color: #0d0d0d;
-                height: 12px;
-            }
-            QScrollBar::handle:horizontal {
-                background-color: #3a3a3a;
-                border-radius: 6px;
-                min-width: 30px;
-                margin: 2px;
-            }
-            QScrollBar::handle:horizontal:hover {
-                background-color: #e8a624;
-            }
-            QScrollBar::add-line, QScrollBar::sub-line {
-                background: none;
-                border: none;
-            }
-            QScrollBar::add-page, QScrollBar::sub-page {
-                background: none;
-            }
-            QCheckBox {
-                color: #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
-            }
-            QCheckBox::indicator {
-                width: 18px;
-                height: 18px;
-                border: 1px solid #e8a624;
-                border-radius: 3px;
-                background-color: #1a1a1a;
-            }
-            QCheckBox::indicator:checked {
-                background-color: #e8a624;
-            }
-            QSpinBox {
-                background-color: #1a1a1a;
-                border: 1px solid #3a3a3a;
-                border-radius: 4px;
-                padding: 6px;
-                color: #e8a624;
-                font-family: 'Consolas', 'Monaco', monospace;
-            }
-            QSpinBox:focus {
-                border-color: #e8a624;
+                background-color: #282828;
+                color: #dcdcdc;
+                border: 1px solid #555;
             }
         """)
 
@@ -1827,229 +1699,91 @@ class MainWindow(QMainWindow):
         help_menu.addAction(action_about)
     
     def _create_ui(self):
-        """Cria a interface do usuário - Estilo Bannerlord"""
+        """Cria a interface do usuário"""
         # Widget central
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-
-        # Labels ocultos para compatibilidade com código legado
-        self.db_info_label = QLabel()
-        self.db_info_label.setVisible(False)
-        self.current_file_label = QLabel()
-        self.current_file_label.setVisible(False)
-
+        
         # Layout principal
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setSpacing(8)
-        main_layout.setContentsMargins(15, 10, 15, 10)
-
-        # Cabeçalho com título
+        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(15, 15, 15, 15)
+        
+        # Cabeçalho
         header_layout = self._create_header()
         main_layout.addLayout(header_layout)
-
-        # Barra superior de navegação (Language, Engine, Tools, etc.)
-        nav_bar = self._create_navigation_bar()
-        main_layout.addLayout(nav_bar)
-
-        # Separador
-        separator1 = QFrame()
-        separator1.setFrameShape(QFrame.HLine)
-        separator1.setStyleSheet("background-color: #3a3a3a;")
-        separator1.setFixedHeight(1)
-        main_layout.addWidget(separator1)
-
-        # Barra de ferramentas principal
+        
+        # Info do banco de dados
+        self.db_info_label = QLabel("⚠️ Nenhum banco de dados conectado")
+        self.db_info_label.setStyleSheet("color: #ffa500; font-weight: bold;")
+        main_layout.addWidget(self.db_info_label)
+        
+        # Info do arquivo atual em tradução
+        self.current_file_label = QLabel("📄 Nenhum arquivo carregado")
+        self.current_file_label.setStyleSheet("color: #888; font-weight: bold;")
+        main_layout.addWidget(self.current_file_label)
+        
+        # Barra de ferramentas
         toolbar_layout = self._create_toolbar()
         main_layout.addLayout(toolbar_layout)
-
-        # Container para área de conteúdo com borda
-        content_container = QFrame()
-        content_container.setStyleSheet("""
-            QFrame {
-                background-color: #141414;
-                border: 1px solid #3a3a3a;
-                border-radius: 4px;
-            }
-        """)
-        content_layout = QVBoxLayout(content_container)
-        content_layout.setContentsMargins(0, 0, 0, 0)
-        content_layout.setSpacing(0)
-
+        
         # Tabela de traduções
         self.table = self._create_translation_table()
-        content_layout.addWidget(self.table)
-
-        main_layout.addWidget(content_container, 1)  # stretch=1 para expandir
-
-        # Barra de progresso e status
+        main_layout.addWidget(self.table)
+        
+        # Barra de progresso
         progress_layout = QHBoxLayout()
-        progress_layout.setSpacing(10)
-
         self.status_label = QLabel("Pronto")
-        self.status_label.setStyleSheet("color: #e8a624;")
         progress_layout.addWidget(self.status_label)
-
         progress_layout.addStretch()
-
         self.progress_bar = QProgressBar()
         self.progress_bar.setMaximumWidth(300)
-        self.progress_bar.setFixedHeight(20)
         self.progress_bar.setValue(0)
         progress_layout.addWidget(self.progress_bar)
-
         main_layout.addLayout(progress_layout)
-
-        # Rodapé com copyright
-        footer = self._create_footer()
-        main_layout.addWidget(footer)
-
-    def _create_navigation_bar(self):
-        """Cria a barra de navegação superior - Estilo Bannerlord"""
-        layout = QHBoxLayout()
-        layout.setSpacing(8)
-
-        # Seletor de idioma
-        lang_container = QHBoxLayout()
-        lang_container.setSpacing(5)
-        lang_label = QLabel("Language:")
-        lang_label.setStyleSheet("color: #888; font-size: 12px;")
-        lang_container.addWidget(lang_label)
-
-        self.lang_indicator = QLabel("Português")
-        self.lang_indicator.setStyleSheet("""
-            color: #4ecdc4;
-            font-weight: bold;
-            padding: 2px 8px;
-        """)
-        lang_container.addWidget(self.lang_indicator)
-        layout.addLayout(lang_container)
-
-        # Seletor de engine
-        engine_container = QHBoxLayout()
-        engine_container.setSpacing(5)
-        engine_label = QLabel("Engine:")
-        engine_label.setStyleSheet("color: #888; font-size: 12px;")
-        engine_container.addWidget(engine_label)
-
-        self.engine_indicator = QLabel("DeepL")
-        self.engine_indicator.setStyleSheet("""
-            color: #4ecdc4;
-            font-weight: bold;
-            padding: 2px 8px;
-        """)
-        engine_container.addWidget(self.engine_indicator)
-        layout.addLayout(engine_container)
-
-        # Separador vertical
-        sep1 = QFrame()
-        sep1.setFrameShape(QFrame.VLine)
-        sep1.setStyleSheet("background-color: #3a3a3a;")
-        sep1.setFixedWidth(1)
-        sep1.setFixedHeight(25)
-        layout.addWidget(sep1)
-
-        # Botões de ferramentas
-        self.btn_tools = QPushButton("Tools")
-        self.btn_tools.setStyleSheet("""
-            QPushButton {
-                background-color: #e8a624;
-                color: #0d0d0d;
-                border: 1px solid #e8a624;
-                padding: 6px 15px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #ffc947;
-            }
-        """)
-        self.btn_tools.clicked.connect(self._open_profile_manager)
-        layout.addWidget(self.btn_tools)
-
-        self.btn_shortcuts = QPushButton("Shortcuts")
-        self.btn_shortcuts.clicked.connect(self._show_shortcuts)
-        layout.addWidget(self.btn_shortcuts)
-
-        self.btn_help = QPushButton("Help")
-        self.btn_help.clicked.connect(self._show_about)
-        layout.addWidget(self.btn_help)
-
-        self.btn_glossary = QPushButton("Glossary")
-        self.btn_glossary.clicked.connect(self._view_database)
-        layout.addWidget(self.btn_glossary)
-
-        layout.addStretch()
-
-        # Separador vertical
-        sep2 = QFrame()
-        sep2.setFrameShape(QFrame.VLine)
-        sep2.setStyleSheet("background-color: #3a3a3a;")
-        sep2.setFixedWidth(1)
-        sep2.setFixedHeight(25)
-        layout.addWidget(sep2)
-
-        # Botões de API e configurações
-        self.btn_enter_api = QPushButton("Enter API")
-        self.btn_enter_api.clicked.connect(self.open_settings)
-        layout.addWidget(self.btn_enter_api)
-
-        self.btn_settings_top = QPushButton("Settings")
-        self.btn_settings_top.clicked.connect(self.open_settings)
-        layout.addWidget(self.btn_settings_top)
-
-        return layout
-
-    def _create_footer(self):
-        """Cria o rodapé com copyright"""
-        footer = QLabel("This software may not be copied, reproduced, or modified without permission.")
-        footer.setAlignment(Qt.AlignCenter)
-        footer.setStyleSheet("""
-            color: #666;
-            font-size: 11px;
-            padding: 8px;
-            font-family: 'Consolas', 'Monaco', monospace;
-        """)
-        return footer
     
     def _create_header(self):
-        """Cria o cabeçalho da aplicação - Estilo Bannerlord"""
+        """Cria o cabeçalho da aplicação"""
         layout = QVBoxLayout()
-        layout.setSpacing(0)
-
-        # Título principal
-        title = QLabel("Game Translator v2.1")
-        title.setFont(QFont("Consolas", 20, QFont.Bold))
-        title.setAlignment(Qt.AlignLeft)
-        title.setStyleSheet("color: #e8a624; padding: 5px 0; font-family: 'Consolas', 'Monaco', monospace;")
-
+        
+        title = QLabel("Game Translator")
+        title.setFont(QFont("Arial", 24, QFont.Bold))
+        title.setAlignment(Qt.AlignCenter)
+        
+        subtitle = QLabel("Sistema Profissional de Tradução para Jogos e Mods")
+        subtitle.setFont(QFont("Arial", 10))
+        subtitle.setAlignment(Qt.AlignCenter)
+        subtitle.setStyleSheet("color: #888;")
+        
         layout.addWidget(title)
-
+        layout.addWidget(subtitle)
+        
         return layout
     
     def _create_toolbar(self):
-        """Cria a barra de ferramentas com novo estilo visual"""
+        """Cria a barra de ferramentas"""
         layout = QHBoxLayout()
-        layout.setSpacing(8)
-
+        
         # Botão importar arquivo
-        self.btn_import = QPushButton("Importar Arquivo")
-        self.btn_import.setToolTip("Selecionar arquivo para tradução (Ctrl+O)")
+        self.btn_import = QPushButton("📁 Importar Arquivo")
         self.btn_import.clicked.connect(self.import_file)
         layout.addWidget(self.btn_import)
-
+        
         # Seletor de perfil
         layout.addWidget(QLabel("Perfil:"))
         self.combo_profile = QComboBox()
         self.combo_profile.addItems(self.profile_manager.get_all_profile_names())
         layout.addWidget(self.combo_profile)
-
+        
         # Botão editar perfis
-        self.btn_edit_profiles = QPushButton("Perfis")
+        self.btn_edit_profiles = QPushButton("✏️")
         self.btn_edit_profiles.setToolTip("Gerenciar Perfis Regex (Ctrl+P)")
+        self.btn_edit_profiles.setMaximumWidth(40)
         self.btn_edit_profiles.clicked.connect(self._open_profile_manager)
         layout.addWidget(self.btn_edit_profiles)
-
+        
         # Botão traduzir automaticamente
-        self.btn_auto_translate = QPushButton("Traduzir API")
+        self.btn_auto_translate = QPushButton("🤖 Traduzir Auto (Ctrl+Shift+T)")
         self.btn_auto_translate.setToolTip(
             "Traduzir usando API:\n"
             "• Sem seleção: traduz todas as linhas não traduzidas\n"
@@ -2059,9 +1793,9 @@ class MainWindow(QMainWindow):
         self.btn_auto_translate.clicked.connect(self.auto_translate)
         self.btn_auto_translate.setEnabled(False)
         layout.addWidget(self.btn_auto_translate)
-
+        
         # Botão aplicar traduções inteligentes
-        self.btn_smart_translate = QPushButton("Aplicar Memória")
+        self.btn_smart_translate = QPushButton("⚡ Aplicar Memória")
         self.btn_smart_translate.setToolTip(
             "Aplicar traduções da memória:\n"
             "• Sem seleção: aplica a todas as linhas não traduzidas\n"
@@ -2070,9 +1804,9 @@ class MainWindow(QMainWindow):
         self.btn_smart_translate.clicked.connect(self.apply_smart_translations)
         self.btn_smart_translate.setEnabled(False)
         layout.addWidget(self.btn_smart_translate)
-
+        
         # Botão toggle memória sensível
-        self.btn_toggle_sensitive = QPushButton("Sensível: ON")
+        self.btn_toggle_sensitive = QPushButton("🧠 Sensível: ON")
         self.btn_toggle_sensitive.setToolTip(
             "Memória Sensível a Padrões:\n"
             "Quando ATIVADA, traduz automaticamente padrões numéricos.\n"
@@ -2082,31 +1816,28 @@ class MainWindow(QMainWindow):
         )
         self.btn_toggle_sensitive.clicked.connect(self._toggle_sensitive_memory)
         self.btn_toggle_sensitive.setStyleSheet(
-            "background-color: #2d5a27; border: 1px solid #4ecdc4; color: #4ecdc4;"
+            "background-color: #2d5a27; border: 1px solid #4ecdc4;"
         )
         layout.addWidget(self.btn_toggle_sensitive)
-
-        layout.addStretch()
-
-        # Botão visualizar banco
-        self.btn_view_db = QPushButton("Ver Banco")
-        self.btn_view_db.setToolTip("Visualizar banco de dados (Ctrl+B)")
-        self.btn_view_db.clicked.connect(self._view_database)
-        layout.addWidget(self.btn_view_db)
-
+        
         # Botão salvar
-        self.btn_save = QPushButton("Salvar")
-        self.btn_save.setToolTip("Salvar arquivo (Ctrl+S)")
+        self.btn_save = QPushButton("💾 Salvar")
         self.btn_save.clicked.connect(self.save_file)
         self.btn_save.setEnabled(False)
         layout.addWidget(self.btn_save)
-
+        
+        # Botão visualizar banco
+        self.btn_view_db = QPushButton("🗄️ Ver Banco")
+        self.btn_view_db.clicked.connect(self._view_database)
+        layout.addWidget(self.btn_view_db)
+        
         # Botão configurações
-        self.btn_settings = QPushButton("Config")
-        self.btn_settings.setToolTip("Configurações (Ctrl+,)")
+        self.btn_settings = QPushButton("⚙️ Config")
         self.btn_settings.clicked.connect(self.open_settings)
         layout.addWidget(self.btn_settings)
-
+        
+        layout.addStretch()
+        
         return layout
     
     def _create_translation_table(self):
@@ -3302,22 +3033,22 @@ class MainWindow(QMainWindow):
             )
     
     def _show_shortcuts(self):
-        """Mostra diálogo de atalhos de teclado com interface moderna - Estilo Bannerlord"""
+        """Mostra diálogo de atalhos de teclado com interface moderna"""
         dialog = QDialog(self)
-        dialog.setWindowTitle("Keyboard Shortcuts")
+        dialog.setWindowTitle("Atalhos de Teclado")
         dialog.setMinimumWidth(550)
         layout = QVBoxLayout(dialog)
-
+        
         style = """
         <style>
-            .container { font-family: 'Consolas', 'Monaco', monospace; color: #e8a624; }
-            .header { color: #e8a624; font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #e8a624; padding-bottom: 5px; }
-            .category { color: #ffc947; font-size: 14px; font-weight: bold; margin-top: 15px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-            table { width: 100%; border-collapse: collapse; background-color: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #3a3a3a; }
-            td { padding: 10px; border-bottom: 1px solid #2a2a2a; }
-            .key { color: #0d0d0d; font-weight: bold; background-color: #e8a624; padding: 3px 8px; border-radius: 4px; border: 1px solid #ffc947; font-family: 'Consolas', monospace; min-width: 100px; display: inline-block; text-align: center; }
-            .desc { color: #e8a624; padding-left: 15px; }
-            tr:hover { background-color: #252525; }
+            .container { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #e0e0e0; }
+            .header { color: #4ecdc4; font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #4ecdc4; padding-bottom: 5px; }
+            .category { color: #ffa500; font-size: 14px; font-weight: bold; margin-top: 15px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+            table { width: 100%; border-collapse: collapse; background-color: #2d2d2d; border-radius: 8px; overflow: hidden; }
+            td { padding: 10px; border-bottom: 1px solid #3d3d3d; }
+            .key { color: #ffffff; font-weight: bold; background-color: #444; padding: 3px 8px; border-radius: 4px; border: 1px solid #555; font-family: 'Consolas', monospace; min-width: 100px; display: inline-block; text-align: center; }
+            .desc { color: #cccccc; padding-left: 15px; }
+            tr:hover { background-color: #383838; }
             tr:last-child td { border-bottom: none; }
         </style>
         """
@@ -3374,10 +3105,10 @@ class MainWindow(QMainWindow):
         text_edit.setStyleSheet("background-color: transparent;")
         layout.addWidget(text_edit)
         
-        btn_close = QPushButton("Got it")
+        btn_close = QPushButton("Entendido")
         btn_close.setFixedWidth(120)
         btn_close.clicked.connect(dialog.accept)
-
+        
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
         btn_layout.addWidget(btn_close)
@@ -3390,18 +3121,17 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self,
             "Sobre Game Translator",
-            "<h2 style='color: #e8a624;'>Game Translator v2.1</h2>"
+            "<h2>Game Translator v1.0.0</h2>"
             "<p>Sistema Profissional de Tradução para Jogos e Mods</p>"
             "<p><b>Características:</b></p>"
             "<ul>"
             "<li>Preservação total da estrutura de arquivos</li>"
             "<li>Memória de tradução com SQLite</li>"
             "<li>Tradução inteligente com padrões</li>"
-            "<li>Suporte a múltiplas APIs (DeepL, Google, MyMemory, LibreTranslate)</li>"
+            "<li>Suporte a APIs de tradução</li>"
             "<li>Sistema de segurança integrado</li>"
-            "<li>Processamento em lote</li>"
             "</ul>"
-            "<p style='color: #666;'>Desenvolvido por Manus AI</p>"
+            "<p>Desenvolvido por <b>Manus AI</b></p>"
         )
     
     def _on_main_table_column_resized(self, logicalIndex, oldSize, newSize):
