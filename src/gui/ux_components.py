@@ -237,21 +237,28 @@ class ThemeManager:
     Gerenciador de temas para a aplicação.
 
     Suporta tema claro e escuro com troca dinâmica.
+    Estilo Bannerlord - tema escuro com acentos laranja/dourado.
     """
 
-    # Paleta de cores para tema escuro
+    # Paleta de cores para tema escuro (Bannerlord Style)
     DARK_THEME = {
-        "window": "#1e1e1e",
-        "window_text": "#ffffff",
-        "base": "#2d2d2d",
-        "alternate_base": "#353535",
-        "text": "#ffffff",
-        "button": "#353535",
-        "button_text": "#ffffff",
-        "highlight": "#0078d4",
-        "highlight_text": "#ffffff",
-        "link": "#3794ff",
-        "placeholder": "#808080",
+        "window": "#0d0d0d",
+        "window_text": "#e8a624",
+        "base": "#141414",
+        "alternate_base": "#1a1a1a",
+        "text": "#e8a624",
+        "button": "#1a1a1a",
+        "button_text": "#e8a624",
+        "highlight": "#e8a624",
+        "highlight_text": "#0d0d0d",
+        "link": "#ffc947",
+        "placeholder": "#666666",
+        "accent": "#e8a624",
+        "accent_hover": "#ffc947",
+        "border": "#3a3a3a",
+        "success": "#4ecdc4",
+        "warning": "#ffa500",
+        "error": "#ff6b6b",
     }
 
     # Paleta de cores para tema claro
@@ -263,10 +270,16 @@ class ThemeManager:
         "text": "#000000",
         "button": "#e1e1e1",
         "button_text": "#000000",
-        "highlight": "#0078d4",
+        "highlight": "#e8a624",
         "highlight_text": "#ffffff",
-        "link": "#0066cc",
+        "link": "#b8860b",
         "placeholder": "#808080",
+        "accent": "#e8a624",
+        "accent_hover": "#ffc947",
+        "border": "#cccccc",
+        "success": "#4ecdc4",
+        "warning": "#ffa500",
+        "error": "#ff6b6b",
     }
 
     def __init__(self, app: QApplication):
@@ -325,103 +338,124 @@ class ThemeManager:
         return new_theme
 
     def _get_dark_stylesheet(self) -> str:
-        """Retorna stylesheet para tema escuro"""
+        """Retorna stylesheet para tema escuro (Bannerlord Style)"""
         return """
             QToolTip {
-                background-color: #2d2d2d;
-                color: #ffffff;
-                border: 1px solid #555555;
-                padding: 4px;
+                background-color: #1a1a1a;
+                color: #e8a624;
+                border: 1px solid #e8a624;
+                padding: 6px;
+                font-family: 'Consolas', 'Monaco', monospace;
             }
             QScrollBar:vertical {
-                background-color: #2d2d2d;
+                background-color: #0d0d0d;
                 width: 12px;
                 margin: 0px;
             }
             QScrollBar::handle:vertical {
-                background-color: #555555;
+                background-color: #3a3a3a;
                 min-height: 30px;
                 border-radius: 6px;
                 margin: 2px;
             }
             QScrollBar::handle:vertical:hover {
-                background-color: #666666;
+                background-color: #e8a624;
             }
             QScrollBar:horizontal {
-                background-color: #2d2d2d;
+                background-color: #0d0d0d;
                 height: 12px;
                 margin: 0px;
             }
             QScrollBar::handle:horizontal {
-                background-color: #555555;
+                background-color: #3a3a3a;
                 min-width: 30px;
                 border-radius: 6px;
                 margin: 2px;
             }
+            QScrollBar::handle:horizontal:hover {
+                background-color: #e8a624;
+            }
             QTableWidget {
-                gridline-color: #3d3d3d;
+                gridline-color: #2a2a2a;
+                background-color: #141414;
+                alternate-background-color: #1a1a1a;
             }
             QHeaderView::section {
-                background-color: #353535;
-                padding: 6px;
+                background-color: #1a1a1a;
+                color: #e8a624;
+                padding: 8px;
                 border: none;
-                border-right: 1px solid #3d3d3d;
-                border-bottom: 1px solid #3d3d3d;
+                border-right: 1px solid #2a2a2a;
+                border-bottom: 1px solid #2a2a2a;
+                font-weight: bold;
             }
             QGroupBox {
-                border: 1px solid #3d3d3d;
+                border: 1px solid #e8a624;
                 border-radius: 4px;
-                margin-top: 8px;
-                padding-top: 8px;
+                margin-top: 12px;
+                padding-top: 12px;
+                color: #e8a624;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
                 left: 10px;
-                padding: 0 5px;
+                padding: 0 8px;
+                color: #e8a624;
             }
             QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
-                border: 1px solid #3d3d3d;
+                border: 1px solid #3a3a3a;
                 border-radius: 4px;
-                padding: 4px;
-                background-color: #2d2d2d;
+                padding: 6px;
+                background-color: #1a1a1a;
+                color: #e8a624;
+                font-family: 'Consolas', 'Monaco', monospace;
             }
             QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
-                border-color: #0078d4;
+                border-color: #e8a624;
             }
             QPushButton {
-                background-color: #0078d4;
-                color: white;
-                border: none;
+                background-color: transparent;
+                color: #e8a624;
+                border: 1px solid #e8a624;
                 border-radius: 4px;
-                padding: 6px 16px;
+                padding: 8px 16px;
                 min-width: 80px;
+                font-family: 'Consolas', 'Monaco', monospace;
+                font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #1e88e5;
+                background-color: #e8a624;
+                color: #0d0d0d;
             }
             QPushButton:pressed {
-                background-color: #005a9e;
+                background-color: #ffc947;
+                color: #0d0d0d;
             }
             QPushButton:disabled {
-                background-color: #555555;
-                color: #888888;
+                background-color: transparent;
+                border-color: #3a3a3a;
+                color: #666666;
             }
             QTabWidget::pane {
-                border: 1px solid #3d3d3d;
+                border: 1px solid #3a3a3a;
                 border-radius: 4px;
             }
             QTabBar::tab {
-                background-color: #2d2d2d;
-                padding: 8px 16px;
+                background-color: #1a1a1a;
+                color: #e8a624;
+                padding: 10px 20px;
                 margin-right: 2px;
                 border-top-left-radius: 4px;
                 border-top-right-radius: 4px;
+                border: 1px solid #3a3a3a;
+                border-bottom: none;
             }
             QTabBar::tab:selected {
-                background-color: #353535;
+                background-color: #e8a624;
+                color: #0d0d0d;
             }
-            QTabBar::tab:hover {
-                background-color: #404040;
+            QTabBar::tab:hover:!selected {
+                background-color: #2a2a2a;
             }
         """
 
