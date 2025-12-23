@@ -3033,48 +3033,88 @@ class MainWindow(QMainWindow):
             )
     
     def _show_shortcuts(self):
-        """Mostra diálogo de atalhos de teclado"""
-        shortcuts = """
-        <h2>⌨️ Atalhos de Teclado</h2>
+        """Mostra diálogo de atalhos de teclado com interface moderna"""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Atalhos de Teclado")
+        dialog.setMinimumWidth(550)
+        layout = QVBoxLayout(dialog)
         
-        <h3>Arquivo</h3>
-        <table>
-        <tr><td><b>Ctrl+O</b></td><td>Importar arquivo</td></tr>
-        <tr><td><b>Ctrl+S</b></td><td>Salvar arquivo</td></tr>
-        <tr><td><b>Ctrl+D</b></td><td>Abrir banco de dados</td></tr>
-        <tr><td><b>Ctrl+Shift+N</b></td><td>Novo banco de dados</td></tr>
-        <tr><td><b>Ctrl+Q</b></td><td>Sair</td></tr>
-        </table>
-        
-        <h3>Banco de Dados</h3>
-        <table>
-        <tr><td><b>Ctrl+B</b></td><td>Visualizar banco de dados</td></tr>
-        <tr><td><b>Ctrl+E</b></td><td>Exportar para CSV</td></tr>
-        </table>
-        
-        <h3>Ferramentas</h3>
-        <table>
-        <tr><td><b>Ctrl+P</b></td><td>Gerenciar perfis regex</td></tr>
-        <tr><td><b>Ctrl+I</b></td><td>Importar traduções</td></tr>
-        <tr><td><b>Ctrl+,</b></td><td>Configurações</td></tr>
-        </table>
-        
-        <h3>Tradução</h3>
-        <table>
-        <tr><td><b>Ctrl+T</b></td><td>Aplicar memória de tradução</td></tr>
-        <tr><td><b>Ctrl+Shift+T</b></td><td>Traduzir com API</td></tr>
-        <tr><td><b>F6</b></td><td>Recarregar arquivo</td></tr>
-        <tr><td><b>Ctrl+C</b></td><td>Copiar linhas selecionadas</td></tr>
-        <tr><td><b>Ctrl+V</b></td><td>Colar traduções</td></tr>
-        </table>
-        
-        <h3>Ajuda</h3>
-        <table>
-        <tr><td><b>F1</b></td><td>Mostrar atalhos</td></tr>
-        </table>
+        style = """
+        <style>
+            .container { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #e0e0e0; }
+            .header { color: #4ecdc4; font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #4ecdc4; padding-bottom: 5px; }
+            .category { color: #ffa500; font-size: 14px; font-weight: bold; margin-top: 15px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+            table { width: 100%; border-collapse: collapse; background-color: #2d2d2d; border-radius: 8px; overflow: hidden; }
+            td { padding: 10px; border-bottom: 1px solid #3d3d3d; }
+            .key { color: #ffffff; font-weight: bold; background-color: #444; padding: 3px 8px; border-radius: 4px; border: 1px solid #555; font-family: 'Consolas', monospace; min-width: 100px; display: inline-block; text-align: center; }
+            .desc { color: #cccccc; padding-left: 15px; }
+            tr:hover { background-color: #383838; }
+            tr:last-child td { border-bottom: none; }
+        </style>
         """
         
-        QMessageBox.information(self, "Atalhos de Teclado", shortcuts)
+        content = f"""
+        {style}
+        <div class="container">
+            <div class="header">⌨️ Atalhos de Teclado</div>
+            
+            <div class="category">📁 Arquivo</div>
+            <table>
+                <tr><td><span class="key">Ctrl + O</span></td><td class="desc">Importar arquivo de tradução</td></tr>
+                <tr><td><span class="key">Ctrl + S</span></td><td class="desc">Salvar alterações no arquivo</td></tr>
+                <tr><td><span class="key">Ctrl + D</span></td><td class="desc">Abrir banco de dados existente</td></tr>
+                <tr><td><span class="key">Ctrl+Shift+N</span></td><td class="desc">Criar novo banco de dados</td></tr>
+                <tr><td><span class="key">Ctrl + Q</span></td><td class="desc">Sair do aplicativo</td></tr>
+            </table>
+            
+            <div class="category">📊 Banco de Dados</div>
+            <table>
+                <tr><td><span class="key">Ctrl + B</span></td><td class="desc">Visualizar memória de tradução</td></tr>
+                <tr><td><span class="key">Ctrl + E</span></td><td class="desc">Exportar banco para CSV</td></tr>
+            </table>
+            
+            <div class="category">🛠️ Ferramentas</div>
+            <table>
+                <tr><td><span class="key">Ctrl + P</span></td><td class="desc">Gerenciar perfis de extração Regex</td></tr>
+                <tr><td><span class="key">Ctrl + I</span></td><td class="desc">Importar traduções de outro arquivo</td></tr>
+                <tr><td><span class="key">Ctrl+Shift+B</span></td><td class="desc">Processamento em Lote (Múltiplos arquivos)</td></tr>
+                <tr><td><span class="key">Ctrl + ,</span></td><td class="desc">Abrir configurações do sistema</td></tr>
+            </table>
+            
+            <div class="category">✍️ Tradução</div>
+            <table>
+                <tr><td><span class="key">Ctrl + T</span></td><td class="desc">Aplicar memória de tradução inteligente</td></tr>
+                <tr><td><span class="key">Ctrl+Shift+T</span></td><td class="desc">Traduzir usando API configurada</td></tr>
+                <tr><td><span class="key">F6</span></td><td class="desc">Recarregar arquivo original</td></tr>
+                <tr><td><span class="key">Ctrl + C</span></td><td class="desc">Copiar linhas selecionadas</td></tr>
+                <tr><td><span class="key">Ctrl + V</span></td><td class="desc">Colar traduções copiadas</td></tr>
+            </table>
+            
+            <div class="category">❓ Ajuda</div>
+            <table>
+                <tr><td><span class="key">F1</span></td><td class="desc">Mostrar esta tela de ajuda</td></tr>
+            </table>
+        </div>
+        """
+        
+        text_edit = QTextEdit()
+        text_edit.setHtml(content)
+        text_edit.setReadOnly(True)
+        text_edit.setFrameStyle(QFrame.NoFrame)
+        text_edit.viewport().setAutoFillBackground(False)
+        text_edit.setStyleSheet("background-color: transparent;")
+        layout.addWidget(text_edit)
+        
+        btn_close = QPushButton("Entendido")
+        btn_close.setFixedWidth(120)
+        btn_close.clicked.connect(dialog.accept)
+        
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
+        btn_layout.addWidget(btn_close)
+        layout.addLayout(btn_layout)
+        
+        dialog.exec()
     
     def _show_about(self):
         """Mostra diálogo Sobre"""
