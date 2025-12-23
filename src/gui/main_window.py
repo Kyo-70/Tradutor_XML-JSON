@@ -1461,24 +1461,21 @@ class MainWindow(QMainWindow):
     def _register_shortcuts(self):
         """Registra todos os atalhos de teclado"""
         # Atalhos de arquivo
-        self.shortcuts.register("open_file", self._open_file, "Ctrl+O")
-        self.shortcuts.register("save_file", self._save_translations, "Ctrl+S")
+        self.shortcuts.register("open_file", self.import_file, "Ctrl+O")
+        self.shortcuts.register("save_file", self.save_file, "Ctrl+S")
 
         # Atalhos de tradução
-        self.shortcuts.register("translate_selected", self._translate_selected, "Ctrl+T")
-        self.shortcuts.register("translate_all", self._translate_all, "Ctrl+Shift+T")
+        self.shortcuts.register("translate_selected", self.auto_translate, "Ctrl+T")
+        self.shortcuts.register("apply_memory", self.apply_smart_translations, "Ctrl+M")
 
         # Atalhos de busca
         self.shortcuts.register("search", self._focus_search, "Ctrl+F")
-
-        # Atalhos de navegação
-        self.shortcuts.register("refresh", self._reload_file, "F5")
 
         # Atalhos de tema
         self.shortcuts.register("toggle_theme", self._toggle_theme, "Ctrl+Shift+D")
 
         # Atalhos de banco de dados
-        self.shortcuts.register("open_database", self._show_database_viewer, "Ctrl+D")
+        self.shortcuts.register("open_database", self._view_database, "Ctrl+B")
 
         # Atalho de ajuda
         self.shortcuts.register("help", self._show_shortcuts_help, "F1")
@@ -1513,13 +1510,13 @@ class MainWindow(QMainWindow):
 <table>
 <tr><td><b>Ctrl+O</b></td><td>Abrir arquivo</td></tr>
 <tr><td><b>Ctrl+S</b></td><td>Salvar traduções</td></tr>
-<tr><td><b>Ctrl+T</b></td><td>Traduzir selecionados</td></tr>
-<tr><td><b>Ctrl+Shift+T</b></td><td>Traduzir todos</td></tr>
+<tr><td><b>Ctrl+T</b></td><td>Traduzir com API</td></tr>
+<tr><td><b>Ctrl+M</b></td><td>Aplicar memória</td></tr>
 <tr><td><b>Ctrl+F</b></td><td>Buscar</td></tr>
-<tr><td><b>F5</b></td><td>Recarregar arquivo</td></tr>
-<tr><td><b>Ctrl+D</b></td><td>Abrir banco de dados</td></tr>
+<tr><td><b>Ctrl+B</b></td><td>Ver banco de dados</td></tr>
 <tr><td><b>Ctrl+Shift+D</b></td><td>Alternar tema claro/escuro</td></tr>
 <tr><td><b>F1</b></td><td>Mostrar esta ajuda</td></tr>
+<tr><td><b>F5</b></td><td>Traduzir automaticamente</td></tr>
 <tr><td><b>Delete</b></td><td>Excluir tradução selecionada</td></tr>
 </table>
 
