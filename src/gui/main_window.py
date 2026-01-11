@@ -2107,7 +2107,7 @@ class MainWindow(QMainWindow):
             self,
             "Selecionar Arquivo",
             "",
-            "Arquivos Suportados (*.json *.xml);;Arquivos JSON (*.json);;Arquivos XML (*.xml)"
+            "Arquivos Suportados (*.json *.xml *.csv);;Arquivos JSON (*.json);;Arquivos XML (*.xml);;Arquivos CSV (*.csv)"
         )
         
         if not filepath:

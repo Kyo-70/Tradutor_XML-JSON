@@ -242,7 +242,7 @@ class BatchProcessorDialog(QDialog):
             self,
             "Selecionar Arquivos",
             "",
-            "Arquivos Suportados (*.json *.xml);;JSON (*.json);;XML (*.xml)"
+            "Arquivos Suportados (*.json *.xml *.csv);;JSON (*.json);;XML (*.xml);;CSV (*.csv)"
         )
         
         if files:
