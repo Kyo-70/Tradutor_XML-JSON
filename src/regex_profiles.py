@@ -225,6 +225,23 @@ class RegexProfileManager:
         )
         default_profiles.append(rimworld_profile)
         
+        # Perfil para CSV genérico
+        csv_profile = RegexProfile(
+            name="CSV Genérico",
+            description="Extrai valores da coluna BRASILIAN em arquivos CSV de jogos (delimitados por ; ou ,)",
+            capture_patterns=[
+                r'"([^"]+)"',  # Valores entre aspas
+                r'([^;,\n\r]+)',  # Valores separados por ponto e vírgula ou vírgula
+            ],
+            exclude_patterns=[
+                r'^[0-9]+$',  # Ignora números puros
+                r'^[a-z_0-9/]+$',  # Ignora IDs e caminhos
+                r'^\s*$',  # Ignora espaços vazios
+            ],
+            file_type="csv"
+        )
+        default_profiles.append(csv_profile)
+        
         # MUDANÇA: Salva apenas perfis que ainda não existem
         # Isso preserva customizações do usuário em perfis padrão
         for profile in default_profiles:
