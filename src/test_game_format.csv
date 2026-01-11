@@ -1,7 +1,0 @@
-;ENGLISH;POLISH;RUSSIAN;FRENCH;GERMAN;SPANISH;BRASILIAN;CHINESE_SP;JAPANESE;KOREAN
-ggui/hud/building_templates/template_01;Template 1;;Шаблон 1;;;;Plano 1;模板-1;;
-ggui/hud/building_templates/template_02;Template 2;;Шаблон 2;;;;Plano 2;模板-2;;
-ggui/hud/actions/build;Build;;Строить;;;;Construir;建造;;
-ggui/hud/actions/destroy;Destroy;;Разрушить;;;;Destruir;摧毁;;
-ggui/hud/resources/wood;Wood;;Дерево;;;;Madeira;木材;;
-ggui/hud/resources/stone;Stone;;Камень;;;;Pedra;石头;;
