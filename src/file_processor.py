@@ -107,6 +107,7 @@ class TranslationEntry:
     translated_text: str = ""
     position: int = 0  # Posição no arquivo original
     context: str = ""  # Contexto (linha completa)
+    csv_info: dict = None  # Informações específicas para CSV (coluna, delimitador, etc.)
 
 
 class FileProcessor:
@@ -274,109 +275,137 @@ class FileProcessor:
             self.entries.append(entry)
 
     def _extract_csv_default(self):
-        """Extração padrão para CSV"""
+        """
+        Extração padrão para arquivos CSV de localização de jogos.
+        
+        Comportamento:
+        1. Detecta automaticamente o delimitador (; ou ,)
+        2. Localiza a posição da coluna BRASILIAN no cabeçalho
+        3. Extrai textos da coluna ENGLISH (para traduzir)
+        4. Armazena informações para inserir traduções na coluna BRASILIAN
+        """
         try:
-            # Detecta o delimitador (ponto e vírgula ou vírgula)
-            delimiter = ';' if ';' in self.original_content.split('\n')[0] else ','
+            # Detecta o delimitador analisando a primeira linha
+            first_line = self.original_content.split('\n')[0]
+            delimiter = ';' if ';' in first_line else ','
             
-            # Usa StringIO para processar o conteúdo como CSV
+            # Cria um leitor CSV
             csv_file = StringIO(self.original_content)
             reader = csv.reader(csv_file, delimiter=delimiter)
             
-            # Lê o cabeçalho (primeira linha)
+            # Lê o cabeçalho
             try:
                 header = next(reader)
             except StopIteration:
-                # Arquivo vazio
+                print("Arquivo CSV vazio")
                 return
             
-            # Detecta se existe coluna BRASILIAN ou BRAZILIAN
-            target_column = None
-            target_column_name = None
-            for idx, col in enumerate(header):
-                col_upper = col.strip().upper()
-                if col_upper in ['BRASILIAN', 'BRAZILIAN', 'PORTUGUESE', 'PT-BR', 'PTBR']:
-                    target_column = idx
-                    target_column_name = col.strip()
-                    break
+            # Procura a coluna ENGLISH (fonte) e BRASILIAN (destino)
+            english_column = None
+            brasilian_column = None
             
-            # Se não encontrou coluna específica, processa todas as colunas
-            if target_column is None:
-                # Modo genérico: processa todas as células
-                for row_index, row in enumerate(reader, start=1):
-                    for col_index, cell_value in enumerate(row):
-                        # Ignora primeira coluna (geralmente é ID/chave)
-                        if col_index == 0:
-                            continue
-                        
-                        # Ignora células vazias
-                        if not cell_value or not cell_value.strip():
-                            continue
-                        
-                        text = cell_value.strip()
-                        
-                        # Ignora textos muito curtos
-                        if len(text) < 2:
-                            continue
-                        
-                        # Ignora números puros
-                        if text.replace('.', '').replace(',', '').replace('-', '').isdigit():
-                            continue
-                        
-                        # Ignora valores que parecem IDs ou códigos com barra ou underscore
-                        if re.match(r'^[a-z_0-9/]+$', text.lower()):
-                            continue
-                        
-                        # Calcula a posição aproximada no arquivo original
-                        position = self.original_content.find(cell_value)
-                        
-                        # Cria contexto com informações da linha e coluna
-                        column_name = header[col_index] if col_index < len(header) else f"Coluna_{col_index}"
-                        context = f"Linha {row_index + 1}, {column_name}: {cell_value}"
-                        
-                        entry = TranslationEntry(
-                            index=len(self.entries),
-                            original_text=text,
-                            position=position if position != -1 else 0,
-                            context=context
-                        )
-                        self.entries.append(entry)
-            else:
-                # Modo específico: processa apenas coluna BRASILIAN
-                for row_index, row in enumerate(reader, start=1):
-                    # Verifica se a linha tem a coluna alvo
-                    if target_column >= len(row):
+            # Variações possíveis dos nomes das colunas
+            english_variants = ['ENGLISH', 'EN', 'INGLÊS', 'INGLES']
+            brasilian_variants = ['BRASILIAN', 'BRAZILIAN', 'PORTUGUESE', 'PT-BR', 'PTBR', 'PT_BR', 'PORTUGUES', 'PORTUGUÊS']
+            
+            for col_index, col_name in enumerate(header):
+                col_upper = col_name.strip().upper()
+                
+                # Procura coluna ENGLISH
+                if col_upper in english_variants:
+                    english_column = col_index
+                    print(f"✓ Coluna ENGLISH encontrada na posição {col_index}")
+                
+                # Procura coluna BRASILIAN
+                if col_upper in brasilian_variants:
+                    brasilian_column = col_index
+                    print(f"✓ Coluna BRASILIAN encontrada na posição {col_index}")
+            
+            # Valida se encontrou as colunas necessárias
+            if english_column is None:
+                print("⚠️  Coluna ENGLISH não encontrada. Usando primeira coluna de texto.")
+                # Fallback: usa a segunda coluna (primeira geralmente é ID)
+                english_column = 1 if len(header) > 1 else 0
+            
+            if brasilian_column is None:
+                print("⚠️  Coluna BRASILIAN não encontrada. Não será possível inserir traduções.")
+                return
+            
+            # Processa cada linha do CSV
+            lines = self.original_content.split('\n')
+            
+            # row_index começa em 1 porque o cabeçalho é a linha 0
+            # Mas no array lines, o cabeçalho é lines[0], então a primeira linha de dados é lines[1]
+            for row_index, row in enumerate(reader, start=1):
+                # Verifica se a linha tem as colunas necessárias
+                if english_column >= len(row):
+                    continue
+                
+                # Obtém o texto em inglês (fonte para tradução)
+                english_text = row[english_column].strip() if english_column < len(row) else ""
+                
+                # Ignora células vazias
+                if not english_text or len(english_text) < 2:
+                    continue
+                
+                # Ignora números puros
+                if english_text.replace('.', '').replace(',', '').replace('-', '').isdigit():
+                    continue
+                
+                # Ignora valores que parecem IDs ou códigos (contém / ou _)
+                if '/' in english_text or '_' in english_text:
+                    # Mas permite se tiver espaços (ex: "Template 1" é OK)
+                    if ' ' not in english_text:
                         continue
-                    
-                    cell_value = row[target_column]
-                    
-                    # Ignora células vazias
-                    if not cell_value or not cell_value.strip():
-                        continue
-                    
-                    text = cell_value.strip()
-                    
-                    # Ignora textos muito curtos
-                    if len(text) < 2:
-                        continue
-                    
-                    # Calcula a posição exata no arquivo original
-                    position = self.original_content.find(cell_value)
-                    
-                    # Obtém a chave (primeira coluna) para contexto
-                    key = row[0] if len(row) > 0 else "?"
-                    context = f"Chave: {key}, {target_column_name}: {cell_value}"
-                    
-                    entry = TranslationEntry(
-                        index=len(self.entries),
-                        original_text=text,
-                        position=position if position != -1 else 0,
-                        context=context
-                    )
-                    self.entries.append(entry)
+                
+                # Obtém a chave (primeira coluna) para contexto
+                key = row[0] if len(row) > 0 else "?"
+                
+                # Obtém o valor atual da coluna BRASILIAN (pode estar vazio)
+                current_brasilian = row[brasilian_column].strip() if brasilian_column < len(row) else ""
+                
+                # Cria contexto rico com informações da linha
+                context_parts = [
+                    f"Chave: {key}",
+                    f"English: {english_text}",
+                ]
+                
+                if current_brasilian:
+                    context_parts.append(f"Brasilian atual: {current_brasilian}")
+                else:
+                    context_parts.append(f"Brasilian: (vazio)")
+                
+                context_parts.append(f"Posição BRASILIAN: coluna {brasilian_column}")
+                context = " | ".join(context_parts)
+                
+                # Encontra a linha completa no conteúdo original
+                line_number = row_index  # +1 para o cabeçalho
+                original_line = lines[line_number] if line_number < len(lines) else ""
+                
+                # Calcula a posição onde a tradução deve ser inserida
+                # Precisamos encontrar a posição da célula BRASILIAN na linha original
+                position_info = {
+                    'line_number': line_number,
+                    'brasilian_column': brasilian_column,
+                    'delimiter': delimiter,
+                    'original_line': original_line,
+                    'key': key
+                }
+                
+                entry = TranslationEntry(
+                    index=len(self.entries),
+                    original_text=english_text,  # Mostra o texto em inglês
+                    position=line_number,  # Armazena o número da linha
+                    context=context,
+                    csv_info=position_info
+                )
+                
+                self.entries.append(entry)
         
         except Exception as e:
             print(f"Erro ao extrair textos do CSV: {e}")
+            import traceback
+            traceback.print_exc()
 
     def _extract_with_profile(self):
         """Extração usando perfil de regex personalizado"""
@@ -437,29 +466,94 @@ class FileProcessor:
 
     def apply_translations(self, translations: Dict[str, str]) -> str:
         """
-        Aplica traduções ao conteúdo original
-
+        Aplica traduções ao conteúdo original.
+        Para arquivos CSV de localização, insere traduções na coluna BRASILIAN.
+        
         Args:
-            translations: Dicionário {texto_original: texto_traduzido}
-
+            translations: Dicionário {texto_original_em_ingles: texto_traduzido_em_portugues}
+        
         Returns:
             Conteúdo traduzido
         """
+        # Para arquivos CSV, usa lógica especial
+        if self.file_type == 'csv' and self.entries and hasattr(self.entries[0], 'csv_info') and self.entries[0].csv_info is not None:
+            return self._apply_translations_csv(translations)
+        
+        # Para outros tipos, usa lógica padrão
         result = self.original_content
-
+        
         # Ordena entradas por posição (de trás para frente para não afetar posições)
         sorted_entries = sorted(self.entries, key=lambda e: e.position, reverse=True)
-
+        
         for entry in sorted_entries:
             if entry.original_text in translations:
                 translated = translations[entry.original_text]
-
+                
                 # Substitui apenas na posição exata
                 before = result[:entry.position]
                 after = result[entry.position + len(entry.original_text):]
                 result = before + translated + after
-
+        
         return result
+    
+    def _apply_translations_csv(self, translations: Dict[str, str]) -> str:
+        """
+        Aplica traduções especificamente para arquivos CSV de localização.
+        Insere traduções na coluna BRASILIAN mantendo a estrutura intacta.
+        
+        Args:
+            translations: Dicionário {texto_em_ingles: texto_traduzido}
+        
+        Returns:
+            Conteúdo CSV com traduções aplicadas
+        """
+        try:
+            lines = self.original_content.split('\n')
+            
+            # Processa cada entrada que tem tradução
+            for entry in self.entries:
+                if entry.original_text not in translations:
+                    continue
+                
+                if not hasattr(entry, 'csv_info') or entry.csv_info is None:
+                    continue
+                
+                csv_info = entry.csv_info
+                line_number = csv_info['line_number']
+                brasilian_column = csv_info['brasilian_column']
+                delimiter = csv_info['delimiter']
+                
+                # Verifica se a linha existe
+                if line_number >= len(lines):
+                    continue
+                
+                original_line = lines[line_number]
+                translated_text = translations[entry.original_text]
+                
+                # Divide a linha em células
+                cells = original_line.split(delimiter)
+                
+                # Verifica se a coluna BRASILIAN existe
+                if brasilian_column >= len(cells):
+                    # Se não existe, adiciona células vazias até chegar lá
+                    while len(cells) <= brasilian_column:
+                        cells.append('')
+                
+                # Insere a tradução na coluna BRASILIAN
+                cells[brasilian_column] = translated_text
+                
+                # Reconstrói a linha
+                new_line = delimiter.join(cells)
+                lines[line_number] = new_line
+            
+            # Reconstrói o conteúdo completo
+            return '\n'.join(lines)
+        
+        except Exception as e:
+            print(f"Erro ao aplicar traduções no CSV: {e}")
+            import traceback
+            traceback.print_exc()
+            return self.original_content
 
     def save_file(self, filepath: str, content: str, create_backup: bool = True,
                   encoding: str = None) -> bool:
