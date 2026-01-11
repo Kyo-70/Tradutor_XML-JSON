@@ -763,7 +763,7 @@ class ImportTranslationDialog(QDialog):
             self,
             "Selecionar Arquivo Traduzido",
             "",
-            "Arquivos Suportados (*.json *.xml);;Arquivos JSON (*.json);;Arquivos XML (*.xml)"
+            "Arquivos Suportados (*.json *.xml *.csv);;Arquivos JSON (*.json);;Arquivos XML (*.xml);;Arquivos CSV (*.csv)"
         )
         
         if filepath:
@@ -792,6 +792,8 @@ class ImportTranslationDialog(QDialog):
             elif filepath.endswith('.xml'):
                 root = ET.fromstring(content)
                 self._extract_xml_texts(root, imported_texts)
+            elif filepath.endswith('.csv'):
+                self._extract_csv_texts(content, imported_texts)
             
             # Encontra correspondências
             self.match_table.setRowCount(0)
@@ -853,6 +855,32 @@ class ImportTranslationDialog(QDialog):
         
         for child in element:
             self._extract_xml_texts(child, texts)
+    
+    def _extract_csv_texts(self, content: str, texts: set):
+        """Extrai textos de arquivo CSV"""
+        import csv
+        from io import StringIO
+        
+        try:
+            # Detecta delimitador
+            delimiter = ';' if ';' in content.split('\n')[0] else ','
+            
+            csv_file = StringIO(content)
+            reader = csv.reader(csv_file, delimiter=delimiter)
+            
+            # Pula cabeçalho
+            try:
+                next(reader)
+            except StopIteration:
+                return
+            
+            # Extrai todos os valores das células
+            for row in reader:
+                for cell in row:
+                    if cell and cell.strip() and len(cell.strip()) > 1:
+                        texts.add(cell.strip())
+        except Exception as e:
+            print(f"Erro ao extrair textos do CSV: {e}")
     
     def _calculate_similarity(self, s1: str, s2: str) -> float:
         """Calcula similaridade entre duas strings"""
