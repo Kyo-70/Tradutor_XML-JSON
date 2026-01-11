@@ -1,15 +1,17 @@
 """
 Módulo de Processamento de Arquivos
-Responsável por extrair, processar e reinserir traduções em arquivos JSON/XML
+Responsável por extrair, processar e reinserir traduções em arquivos JSON/XML/CSV
 
 Melhorias implementadas:
 - Detecção automática de encoding
 - Suporte a múltiplos encodings (UTF-8, Latin-1, etc.)
+- Suporte a arquivos CSV com extração inteligente
 - Melhor tratamento de erros
 """
 
 import re
 import json
+import csv
 import xml.etree.ElementTree as ET
 from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
@@ -17,6 +19,7 @@ import shutil
 import os
 from datetime import datetime
 from pathlib import Path
+from io import StringIO
 
 
 def detect_encoding(filepath: str) -> str:
@@ -108,7 +111,7 @@ class TranslationEntry:
 
 class FileProcessor:
     """
-    Processa arquivos JSON e XML para extração e inserção de traduções.
+    Processa arquivos JSON, XML e CSV para extração e inserção de traduções.
 
     Suporta detecção automática de encoding para arquivos de jogos
     que podem usar diferentes codificações.
@@ -179,6 +182,8 @@ class FileProcessor:
                 self.file_type = 'json'
             elif ext == '.xml':
                 self.file_type = 'xml'
+            elif ext == '.csv':
+                self.file_type = 'csv'
             else:
                 return False
 
@@ -207,6 +212,8 @@ class FileProcessor:
                 self._extract_json_default()
             elif self.file_type == 'xml':
                 self._extract_xml_default()
+            elif self.file_type == 'csv':
+                self._extract_csv_default()
         else:
             # Usa perfil de regex personalizado
             self._extract_with_profile()
@@ -265,6 +272,111 @@ class FileProcessor:
                 context=match.group(0)
             )
             self.entries.append(entry)
+
+    def _extract_csv_default(self):
+        """Extração padrão para CSV"""
+        try:
+            # Detecta o delimitador (ponto e vírgula ou vírgula)
+            delimiter = ';' if ';' in self.original_content.split('\n')[0] else ','
+            
+            # Usa StringIO para processar o conteúdo como CSV
+            csv_file = StringIO(self.original_content)
+            reader = csv.reader(csv_file, delimiter=delimiter)
+            
+            # Lê o cabeçalho (primeira linha)
+            try:
+                header = next(reader)
+            except StopIteration:
+                # Arquivo vazio
+                return
+            
+            # Detecta se existe coluna BRASILIAN ou BRAZILIAN
+            target_column = None
+            target_column_name = None
+            for idx, col in enumerate(header):
+                col_upper = col.strip().upper()
+                if col_upper in ['BRASILIAN', 'BRAZILIAN', 'PORTUGUESE', 'PT-BR', 'PTBR']:
+                    target_column = idx
+                    target_column_name = col.strip()
+                    break
+            
+            # Se não encontrou coluna específica, processa todas as colunas
+            if target_column is None:
+                # Modo genérico: processa todas as células
+                for row_index, row in enumerate(reader, start=1):
+                    for col_index, cell_value in enumerate(row):
+                        # Ignora primeira coluna (geralmente é ID/chave)
+                        if col_index == 0:
+                            continue
+                        
+                        # Ignora células vazias
+                        if not cell_value or not cell_value.strip():
+                            continue
+                        
+                        text = cell_value.strip()
+                        
+                        # Ignora textos muito curtos
+                        if len(text) < 2:
+                            continue
+                        
+                        # Ignora números puros
+                        if text.replace('.', '').replace(',', '').replace('-', '').isdigit():
+                            continue
+                        
+                        # Ignora valores que parecem IDs ou códigos com barra ou underscore
+                        if re.match(r'^[a-z_0-9/]+$', text.lower()):
+                            continue
+                        
+                        # Calcula a posição aproximada no arquivo original
+                        position = self.original_content.find(cell_value)
+                        
+                        # Cria contexto com informações da linha e coluna
+                        column_name = header[col_index] if col_index < len(header) else f"Coluna_{col_index}"
+                        context = f"Linha {row_index + 1}, {column_name}: {cell_value}"
+                        
+                        entry = TranslationEntry(
+                            index=len(self.entries),
+                            original_text=text,
+                            position=position if position != -1 else 0,
+                            context=context
+                        )
+                        self.entries.append(entry)
+            else:
+                # Modo específico: processa apenas coluna BRASILIAN
+                for row_index, row in enumerate(reader, start=1):
+                    # Verifica se a linha tem a coluna alvo
+                    if target_column >= len(row):
+                        continue
+                    
+                    cell_value = row[target_column]
+                    
+                    # Ignora células vazias
+                    if not cell_value or not cell_value.strip():
+                        continue
+                    
+                    text = cell_value.strip()
+                    
+                    # Ignora textos muito curtos
+                    if len(text) < 2:
+                        continue
+                    
+                    # Calcula a posição exata no arquivo original
+                    position = self.original_content.find(cell_value)
+                    
+                    # Obtém a chave (primeira coluna) para contexto
+                    key = row[0] if len(row) > 0 else "?"
+                    context = f"Chave: {key}, {target_column_name}: {cell_value}"
+                    
+                    entry = TranslationEntry(
+                        index=len(self.entries),
+                        original_text=text,
+                        position=position if position != -1 else 0,
+                        context=context
+                    )
+                    self.entries.append(entry)
+        
+        except Exception as e:
+            print(f"Erro ao extrair textos do CSV: {e}")
 
     def _extract_with_profile(self):
         """Extração usando perfil de regex personalizado"""

@@ -1,0 +1,14 @@
+{
+  "name": "CSV Genérico",
+  "description": "Extrai valores da coluna BRASILIAN em arquivos CSV de jogos (delimitados por ; ou ,)",
+  "capture_patterns": [
+    "\"([^\"]+)\"",
+    "([^;,\\n\\r]+)"
+  ],
+  "exclude_patterns": [
+    "^[0-9]+$",
+    "^[a-z_0-9/]+$",
+    "^\\s*$"
+  ],
+  "file_type": "csv"
+}
